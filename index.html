@@ -1,0 +1,2069 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>StarCube</title>
+    <meta name="description" content="StarCube — Aventura de plataformas 2D creada por Isaac Daniel Cotera. Juega como Peggy en mundos llenos de acción, jefes épicos y secretos ocultos. 100% Vanilla JavaScript y HTML5 Canvas.">
+    <meta name="keywords" content="StarCube, juego, plataformas, platformer, 2D, Isaac Daniel Cotera, HTML5, Canvas, JavaScript, aventura, Peggy, arcade, indie, 2026">
+    <meta name="author" content="Isaac Daniel Cotera">
+    <meta name="theme-color" content="#000000">
+    <link rel="icon" type="image/x-icon" href="favicon/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+    <link rel="apple-touch-icon" href="favicon/apple-icon.png">
+    <script src="js/gsap.min.js"></script>
+    <link rel="stylesheet" href="css/plataformer.css">
+    <style>
+        body.no-cursor, body.no-cursor * { cursor: none !important; }
+        body { margin: 0; overflow: hidden; background: #000; color: #fff; font-family: 'Courier Prime', monospace; }
+        #blackout { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000; opacity: 0; pointer-events: none; transition: opacity 0.2s; z-index: 10; }
+        .ui-panel { position: absolute; padding: 10px 20px; z-index: 5; font-family: 'Fredoka One', cursive; text-shadow: 2px 2px 0 #000; }
+        #ui-overlay { top: 10px; left: 10px; right: 10px; display: none; justify-content: space-between; align-items: center; }
+        .health-bar-container { width: 200px; height: 20px; background: #333; border: 3px solid #fff; border-radius: 10px; overflow: hidden; }
+        .health-bar-fill { height: 100%; background: linear-gradient(90deg, #ff66aa, #ff3388); width: 100%; transition: width 0.3s; }
+        #score-display { font-size: 18px; color: #ffd700; letter-spacing: 2px; }
+        
+        #lives-container { display: flex; gap: 7px; align-items: center; margin-left: 2px; }
+        .life-icon {
+            width: 20px; height: 20px; border-radius: 5px; position: relative;
+            background: linear-gradient(135deg, #ff9ec7 0%, #ff66aa 100%);
+            border: 2px solid #fff;
+            box-shadow: 0 0 8px rgba(255, 102, 170, 0.8);
+            transition: opacity 0.35s, filter 0.35s, transform 0.35s;
+        }
+        .life-icon::before, .life-icon::after {
+            content: ''; position: absolute; top: 5px; width: 3px; height: 5px;
+            background: #5b1a36; border-radius: 2px;
+        }
+        .life-icon::before { left: 4px; }
+        .life-icon::after { right: 4px; }
+        .life-icon.lost { opacity: 0.22; filter: grayscale(1); transform: scale(0.8); box-shadow: none; }
+        #controls-info { bottom: 10px; width: 100%; text-align: center; font-size: 14px; opacity: 0.7; }
+        #message { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0); font-size: 48px; text-align: center; opacity: 0; z-index: 20; border: 4px solid #fff; padding: 20px; background: rgba(255,255,255,0.9); border-radius: 15px; }
+        #choice { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 30; display: none; flex-direction: column; justify-content: center; align-items: center; gap: 40px; text-align: center; }
+        #intro-skip-btn {
+            position: absolute; top: 14px; right: 14px; z-index: 45;
+            display: none; font-family: 'Fredoka One', cursive; font-size: 18px;
+            letter-spacing: 1px; color: #fff; background: #10b981;
+            border: 3px solid #34d399; border-radius: 12px; padding: 10px 24px;
+            text-shadow: 1px 1px 0 #065f46;
+            box-shadow: 0 4px 0 #047857, 0 0 18px rgba(52, 211, 153, 0.45);
+            cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+        }
+        #intro-skip-btn:active { transform: scale(0.94); box-shadow: 0 2px 0 #047857; }
+        .choice-text { font-size: 36px; color: #ff0000; text-shadow: 0 0 10px #ff0000; }
+        .choice-buttons { display: flex; gap: 60px; margin-top: 10px; }
+        .choice-buttons button { font-family: 'Courier Prime', monospace; font-size: 28px; padding: 14px 40px; background: #111; color: #fff; border: 2px solid #555; cursor: pointer; transition: 0.3s; }
+        .choice-buttons button:hover { background: #333; border-color: #fff; }
+        .choice-sub { font-size: 15px; color: #888; margin-top: 5px; }
+        #handOverlay, #cursorOverlay { position: fixed; pointer-events: none; z-index: 9999; display: none; text-shadow: 0 0 10px rgba(0,0,0,0.5); }
+        #cursorOverlay { font-size: 32px; color: #fff; -webkit-text-stroke: 2px #000; }
+        #handOverlay { font-size: 96px; }
+        
+        #splash-screen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 200; display: flex;
+            flex-direction: column; justify-content: center; align-items: center;
+            opacity: 1; transition: opacity 0.8s ease;
+        }
+        #splash-screen.hidden { opacity: 0; pointer-events: none; }
+        #splash-screen h1 {
+            font-family: 'Fredoka One', cursive;
+            font-size: 48px; color: #fff;
+            text-shadow: 0 0 30px rgba(255,255,255,0.3);
+            letter-spacing: 6px;
+        }
+        
+        #lang-select {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, #1b123d 0%, #0a0a24 70%, #050515 100%);
+            z-index: 150; display: none;
+            flex-direction: column; justify-content: center; align-items: center;
+            gap: 24px; opacity: 0; transition: opacity 0.4s ease;
+        }
+        #lang-select.visible { display: flex; opacity: 1; }
+        #lang-select h2 {
+            font-family: 'Fredoka One', cursive;
+            font-size: 30px; color: #ffd700;
+            text-shadow: 0 0 20px rgba(255,215,0,0.4);
+            letter-spacing: 3px; margin: 0 0 8px 0;
+            text-align: center;
+        }
+        .lang-grid {
+            display: flex; gap: 20px; flex-wrap: wrap;
+            justify-content: center; align-items: center;
+            max-width: 760px;
+            padding: 0 20px;
+        }
+        .lang-btn {
+            display: flex; flex-direction: column; align-items: center;
+            gap: 8px; padding: 14px 22px; border-radius: 16px;
+            background: rgba(255,255,255,0.08);
+            border: 3px solid rgba(255,255,255,0.18);
+            cursor: pointer; transition: all 0.25s ease;
+            font-family: 'Courier Prime', monospace;
+            color: #fff; font-size: 14px; min-width: 110px;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .lang-btn:hover {
+            background: rgba(255,255,255,0.18);
+            border-color: #ffd700;
+            transform: scale(1.08) translateY(-2px);
+            box-shadow: 0 6px 25px rgba(255,215,0,0.3);
+        }
+        .lang-btn.active {
+            border-color: #00ffff !important;
+            background: rgba(0, 212, 255, 0.18) !important;
+            box-shadow: 0 0 25px rgba(0, 212, 255, 0.5) !important;
+            transform: scale(1.04);
+        }
+        .lang-btn.active .name {
+            color: #00ffff;
+            font-weight: bold;
+        }
+        .lang-btn .flag { font-size: 44px; line-height: 1; }
+        .lang-btn .name { font-size: 15px; letter-spacing: 1px; }
+
+        #close-lang-btn {
+            width: auto !important;
+            min-width: 170px;
+            max-width: 230px;
+            margin: 10px auto 0 auto !important;
+            padding: 10px 24px !important;
+            font-size: 14px !important;
+            border-radius: 12px !important;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.12) !important;
+            border: 2px solid rgba(255, 255, 255, 0.25) !important;
+            color: #fff !important;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4) !important;
+            transition: all 0.25s ease;
+        }
+        #close-lang-btn:hover {
+            background: rgba(255, 255, 255, 0.24) !important;
+            border-color: #ffd700 !important;
+            color: #ffd700 !important;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.35) !important;
+        }
+
+        #btn-lang-toggle {
+            position: absolute;
+            top: 12px;
+            left: 14px;
+            z-index: 60;
+            display: none;
+            align-items: center;
+            gap: 7px;
+            padding: 6px 14px;
+            height: 38px;
+            border-radius: 10px;
+            background: rgba(15, 23, 42, 0.85);
+            border: 1.5px solid rgba(255, 215, 0, 0.65);
+            color: #ffd700;
+            font-family: 'Fredoka One', cursive;
+            font-size: 14px;
+            letter-spacing: 1px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5), 0 0 10px rgba(255, 215, 0, 0.2);
+            transition: all 0.25s ease;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+        #btn-lang-toggle:hover {
+            background: rgba(30, 41, 59, 0.95);
+            border-color: #ffd700;
+            color: #ffffff;
+            transform: scale(1.06) translateY(-1px);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6), 0 0 18px rgba(255, 215, 0, 0.45);
+        }
+        #btn-lang-toggle:active {
+            transform: scale(0.96);
+        }
+        #btn-lang-toggle .lang-toggle-flag {
+            font-size: 16px;
+            line-height: 1;
+        }
+        #btn-lang-toggle .lang-toggle-code {
+            font-weight: bold;
+            font-size: 13px;
+            color: #fff;
+        }
+        
+        #game-title {
+            position: absolute; top: 28%; left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1; text-align: center;
+            pointer-events: none; opacity: 0;
+            transition: opacity 0.5s;
+        }
+                #game-title .starcube-title {
+            font-family: 'Fredoka One', cursive;
+            font-size: 110px; color: #ffd700;
+            text-shadow: 0 0 35px rgba(255,215,0,0.5), 5px 5px 0 #ff3388, -2px -2px 0 #000;
+            letter-spacing: 12px;
+        }
+        #game-title .starcube-title.horror {
+            color: #dc2626 !important;
+            text-shadow: 0 0 45px rgba(255, 0, 0, 0.9), 5px 5px 0 #000000, -2px -2px 0 #450a0a !important;
+            letter-spacing: 14px;
+            animation: horrorGlitchTitle 3.5s infinite ease-in-out;
+        }
+        body.horror-mode #game-container {
+            background: radial-gradient(circle at center, #180505 0%, #000000 100%) !important;
+        }
+        body.horror-mode .title-btn {
+            background: linear-gradient(135deg, #450a0a 0%, #180303 100%) !important;
+            color: #fca5a5 !important;
+            border-color: #7f1d1d !important;
+            box-shadow: 0 8px 25px rgba(185, 28, 28, 0.5) !important;
+            text-shadow: 0 0 8px rgba(255, 0, 0, 0.7);
+        }
+        body.horror-mode .title-btn:hover {
+            border-color: #ef4444 !important;
+            box-shadow: 0 12px 30px rgba(220, 38, 38, 0.85) !important;
+            color: #ffffff !important;
+        }
+        @keyframes horrorGlitchTitle {
+            0%, 100% { transform: translate(0, 0) skew(0deg); }
+            15% { transform: translate(-2px, 1px) skew(-1deg); }
+            35% { transform: translate(3px, -1px) skew(1.5deg); }
+            55% { transform: translate(-1px, 2px) skew(-0.8deg); }
+            75% { transform: translate(2px, -2px) skew(0.8deg); }
+        }
+
+        
+        .title-btn {
+            font-family: 'Fredoka One', cursive;
+            font-size: 22px;
+            padding: 12px 45px;
+            background: linear-gradient(135deg, #ff3388 0%, #db2777 100%);
+            color: #fff;
+            border: 3px solid #ff99cc;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            margin: 6px 0;
+            width: 270px;
+            letter-spacing: 2px;
+            box-shadow: 0 8px 25px rgba(255, 51, 136, 0.4);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .title-btn:hover {
+            transform: scale(1.08) translateY(-3px);
+            box-shadow: 0 12px 30px rgba(255, 51, 136, 0.6);
+            border-color: #ffffff;
+        }
+        .title-btn.secondary {
+            font-size: 17px;
+            padding: 10px 35px;
+            width: 240px;
+            background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
+            border-color: #7dd3fc;
+            box-shadow: 0 6px 20px rgba(56, 189, 248, 0.4);
+        }
+        .title-btn.secondary:hover {
+            border-color: #ffffff;
+            box-shadow: 0 10px 25px rgba(56, 189, 248, 0.6);
+        }
+        #credits-btn {
+            background: linear-gradient(135deg, #7e22ce 0%, #a855f7 100%);
+            border-color: #e9d5ff;
+            box-shadow: 0 6px 20px rgba(168, 85, 247, 0.4);
+        }
+        #credits-btn:hover {
+            border-color: #ffffff;
+            box-shadow: 0 10px 25px rgba(168, 85, 247, 0.6);
+        }
+
+        
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(19, 9, 36, 0.88);
+            backdrop-filter: blur(8px);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-overlay.active { display: flex; }
+
+        
+        
+        #title-buttons {
+            position: absolute;
+            top: 70%; left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            pointer-events: none;
+        }
+        #title-buttons .title-btn {
+            pointer-events: auto;
+        }
+        #title-buttons.hidden { display: none !important; }
+        .modal-box {
+            background: #1a1a2e;
+            border: 3px solid #4a4a8a;
+            border-radius: 16px;
+            padding: 24px 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            color: #fff;
+            box-shadow: 0 0 40px rgba(0,0,0,0.5);
+            box-sizing: border-box;
+        }
+        .modal-box h2 {
+            font-family: 'Fredoka One', cursive;
+            text-align: center;
+            font-size: 26px;
+            margin: 0;
+            color: #ffd700;
+            letter-spacing: 2px;
+        }
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            padding-bottom: 12px;
+        }
+        .modal-badge {
+            font-family: 'Fredoka One', cursive;
+            font-size: 13px;
+            padding: 4px 14px;
+            border-radius: 20px;
+            background: rgba(0, 255, 255, 0.18);
+            color: #00ffff;
+            border: 1px solid #00ffff;
+            letter-spacing: 1px;
+        }
+        .modal-badge.gold-badge {
+            background: rgba(255, 215, 0, 0.2);
+            color: #ffd700;
+            border-color: #ffd700;
+        }
+
+        
+        .controls-modal-box {
+            max-width: 860px;
+            width: 94%;
+            background: linear-gradient(145deg, #10152b 0%, #0c0f20 100%);
+            border: 2px solid #00ffff;
+            box-shadow: 0 0 45px rgba(0, 255, 255, 0.25), inset 0 0 25px rgba(0, 255, 255, 0.05);
+            border-radius: 20px;
+        }
+        .platform-tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            justify-content: center;
+        }
+        .platform-tab-btn {
+            flex: 1;
+            max-width: 280px;
+            padding: 10px 18px;
+            border-radius: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.18);
+            background: rgba(255, 255, 255, 0.06);
+            color: #94a3b8;
+            font-family: 'Fredoka One', cursive;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+        .platform-tab-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+        .platform-tab-btn.active {
+            background: linear-gradient(135deg, rgba(0, 204, 255, 0.35), rgba(0, 119, 182, 0.6));
+            border-color: #00ffff;
+            color: #ffffff;
+            box-shadow: 0 0 16px rgba(0, 255, 255, 0.4);
+        }
+        .controls-panel {
+            display: none;
+        }
+        .controls-panel.active {
+            display: block;
+        }
+        .controls-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        @media (max-width: 680px) {
+            .controls-cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .ctrl-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 10px 14px;
+            box-sizing: border-box;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .ctrl-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(0, 255, 255, 0.45);
+            background: rgba(255, 255, 255, 0.07);
+        }
+        .ctrl-card.special-edash {
+            border-color: rgba(255, 215, 0, 0.35);
+            background: rgba(255, 215, 0, 0.05);
+        }
+        .ctrl-card.special-slash {
+            border-color: rgba(255, 51, 102, 0.35);
+            background: rgba(255, 51, 102, 0.05);
+        }
+        .ctrl-canvas-box {
+            width: 64px;
+            height: 64px;
+            min-width: 64px;
+            background: radial-gradient(circle, rgba(0, 204, 255, 0.16) 0%, rgba(10, 15, 35, 0.85) 100%);
+            border: 1.5px solid rgba(0, 255, 255, 0.3);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+        .ctrl-peggy-canvas {
+            width: 64px;
+            height: 64px;
+            display: block;
+        }
+        .ctrl-details {
+            flex: 1;
+            min-width: 0;
+        }
+        .ctrl-details h4 {
+            font-family: 'Fredoka One', cursive;
+            font-size: 16px;
+            margin: 4px 0 2px 0;
+            color: #ffffff;
+        }
+        .ctrl-details p {
+            font-family: 'Courier Prime', monospace;
+            font-size: 12px;
+            margin: 0;
+            color: #94a3b8;
+            line-height: 1.35;
+        }
+        .ctrl-badges {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        .key-separator {
+            font-family: 'Fredoka One', cursive;
+            color: #64748b;
+            font-size: 14px;
+        }
+        .key-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 28px;
+            height: 26px;
+            padding: 0 6px;
+            border-radius: 6px;
+            background: linear-gradient(180deg, #242c4a 0%, #14172a 100%);
+            border: 1px solid #475569;
+            box-shadow: 0 2px 0 #0b0d18;
+            color: #00ffff;
+            font-family: 'Courier Prime', monospace;
+            font-weight: bold;
+            font-size: 13px;
+        }
+        .key-badge.wide {
+            min-width: 64px;
+            padding: 0 8px;
+        }
+        .key-badge.gold {
+            color: #ffd700;
+            border-color: #ffd700;
+        }
+        .key-badge.red {
+            color: #ff3366;
+            border-color: #ff3366;
+        }
+        .badge-tag {
+            font-family: 'Fredoka One', cursive;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+        .badge-tag.gold-tag {
+            background: rgba(255, 215, 0, 0.2);
+            color: #ffd700;
+            border: 1px solid #ffd700;
+        }
+        .badge-tag.red-tag {
+            background: rgba(255, 51, 102, 0.2);
+            color: #ff3366;
+            border: 1px solid #ff3366;
+        }
+        .touch-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 10px;
+            border-radius: 8px;
+            font-family: 'Fredoka One', cursive;
+            font-size: 12px;
+            background: rgba(0, 204, 255, 0.18);
+            border: 1px solid #00ffff;
+            color: #00ffff;
+        }
+        .touch-badge.dpad {
+            background: rgba(168, 85, 247, 0.2);
+            border-color: #c084fc;
+            color: #e9d5ff;
+        }
+        .touch-badge.btn-jump {
+            background: rgba(34, 197, 94, 0.2);
+            border-color: #4ade80;
+            color: #86efac;
+        }
+        .touch-badge.btn-shoot {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: #60a5fa;
+            color: #93c5fd;
+        }
+        .touch-badge.btn-dash {
+            background: rgba(6, 182, 212, 0.2);
+            border-color: #22d3ee;
+            color: #67e8f9;
+        }
+        .touch-badge.btn-edash {
+            background: rgba(234, 179, 8, 0.2);
+            border-color: #facc15;
+            color: #fef08a;
+        }
+        .touch-badge.btn-slash {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: #f87171;
+            color: #fca5a5;
+        }
+
+        
+        .credits-modal-box {
+            max-width: 800px;
+            width: 94%;
+            background: linear-gradient(145deg, #1b132e 0%, #0f0a1c 100%);
+            border: 2px solid #ffd700;
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.22), inset 0 0 25px rgba(255, 215, 0, 0.05);
+            border-radius: 20px;
+        }
+        .credits-showcase {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .credits-hero {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px 18px;
+            background: radial-gradient(circle at 10% 50%, rgba(255, 215, 0, 0.16), rgba(15, 10, 28, 0.7));
+            border-radius: 14px;
+            border: 1px solid rgba(255, 215, 0, 0.35);
+        }
+        .credits-logo-icon {
+            font-size: 36px;
+            filter: drop-shadow(0 0 10px #ffd700);
+        }
+        .credits-hero-text h3 {
+            font-family: 'Fredoka One', cursive;
+            font-size: 24px;
+            color: #ffd700;
+            margin: 0 0 2px 0;
+            letter-spacing: 2px;
+        }
+        .credits-hero-text .credits-sub {
+            font-family: 'Courier Prime', monospace;
+            font-size: 13px;
+            color: #cbd5e1;
+            margin: 0;
+        }
+        .credits-card-highlight {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 14px 18px;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.12), rgba(168, 85, 247, 0.12));
+            border: 1.5px solid rgba(255, 215, 0, 0.45);
+            border-radius: 14px;
+        }
+        .author-avatar {
+            font-size: 32px;
+            background: rgba(255, 215, 0, 0.2);
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #ffd700;
+            flex-shrink: 0;
+        }
+        .author-role {
+            font-family: 'Courier Prime', monospace;
+            font-size: 12px;
+            color: #fef08a;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: block;
+        }
+        .author-name {
+            font-family: 'Fredoka One', cursive;
+            font-size: 22px;
+            color: #ffffff;
+            margin: 2px 0 0 0;
+            text-shadow: 0 0 12px rgba(255, 215, 0, 0.5);
+        }
+        .credits-grid-details {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+        .credits-tile {
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+        }
+        .tile-icon {
+            font-size: 24px;
+            min-width: 30px;
+            padding-top: 2px;
+        }
+        .tile-content h4 {
+            font-family: 'Fredoka One', cursive;
+            font-size: 15px;
+            margin: 0 0 4px 0;
+            color: #ffd700;
+        }
+        .tile-content p {
+            font-family: 'Courier Prime', monospace;
+            font-size: 12.5px;
+            margin: 0;
+            color: #cbd5e1;
+            line-height: 1.4;
+        }
+        .credits-note-box {
+            margin-top: 8px;
+            padding: 6px 10px;
+            background: rgba(255, 0, 85, 0.12);
+            border-left: 3px solid #ff0055;
+            border-radius: 4px;
+            font-family: 'Courier Prime', monospace;
+            font-size: 12px;
+            color: #fca5a5;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .credits-footer {
+            text-align: center;
+            padding: 6px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .credits-cr {
+            font-family: 'Courier Prime', monospace;
+            font-size: 12px;
+            color: #94a3b8;
+            margin: 0;
+        }
+
+        .modal-close-btn {
+            font-family: 'Fredoka One', cursive;
+            font-size: 16px;
+            padding: 10px 24px;
+            background: #333;
+            color: #fff;
+            border: 2px solid #555;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-top: 12px;
+            width: 100%;
+            transition: all 0.25s ease;
+            box-sizing: border-box;
+        }
+        .modal-close-btn:hover {
+            background: #555;
+            border-color: #fff;
+        }
+        .modal-close-btn.primary-btn {
+            background: linear-gradient(135deg, #00d4ff 0%, #0077b6 100%);
+            color: #081120;
+            border-color: #80e5ff;
+            font-weight: bold;
+        }
+        .modal-close-btn.primary-btn:hover {
+            background: linear-gradient(135deg, #ffffff 0%, #00d4ff 100%);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+            color: #000;
+        }
+        .modal-close-btn.gold-btn {
+            background: linear-gradient(135deg, #ffd700 0%, #b8860b 100%);
+            color: #0f0a1c;
+            border-color: #ffe066;
+            font-weight: bold;
+        }
+        .modal-close-btn.gold-btn:hover {
+            background: linear-gradient(135deg, #ffffff 0%, #ffd700 100%);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            color: #000;
+        }
+    
+        body { overscroll-behavior: none; }
+        canvas { touch-action: none; }
+        html, body { position: fixed; width: 100%; height: 100%; }
+
+        
+        #rotate-overlay {
+            position: fixed; inset: 0; display: none;
+            align-items: center; justify-content: center;
+            flex-direction: column; gap: 20px;
+            background: rgba(5, 2, 14, 0.97);
+            color: #fff; text-align: center; z-index: 50000;
+            font-family: 'Fredoka One', cursive; padding: 20px;
+        }
+        #rotate-overlay .rot-icon {
+            width: 56px; height: 100px;
+            border: 5px solid #ffd700; border-radius: 16px;
+            position: relative; animation: rot-hint 1.8s ease-in-out infinite;
+            box-shadow: 0 0 40px rgba(255,215,0,0.35);
+        }
+        #rotate-overlay .rot-icon::after {
+            content: ''; position: absolute; left: 50%; top: 8px; transform: translateX(-50%);
+            width: 4px; height: 4px; border-radius: 50%; background: #ffd700;
+        }
+        #rotate-overlay h2 { font-size: 30px; letter-spacing: 3px; margin: 0; color: #ffd700; }
+        #rotate-overlay p { font-size: 16px; color: #ccc; margin: 0; font-family: 'Courier Prime', monospace; }
+        @keyframes rot-hint {
+            0%   { transform: rotate(0deg); }
+            50%  { transform: rotate(90deg); }
+            100% { transform: rotate(90deg); }
+        }
+        @media (orientation: portrait) and (pointer: coarse) {
+            #rotate-overlay { display: flex; }
+        }
+        @media (orientation: landscape) {
+            #rotate-overlay { display: none !important; }
+        }
+
+        
+        
+        #touch-controls {
+            position: absolute; inset: 0; pointer-events: none;
+            z-index: 12; display: none;
+            font-family: 'Fredoka One', cursive;
+        }
+
+        
+        @media (max-height: 520px) {
+            .modal-box {
+                padding: 12px 18px !important;
+                max-height: 94vh !important;
+            }
+            .modal-box h2 {
+                font-size: 20px !important;
+                margin-bottom: 6px !important;
+            }
+            .modal-header {
+                margin-bottom: 8px !important;
+                padding-bottom: 6px !important;
+            }
+            .platform-tabs {
+                margin-bottom: 8px !important;
+            }
+            .platform-tab-btn {
+                padding: 6px 14px !important;
+                font-size: 13px !important;
+            }
+            .controls-cards-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 8px !important;
+                margin-bottom: 8px !important;
+            }
+            .ctrl-card {
+                padding: 6px 10px !important;
+                gap: 8px !important;
+            }
+            .ctrl-canvas-box {
+                width: 46px !important;
+                height: 46px !important;
+                min-width: 46px !important;
+            }
+            .ctrl-peggy-canvas {
+                width: 46px !important;
+                height: 46px !important;
+            }
+            .ctrl-details h4 {
+                font-size: 13px !important;
+                margin: 1px 0 !important;
+            }
+            .ctrl-details p {
+                font-size: 10.5px !important;
+                line-height: 1.2 !important;
+            }
+            .key-badge {
+                min-width: 22px !important;
+                height: 22px !important;
+                font-size: 11px !important;
+                padding: 0 4px !important;
+            }
+            .touch-badge {
+                font-size: 10.5px !important;
+                padding: 2px 8px !important;
+            }
+            .credits-showcase {
+                gap: 8px !important;
+                margin-bottom: 8px !important;
+            }
+            .credits-hero {
+                padding: 6px 12px !important;
+            }
+            .credits-hero-text h3 {
+                font-size: 18px !important;
+            }
+            .credits-card-highlight {
+                padding: 6px 12px !important;
+            }
+            .author-name {
+                font-size: 17px !important;
+            }
+            .credits-tile {
+                padding: 6px 12px !important;
+            }
+            .credits-tile h4 {
+                font-size: 13px !important;
+            }
+            .credits-tile p {
+                font-size: 11px !important;
+            }
+            .modal-close-btn {
+                padding: 6px 16px !important;
+                font-size: 14px !important;
+                margin-top: 6px !important;
+            }
+        }
+        .tc-btn {
+            -webkit-user-select: none; user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: none;
+            pointer-events: auto;
+            border: 0; outline: 0; cursor: pointer;
+            color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.7);
+            display: flex; align-items: center; justify-content: center;
+            flex-direction: column;
+            transition: transform 0.06s ease, filter 0.06s ease, box-shadow 0.06s ease;
+        }
+        .tc-btn.active {
+            filter: brightness(1.4) contrast(1.1);
+            transform: scale(0.92);
+        }
+
+        
+        #pad-zone {
+            position: absolute; left: 16px; bottom: 16px;
+            width: 220px; height: 220px;
+            pointer-events: auto;
+            touch-action: none;
+            transition: left 0.3s ease, right 0.3s ease;
+        }
+        .dpad-cross {
+            position: relative; width: 100%; height: 100%;
+            display: grid;
+            grid-template-columns: 70px 80px 70px;
+            grid-template-rows: 70px 80px 70px;
+            justify-content: center; align-content: center;
+        }
+        .dpad-btn {
+            background: rgba(22, 27, 34, 0.72);
+            border: 2px solid rgba(255, 255, 255, 0.35);
+            font-size: 30px; color: #f0f6fc;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.2);
+            backdrop-filter: blur(4px);
+        }
+        .dpad-btn.active {
+            background: rgba(56, 189, 248, 0.65);
+            border-color: #38bdf8;
+            box-shadow: 0 0 16px rgba(56, 189, 248, 0.8), inset 0 0 8px #fff;
+        }
+        #pad-up {
+            grid-column: 2; grid-row: 1;
+            border-radius: 16px 16px 4px 4px;
+            border-bottom: 0;
+        }
+        #pad-down {
+            grid-column: 2; grid-row: 3;
+            border-radius: 4px 4px 16px 16px;
+            border-top: 0;
+        }
+        #pad-left {
+            grid-column: 1; grid-row: 2;
+            border-radius: 16px 4px 4px 16px;
+            border-right: 0;
+        }
+        #pad-right {
+            grid-column: 3; grid-row: 2;
+            border-radius: 4px 16px 16px 4px;
+            border-left: 0;
+        }
+        .dpad-center {
+            grid-column: 2; grid-row: 2;
+            background: rgba(22, 27, 34, 0.85);
+            border: 2px solid rgba(255, 255, 255, 0.18);
+            border-radius: 8px;
+            pointer-events: none;
+            position: relative;
+        }
+        .dpad-center::after {
+            content: ''; position: absolute; inset: 20px;
+            border-radius: 50%; background: rgba(255,255,255,0.18);
+        }
+
+        
+        #btn-energy-dash {
+            position: absolute; left: 204px; bottom: 192px;
+            padding: 8px 14px; border-radius: 20px;
+            background: linear-gradient(135deg, #ff007f, #9d0208);
+            border: 2px solid #ff4d94;
+            box-shadow: 0 0 16px rgba(255, 0, 127, 0.85), inset 0 1px 0 rgba(255,255,255,0.4);
+            display: none; align-items: center; justify-content: center; gap: 6px;
+            animation: pulseEnergyDash 1.2s ease-in-out infinite;
+            z-index: 15;
+            transition: left 0.3s ease, right 0.3s ease;
+        }
+        #btn-energy-dash .ed-icon { font-size: 18px; }
+        #btn-energy-dash .ed-lbl { font-size: 11px; letter-spacing: 1px; font-weight: bold; color: #fff; }
+        @keyframes pulseEnergyDash {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 14px rgba(255, 0, 127, 0.7); }
+            50% { transform: scale(1.08); box-shadow: 0 0 24px rgba(255, 77, 148, 1); }
+        }
+
+        
+        #action-zone {
+            position: absolute; right: 16px; bottom: 16px;
+            width: 250px; height: 210px;
+            pointer-events: none;
+            transition: left 0.3s ease, right 0.3s ease;
+        }
+        #btn-jump {
+            position: absolute; right: 8px; bottom: 8px;
+            width: 96px; height: 96px; border-radius: 50%;
+            background: linear-gradient(135deg, #ff3377, #c2185b);
+            border: 3px solid #ff80ab;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.5), inset 0 -4px 10px rgba(0,0,0,0.3);
+            font-size: 26px; line-height: 1;
+        }
+        #btn-jump .lbl { font-size: 11px; letter-spacing: 1.2px; opacity: 0.95; margin-top: 3px; }
+
+        #btn-shoot {
+            position: absolute; right: 118px; bottom: 28px;
+            width: 82px; height: 82px; border-radius: 50%;
+            background: linear-gradient(135deg, #00b4d8, #0077b6);
+            border: 3px solid #90e0ef;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.5), inset 0 -4px 10px rgba(0,0,0,0.3);
+            font-size: 22px; line-height: 1;
+        }
+        #btn-shoot .lbl { font-size: 10px; letter-spacing: 1px; opacity: 0.95; margin-top: 2px; }
+
+        #btn-dash {
+            position: absolute; right: 68px; bottom: 118px;
+            width: 74px; height: 74px; border-radius: 50%;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            border: 3px solid #fde68a;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.5), inset 0 -3px 8px rgba(0,0,0,0.3);
+            font-size: 20px; line-height: 1;
+        }
+        #btn-dash .lbl { font-size: 10px; letter-spacing: 1px; opacity: 0.95; margin-top: 2px; }
+
+        
+        #hunt-action-zone {
+            position: absolute; right: 24px; bottom: 24px;
+            width: 140px; height: 140px;
+            pointer-events: none;
+            transition: left 0.3s ease, right 0.3s ease;
+        }
+        #btn-slash-hunt {
+            width: 130px; height: 130px; border-radius: 50%;
+            background: linear-gradient(135deg, #ef4444, #7f1d1d);
+            border: 4px solid #fca5a5;
+            box-shadow: 0 0 28px rgba(239, 68, 68, 0.85), inset 0 -6px 16px rgba(0,0,0,0.5);
+            font-size: 38px; line-height: 1;
+            animation: pulseHuntBtn 0.9s ease-in-out infinite;
+        }
+        #btn-slash-hunt .hunt-lbl { font-size: 13px; letter-spacing: 2px; font-weight: bold; margin-top: 4px; color: #fff; }
+        @keyframes pulseHuntBtn {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 22px rgba(239, 68, 68, 0.8); }
+            50% { transform: scale(1.06); box-shadow: 0 0 34px rgba(254, 202, 202, 1); }
+        }
+
+        
+        #touch-controls.inverted-hands #pad-zone {
+            left: auto !important; right: 16px !important;
+        }
+        #touch-controls.inverted-hands #btn-energy-dash {
+            left: auto !important; right: 204px !important;
+        }
+        #touch-controls.inverted-hands #action-zone {
+            right: auto !important; left: 16px !important;
+        }
+        #touch-controls.inverted-hands #btn-jump {
+            right: auto !important; left: 8px !important;
+        }
+        #touch-controls.inverted-hands #btn-shoot {
+            right: auto !important; left: 118px !important;
+        }
+        #touch-controls.inverted-hands #btn-dash {
+            right: auto !important; left: 68px !important;
+        }
+        #touch-controls.inverted-hands #hunt-action-zone {
+            right: auto !important; left: 24px !important;
+        }
+
+        
+        #btn-fullscreen-toggle {
+            position: absolute; right: 14px; top: 12px;
+            width: 36px; height: 36px; border-radius: 8px;
+            background: rgba(15, 23, 42, 0.75);
+            border: 1.5px solid rgba(255, 255, 255, 0.3);
+            font-size: 16px; color: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+            z-index: 25;
+        }
+
+        
+        @media (pointer: coarse) {
+            #controls-info { display: none !important; }
+            #handOverlay, #cursorOverlay { display: none !important; }
+        }
+
+    
+        .pause-modal-box { text-align: center; }
+        .pause-icon {
+            width: 84px; height: 84px; border-radius: 50%;
+            background: linear-gradient(135deg, #38bdf8, #2563eb);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 36px; color: #fff;
+            margin: 0 auto 14px;
+            box-shadow: 0 10px 30px rgba(56, 189, 248, 0.45);
+            animation: pausePulse 1.6s ease-in-out infinite;
+        }
+        @keyframes pausePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.09); }
+        }
+        .pause-sub {
+            color: #bbb; font-family: 'Courier Prime', monospace;
+            margin: 6px 0 0; font-size: 14px;
+        }
+        .pause-buttons {
+            display: flex; flex-direction: column; gap: 12px;
+            align-items: center; margin-top: 20px;
+        }
+        .pause-buttons button {
+            font-family: 'Courier Prime', monospace;
+            font-size: 17px; letter-spacing: 1px;
+            padding: 12px 30px; width: 320px; max-width: 82vw;
+            background: #111; color: #fff;
+            border: 2px solid #555; border-radius: 12px;
+            cursor: pointer; transition: all 0.25s ease;
+        }
+        .pause-buttons button:hover {
+            background: #333; border-color: #fff;
+            transform: translateY(-2px);
+        }
+        #pause-resume-btn {
+            background: linear-gradient(135deg, #0284c7, #38bdf8);
+            border-color: #7dd3fc;
+            font-weight: bold;
+        }
+        #pause-resume-btn:hover {
+            box-shadow: 0 8px 24px rgba(56, 189, 248, 0.45);
+            border-color: #fff;
+        }
+        #pause-retry-btn:hover { border-color: #ffd700; }
+        .pause-hint {
+            margin-top: 18px; color: #888;
+            font-size: 13px; font-family: 'Courier Prime', monospace;
+        }
+
+        
+        #pause-btn {
+            width: 36px; height: 36px; border-radius: 50%;
+            background: rgba(0, 0, 0, 0.55);
+            border: 2px solid rgba(255, 255, 255, 0.7);
+            color: #fff; font-size: 16px; line-height: 1;
+            display: inline-flex; align-items: center; justify-content: center;
+            cursor: pointer; z-index: 20;
+            pointer-events: auto;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none; user-select: none;
+            transition: background 0.2s ease, transform 0.15s ease;
+            flex: 0 0 auto;
+        }
+        #pause-btn:hover { background: rgba(255, 60, 120, 0.4); border-color: #ff99cc; }
+        #pause-btn:active { transform: scale(0.92); }
+        #pause-btn.active {
+            background: rgba(255, 60, 120, 0.55);
+            border-color: #ff99cc;
+            box-shadow: 0 0 14px rgba(255, 60, 120, 0.7);
+        }
+
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        
+        <div id="splash-screen" onclick="if(window.dismissSplashScreen)window.dismissSplashScreen()">
+            <h1 id="splash-author">By Isaac Daniel Cotera 2026</h1>
+        </div>
+        
+        
+        <div id="lang-select">
+            <h2 id="lang-title" data-i18n="ui_select_language">SELECCIONA UN IDIOMA</h2>
+            <div class="lang-grid">
+                <div class="lang-btn" data-lang="es"><span class="flag">🇪🇸</span><span class="name">Español</span></div>
+                <div class="lang-btn" data-lang="en"><span class="flag">🇬🇧</span><span class="name">English</span></div>
+                <div class="lang-btn" data-lang="zh"><span class="flag">🇨🇳</span><span class="name">中文</span></div>
+                <div class="lang-btn" data-lang="ja"><span class="flag">🇯🇵</span><span class="name">日本語</span></div>
+                <div class="lang-btn" data-lang="ru"><span class="flag">🇷🇺</span><span class="name">Русский</span></div>
+            </div>
+            <button id="close-lang-btn" class="modal-close-btn" data-i18n="ui_btn_close" style="display:none;">✓ CERRAR</button>
+        </div>
+        
+        <button id="btn-lang-toggle" title="Idioma / Language" aria-label="Idioma">
+            <span class="lang-toggle-flag">🌐</span>
+            <span class="lang-toggle-code" id="lang-toggle-code">ES</span>
+        </button>
+        
+        <div id="game-title">
+            <div class="starcube-title">StarCube</div>
+        </div>
+        
+        
+        <div id="title-buttons" class="hidden">
+            <button id="start-btn" class="title-btn" data-i18n="ui_btn_start">▶ EMPEZAR</button>
+            <button id="hub-btn" class="title-btn" style="border-color:#00ffff; color:#00ffff;" data-i18n="ui_btn_hub">🚪 NIVELES</button>
+            <button id="controls-btn" class="title-btn secondary" data-i18n="ui_btn_controls">⌨ CONTROLES</button>
+            <button id="credits-btn" class="title-btn secondary" data-i18n="ui_btn_credits">© CRÉDITOS</button>
+        </div>
+        
+        <div id="blackout"></div>
+        <div id="ui-overlay" class="ui-panel">
+            <div style="display: flex; flex-direction: column; gap: 5px;">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <span id="health-label" data-i18n="ui_health">SALUD</span>
+                    <div class="health-bar-container" id="hp-container">
+                        <div class="health-bar-fill" id="player-health-fill"></div>
+                    </div>
+                    <span id="score-display">PUNTOS: 0</span>
+                </div>
+                
+                <div id="lives-container" aria-label="Vidas">
+                    <span class="life-icon"></span>
+                    <span class="life-icon"></span>
+                    <span class="life-icon"></span>
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 13px;">
+                <span id="level-display"></span>
+                <button id="pause-btn" aria-label="Pausa" title="Pausa (P)">⏸</button>
+            </div>
+        </div>
+        <div id="message"></div>
+        <div id="choice">
+            <div class="choice-text" id="choice-text" data-i18n="ui_choice_question">¿Confías en que cumpliré mi palabra?</div>
+            <div class="choice-buttons">
+                <button id="btnSi" data-i18n="ui_choice_yes">SÍ</button>
+                <button id="btnNo" data-i18n="ui_choice_no">NO</button>
+            </div>
+            <div class="choice-sub" id="choice-sub" data-i18n="ui_choice_sub">Tu mano ya no te pertenece.</div>
+        </div>
+        <button id="intro-skip-btn" data-i18n="ui_intro_skip_btn" aria-label="Saltar intro">Saltar</button>
+        <canvas id="gameCanvas"></canvas>
+        
+        <div id="dialog-box" class="dialog-hidden">
+            <div id="dialog-portrait">🦊</div>
+            <div class="dialog-content">
+                <div id="dialog-speaker">Peggy</div>
+                <div id="dialog-text"></div>
+                <div id="dialog-prompt" data-i18n="ui_dialog_prompt">PULSA ESPACIO ▶</div>
+            </div>
+        </div>
+
+        
+        <div id="touch-controls">
+            
+            <div id="pad-zone" class="dpad-container">
+                <div class="dpad-cross">
+                    <button class="tc-btn dpad-btn" id="pad-up" data-dir="up" aria-label="Arriba">▲</button>
+                    <button class="tc-btn dpad-btn" id="pad-left" data-dir="left" aria-label="Izquierda">◀</button>
+                    <div class="dpad-center"></div>
+                    <button class="tc-btn dpad-btn" id="pad-right" data-dir="right" aria-label="Derecha">▶</button>
+                    <button class="tc-btn dpad-btn" id="pad-down" data-dir="down" aria-label="Abajo">▼</button>
+                </div>
+            </div>
+
+            
+            <button class="tc-btn" id="btn-energy-dash" data-action="energy-dash" aria-label="Energy Dash">
+                <span class="ed-icon">⚡</span>
+                <span class="ed-lbl" data-i18n="ui_touch_edash_btn">ENERGY DASH</span>
+            </button>
+
+            
+            <div id="action-zone">
+                <button class="tc-btn" id="btn-enter-door" data-action="enter" aria-label="Entrar" style="display:none">
+                    <span>🚪</span><span class="lbl" data-i18n="ui_touch_enter_btn">ENTRAR</span>
+                </button>
+                <button class="tc-btn" id="btn-dash" data-action="dash" aria-label="Dash">
+                    <span>⚡</span><span class="lbl" data-i18n="ui_touch_dash_btn">DASH</span>
+                </button>
+                <button class="tc-btn" id="btn-shoot" data-action="shoot" aria-label="Disparar">
+                    <span>✕</span><span class="lbl" data-i18n="ui_touch_shoot_btn">DISPARO</span>
+                </button>
+                <button class="tc-btn" id="btn-jump" data-action="jump" aria-label="Saltar">
+                    <span>A</span><span class="lbl" data-i18n="ui_touch_jump_btn">SALTO</span>
+                </button>
+            </div>
+
+            
+            <div id="hunt-action-zone" style="display:none;">
+                <button class="tc-btn" id="btn-slash-hunt" data-action="slash" aria-label="Atacar">
+                    <span class="hunt-icon">🗡️</span>
+                    <span class="hunt-lbl" data-i18n="ui_touch_slash_btn">ATACAR</span>
+                </button>
+            </div>
+
+            
+            <button class="tc-btn" id="btn-fullscreen-toggle" aria-label="Pantalla Completa">⛶</button>
+        </div>
+    </div>
+    <div id="handOverlay">✋</div>
+    <div id="cursorOverlay">▶</div>
+
+    
+    <div id="rotate-overlay">
+        <div class="rot-icon"></div>
+        <h2 data-i18n="ui_rotate_title">¡Gira tu teléfono!</h2>
+        <p data-i18n="ui_rotate_desc">StarCube se juega en horizontal.<br>Pon el móvil de lado para continuar.</p>
+    </div>
+
+    
+
+    
+    <div id="controls-modal" class="modal-overlay">
+        <div class="modal-box controls-modal-box">
+            <div class="modal-header">
+                <h2 data-i18n="ui_controls_title">🎮 GUÍA DE CONTROLES</h2>
+                <div class="modal-badge" data-i18n="ui_guide_badge">GUÍA</div>
+            </div>
+
+            
+            <div class="platform-tabs">
+                <button id="tab-btn-pc" class="platform-tab-btn active" data-i18n="ui_tab_pc">💻 PC / TECLADO</button>
+                <button id="tab-btn-mobile" class="platform-tab-btn" data-i18n="ui_tab_mobile">📱 MÓVIL / TÁCTIL</button>
+            </div>
+
+            
+            <div id="controls-pc-panel" class="controls-panel active">
+                <div class="controls-cards-grid">
+                    <div class="ctrl-card">
+                        <div class="ctrl-canvas-box">
+                            <canvas class="ctrl-peggy-canvas" data-action="move" width="64" height="64"></canvas>
+                        </div>
+                        <div class="ctrl-details">
+                            <div class="ctrl-badges">
+                                <span class="key-badge">←</span><span class="key-badge">→</span>
+                            </div>
+                            <h4 data-i18n="ui_ctrl_move">Moverse</h4>
+                            <p data-i18n="ui_ctrl_move_desc">Caminar a la izquierda o derecha con respuesta física ágil</p>
+                        </div>
+                    </div>
+
+                    <div class="ctrl-card">
+                        <div class="ctrl-canvas-box">
+                            <canvas class="ctrl-peggy-canvas" data-action="jump" width="64" height="64"></canvas>
+                        </div>
+                        <div class="ctrl-details">
+                            <div class="ctrl-badges">
+                                <span class="key-badge wide">ESPACIO</span>
+                            </div>
+                            <h4 data-i18n="ui_ctrl_jump">Saltar</h4>
+                            <p data-i18n="ui_ctrl_jump_desc">Salto reactivo con altura variable y deformación elástica</p>
+                        </div>
+                    </div>
+
+                    <div class="ctrl-card">
+                        <div class="ctrl-canvas-box">
+                            <canvas class="ctrl-peggy-canvas" data-action="shoot" width="64" height="64"></canvas>
+                        </div>
+                        <div class="ctrl-details">
+                            <div class="ctrl-badges">
+                                <span class="key-badge">X</span>
+                            </div>
+                            <h4 data-i18n="ui_ctrl_shoot">Disparar / Cargar Energía</h4>
+                            <p data-i18n="ui_ctrl_shoot_desc">Pulsa para disparar o mantén presionado para acumular hasta 4 niveles de plasma destructor</p>
+                        </div>
+                    </div>
+
+                    <div class="ctrl-card">
+                        <div class="ctrl-canvas-box">
+                            <canvas class="ctrl-peggy-canvas" data-action="vertical" width="64" height="64"></canvas>
+                        </div>
+                        <div class="ctrl-details">
+                            <div class="ctrl-badges">
+                                <span class="key-badge">↑</span> <span class="key-separator">+</span> <span class="key-badge">X</span>
+                            </div>
+                            <h4 data-i18n="ui_ctrl_vertical">Disparo Vertical</h4>
+                            <p data-i18n="ui_ctrl_vertical_desc">Mantén Arriba o Abajo mientras disparas para apuntar verticalmente</p>
+                        </div>
+                    </div>
+
+                    <div class="ctrl-card">
+                        <div class="ctrl-canvas-box">
+                            <canvas class="ctrl-peggy-canvas" data-action="dash" width="64" height="64"></canvas>
+                        </div>
+                        <div class="ctrl-details">
+                            <div class="ctrl-badges">
+                                <span class="key-badge">C</span>
+                                <span class="key-separator">/</span>
+                                <span class="key-badge wide">SHIFT</span>
+                            </div>
+                            <h4 data-i18n="ui_ctrl_dash">Dash (Impulso)</h4>
+                            <p data-i18n="ui_ctrl_dash_desc">Aceleración horizontal supersónica para cruzar abismos y esquivar trampas</p>
+                        </div>
+                    </div>
+
+                    <div class="ctrl-card special-edash">
+                        <div class="ctrl-canvas-box">
+                            <canvas class="ctrl-peggy-canvas" data-action="edash" width="64" height="64"></canvas>
+                        </div>
+                        <div class="ctrl-details">
+                            <div class="ctrl-badges">
+                                <span class="key-badge gold">C</span>
+                                <span class="badge-tag gold-tag">LVL 4</span>
+                            </div>
+                            <h4 data-i18n="ui_ctrl_edash">Energy Dash (Nivel 4)</h4>
+                            <p data-i18n="ui_ctrl_edash_desc">Al alcanzar carga máxima, el dash rompe cristales de rubí/esmeralda y daña jefes</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            
+            <div id="controls-mobile-panel" class="controls-panel">
+                <div class="controls-cards-grid">
+                    <div class="ctrl-card">
+                        <div class="ctrl-canvas-box">
+                            <canvas class="ctrl-peggy-canvas" data-action="touch-dpad" width="64" height="64"></canvas>
+                        </div>
+                        <div class="ctrl-details">
+                            <div class="ctrl-badges">
+                                <span class="touch-badge dpad">🕹️ CRUCETA (D-PAD)</span>
+                            </div>
+                            <h4 data-i18n="ui_touch_dpad">Cruceta Táctil (D-PAD)</h4>
+                            <p data-i18n="ui_touch_dpad_desc">Desliza en 8 direcciones ergonómicas para mover a Peggy y apuntar arriba o abajo</p>
+                        </div>
+                    </div>
+
+                    <div class="ctrl-card">
+                        <div class="ctrl-canvas-box">
+                            <canvas class="ctrl-peggy-canvas" data-action="touch-jump" width="64" height="64"></canvas>
+                        </div>
+                        <div class="ctrl-details">
+                            <div class="ctrl-badges">
+                                <span class="touch-badge btn-jump">🟢 BOTÓN [A] / SALTO</span>
+                            </div>
+                            <h4 data-i18n="ui_touch_jump">Botón de Salto</h4>
+                            <p data-i18n="ui_touch_jump_desc">Toque para saltar. Puedes deslizar el dedo hacia el disparo sin levantarlo de la pantalla</p>
+                        </div>
+                    </div>
+
+                    <div class="ctrl-card">
+                        <div class="ctrl-canvas-box">
+                            <canvas class="ctrl-peggy-canvas" data-action="touch-shoot" width="64" height="64"></canvas>
+                        </div>
+                        <div class="ctrl-details">
+                            <div class="ctrl-badges">
+                                <span class="touch-badge btn-shoot">🔵 BOTÓN [✕] / DISPARO</span>
+                            </div>
+                            <h4 data-i18n="ui_touch_shoot">Botón de Disparo</h4>
+                            <p data-i18n="ui_touch_shoot_desc">Toque para disparar estrella o mantén presionado para cargar la esfera de energía</p>
+                        </div>
+                    </div>
+
+                    <div class="ctrl-card">
+                        <div class="ctrl-canvas-box">
+                            <canvas class="ctrl-peggy-canvas" data-action="touch-dash" width="64" height="64"></canvas>
+                        </div>
+                        <div class="ctrl-details">
+                            <div class="ctrl-badges">
+                                <span class="touch-badge btn-dash">⚡ BOTÓN DASH</span>
+                            </div>
+                            <h4 data-i18n="ui_touch_dash">Botón de Dash</h4>
+                            <p data-i18n="ui_touch_dash_desc">Impulso rápido en la dirección en la que miras para esquivar peligros</p>
+                        </div>
+                    </div>
+
+                    <div class="ctrl-card special-edash">
+                        <div class="ctrl-canvas-box">
+                            <canvas class="ctrl-peggy-canvas" data-action="touch-edash" width="64" height="64"></canvas>
+                        </div>
+                        <div class="ctrl-details">
+                            <div class="ctrl-badges">
+                                <span class="touch-badge btn-edash">✨ ENERGY DASH [LVL 4]</span>
+                            </div>
+                            <h4 data-i18n="ui_touch_edash">Botón Energy Dash</h4>
+                            <p data-i18n="ui_touch_edash_desc">Aparece junto a la cruceta al alcanzar nivel 4 de carga para arrasar con todo</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button id="close-controls" class="modal-close-btn primary-btn" data-i18n="ui_btn_understood">✓ ENTENDIDO</button>
+        </div>
+    </div>
+
+    
+    <div id="credits-modal" class="modal-overlay">
+        <div class="modal-box credits-modal-box">
+            <div class="modal-header">
+                <h2 data-i18n="ui_credits_title">© CRÉDITOS</h2>
+                <div class="modal-badge gold-badge" data-i18n="ui_info_badge">INFO</div>
+            </div>
+
+            <div class="credits-showcase">
+                
+                <div class="credits-hero">
+                    <div class="credits-logo-icon">⭐</div>
+                    <div class="credits-hero-text">
+                        <h3 data-i18n="ui_credits_game">StarCube</h3>
+                        <p class="credits-sub" data-i18n="ui_credits_levels">Aventura de Plataformas 2D</p>
+                    </div>
+                </div>
+
+                
+                <div class="credits-card-highlight">
+                    <div class="author-avatar">👨‍💻</div>
+                    <div class="author-info">
+                        <span class="author-role" data-i18n="ui_credits_author_role">👨‍💻 Dirección, Programación & Arte</span>
+                        <h4 class="author-name" data-i18n="ui_credits_author">Isaac Daniel Cotera</h4>
+                    </div>
+                </div>
+
+                
+                <div class="credits-grid-details">
+                    
+                    <div class="credits-tile">
+                        <div class="tile-icon">⚙️</div>
+                        <div class="tile-content">
+                            <h4 data-i18n="ui_credits_engine">⚙️ Programación & Motor</h4>
+                            <p data-i18n="ui_credits_engine_desc">Programación artesanal 100% Vanilla JavaScript, HTML5 Canvas 2D & GSAP. ¡Diversión pura sin frameworks pesados!</p>
+                        </div>
+                    </div>
+
+                    
+                    <div class="credits-tile">
+                        <div class="tile-icon">🎨</div>
+                        <div class="tile-content">
+                            <h4 data-i18n="ui_credits_art">🎨 Arte & Diseño Gráfico</h4>
+                            <p data-i18n="ui_credits_art_desc">Isaac Daniel Cotera — Arte vectorial puro en Canvas 2D, iluminación dinámica, físicas de partículas y animaciones</p>
+                            <div class="credits-note-box">
+                                <span class="demon-icon">👾</span>
+                                <span data-i18n="ui_credits_demon_note">Sprite del Demonio Volador hecho por Kelano Studio (OpenGameArt / CC0)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    
+                    <div class="credits-tile">
+                        <div class="tile-icon">🎵</div>
+                        <div class="tile-content">
+                            <h4 data-i18n="ui_credits_audio">🎵 Audio & Efectos Sonoros</h4>
+                            <p data-i18n="ui_credits_audio_desc">Música de libre descarga y efectos sonoros generados en tiempo real por el navegador (Web Audio API)</p>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div class="credits-footer">
+                    <p class="credits-cr" data-i18n="ui_credits_copyright">© 2026 Isaac Daniel Cotera. Todos los derechos reservados.</p>
+                </div>
+            </div>
+
+            <button id="close-credits" class="modal-close-btn gold-btn" data-i18n="ui_btn_close">✓ CERRAR</button>
+        </div>
+    </div>
+
+    
+    <div id="victory-modal" class="modal-overlay">
+        <div class="modal-box victory-modal-box">
+            <div class="victory-icon">🏆</div>
+            <h2 data-i18n="ui_victory_title">¡VICTORIA!</h2>
+            <p class="victory-desc" data-i18n="ui_victory_desc">¡Has superado con éxito los 3 Niveles!</p>
+            <div class="victory-stats">
+                <div class="stat-card">
+                    <span class="stat-title" data-i18n="ui_victory_score">PUNTAJE FINAL</span>
+                    <span id="victory-score" class="stat-val">0</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-title" data-i18n="ui_victory_levels">NIVELES COMPLETADOS</span>
+                    <span class="stat-val" data-i18n="ui_victory_levels_done">3 / 3</span>
+                </div>
+            </div>
+            <button id="victory-restart-btn" class="modal-close-btn primary-btn" data-i18n="ui_btn_play_again">▶ JUGAR DE NUEVO</button>
+        </div>
+    </div>
+
+    
+    <div id="level-map-modal" class="modal-overlay">
+        <div class="modal-box level-map-box full-screen-map">
+            
+            <div class="map-header">
+                <div class="map-title-group">
+                    <h2 data-i18n="map_title">🗺️ MAPA DE MUNDOS</h2>
+                    <p class="map-sub" data-i18n="map_sub">Completa cada región para avanzar en el destino de Peggy</p>
+                </div>
+                <button class="map-back-btn" data-i18n="ui_btn_menu" onclick="window.exitToLevelMapTitle ? window.exitToLevelMapTitle() : window.exitToLevelMap()">🏠 MENÚ</button>
+            </div>
+
+            
+            <div class="world-map-viewport">
+                <div class="map-grid-overlay"></div>
+                
+                
+                <svg class="map-path-svg" viewBox="0 0 1000 500" preserveAspectRatio="none">
+                    <defs>
+                        <linearGradient id="pathGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#38bdf8" />
+                            <stop offset="33%" stop-color="#c084fc" />
+                            <stop offset="66%" stop-color="#f43f5e" />
+                            <stop offset="100%" stop-color="#fde047" />
+                        </linearGradient>
+                        <filter id="pathGlow">
+                            <feGaussianBlur stdDeviation="4" result="blur"/>
+                            <feMerge>
+                                <feMergeNode in="blur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                    </defs>
+                    
+                    <path class="map-path-base" d="M 150 360 C 260 210, 340 190, 420 190 C 500 190, 580 350, 680 350 C 760 350, 800 160, 880 160" />
+                    
+                    <path id="map-active-path" class="map-path-active" d="M 150 360 C 260 210, 340 190, 420 190 C 500 190, 580 350, 680 350 C 760 350, 800 160, 880 160" />
+                </svg>
+
+                
+                <div id="map-player-pin" class="map-player-pin">
+                    <div class="pin-avatar">⭐</div>
+                    <div class="pin-pulse"></div>
+                </div>
+
+                
+                <div class="map-nodes-container">
+                    <div class="level-node level-card" data-level="1" style="left: 15%; top: 72%;" onclick="window.selectLevelNode(1)">
+                        <div class="node-ring">
+                            <span class="node-icon">🌄</span>
+                            <span class="level-card-lock">🔒</span>
+                        </div>
+                        <div class="node-info">
+                            <span class="node-num" data-i18n="map_node_1">NIVEL 1</span>
+                            <span class="node-name" data-i18n="level_name_1">Pradera del Amanecer</span>
+                        </div>
+                    </div>
+
+                    <div class="level-node level-card" data-level="2" style="left: 42%; top: 38%;" onclick="window.selectLevelNode(2)">
+                        <div class="node-ring">
+                            <span class="node-icon">💎</span>
+                            <span class="level-card-lock">🔒</span>
+                        </div>
+                        <div class="node-info">
+                            <span class="node-num" data-i18n="map_node_2">NIVEL 2</span>
+                            <span class="node-name" data-i18n="level_name_2">Bóveda Cristalina</span>
+                        </div>
+                    </div>
+
+                    <div class="level-node level-card" data-level="3" style="left: 68%; top: 70%;" onclick="window.selectLevelNode(3)">
+                        <div class="node-ring">
+                            <span class="node-icon">🌋</span>
+                            <span class="level-card-lock">🔒</span>
+                        </div>
+                        <div class="node-info">
+                            <span class="node-num" data-i18n="map_node_3">NIVEL 3</span>
+                            <span class="node-name" data-i18n="level_name_3">Desfiladero Carmesí</span>
+                        </div>
+                    </div>
+
+                    <div class="level-node level-card" data-level="4" style="left: 80%; top: 45%;" onclick="window.selectLevelNode(4)">
+                        <div class="node-ring">
+                            <span class="node-icon">🌊</span>
+                            <span class="level-card-lock">🔒</span>
+                        </div>
+                        <div class="node-info">
+                            <span class="node-num" data-i18n="map_node_4">NIVEL 4</span>
+                            <span class="node-name" data-i18n="level_name_4">Cumbres Mareadas</span>
+                        </div>
+                    </div>
+
+                    <div class="level-node level-card" data-level="5" style="left: 92%; top: 24%;" onclick="window.selectLevelNode(5)">
+                        <div class="node-ring">
+                            <span class="node-icon">👑</span>
+                            <span class="level-card-lock">🔒</span>
+                        </div>
+                        <div class="node-info">
+                            <span class="node-num" data-i18n="map_node_5">NIVEL 5</span>
+                            <span class="node-name" data-i18n="level_name_5">???</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            
+            <div id="map-level-preview" class="map-level-preview">
+                <div class="preview-info">
+                    <div id="preview-icon" class="preview-badge-icon">🌄</div>
+                    <div class="preview-text">
+                        <h3 id="preview-title">Nivel 1: Pradera del Amanecer</h3>
+                        <p id="preview-desc">Inicia la aventura con Peggy. Terreno helado y cambios de gravedad en la pradera.</p>
+                        <div class="preview-meta">
+                            <span id="preview-status" class="status-tag unlocked">DESBLOQUEADO</span>
+                            <span id="preview-boss" class="boss-tag">Jefe: Cuadrado Azul 🧊</span>
+                        </div>
+                    </div>
+                </div>
+                <button id="map-play-btn" class="map-play-btn" data-i18n="map_btn_play" onclick="window.confirmChooseSelectedLevel()">
+                    ▶ ¡JUGAR NIVEL!
+                </button>
+            </div>
+        </div>
+    </div>
+
+    
+    <div id="gameover-modal" class="modal-overlay">
+        <div class="modal-box gameover-modal-box">
+            <div class="gameover-icon">💀</div>
+            <h2 data-i18n="ui_gameover_title">¡GAME OVER!</h2>
+            <p class="gameover-desc" data-i18n="ui_gameover_desc">Te has quedado sin vida en esta aventura.</p>
+            <div class="gameover-buttons">
+                <button id="gameover-retry-btn" class="modal-close-btn primary-btn" data-i18n="ui_btn_retry">🔄 REPETIR NIVEL</button>
+                <button id="gameover-exit-btn" class="modal-close-btn secondary-btn" data-i18n="ui_gameover_exit_map">🗺️ SALIR A SELECCIÓN DE NIVELES</button>
+            </div>
+        </div>
+    </div>
+
+    
+    <div id="defeat-modal" class="modal-overlay defeat-overlay">
+        <div class="defeat-box">
+            <h1 class="defeat-title" data-i18n="ui_defeat_title">DERROTA</h1>
+            <div class="defeat-buttons">
+                <button id="defeat-map-btn" class="modal-close-btn primary-btn" data-i18n="ui_btn_map">🗺 SELECCIÓN DE NIVELES</button>
+                <button id="defeat-exit-btn" class="modal-close-btn secondary-btn" data-i18n="ui_btn_exit">🏠 SALIR AL TÍTULO</button>
+            </div>
+        </div>
+    </div>
+
+    
+    <div id="pause-modal" class="modal-overlay">
+        <div class="modal-box pause-modal-box">
+            <div class="pause-icon">⏸</div>
+            <h2 data-i18n="ui_pause_title">PAUSA</h2>
+            <p class="pause-sub" data-i18n="ui_pause_sub">El juego está detenido. Respira.</p>
+            <div class="pause-buttons">
+                <button id="pause-resume-btn" data-i18n="ui_pause_resume">▶ REANUDAR</button>
+                <button id="pause-retry-btn" data-i18n="ui_pause_retry">🔄 REINICIAR NIVEL</button>
+                <button id="pause-exit-btn" data-i18n="ui_pause_exit_map">🗺️ SALIR AL MAPA</button>
+                <button id="pause-title-btn" data-i18n="ui_pause_exit" style="display: none;">🏠 SALIR AL TÍTULO</button>
+            </div>
+            <p class="pause-hint" data-i18n="ui_pause_hint">Pulsa P (o toca ⏸) para reanudar</p>
+        </div>
+    </div>
+
+    <script src="js/i18n.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/state.js"></script>
+    <script src="js/perf.js"></script>
+    <script src="js/audio.js"></script>
+    <script src="js/dialog.js"></script>
+    <script src="js/camera.js"></script>
+    <script src="js/effects.js"></script>
+    <script src="js/hud.js"></script>
+    <script src="js/boss_hud.js"></script>
+    <script src="js/levels.js"></script>
+    <script src="js/backgrounds.js"></script>
+    <script src="js/render.js"></script>
+    <script src="js/storm.js"></script>
+    <script src="js/entities.js"></script>
+    <script src="js/boss1.js"></script>
+    <script src="js/boss2.js"></script>
+    <script src="js/boss3.js"></script>
+    <script src="js/boss4.js"></script>
+    <script src="js/boss5.js"></script>
+    <script src="js/bossface.js"></script>
+    <script src="js/pink.js"></script>
+    <script src="js/modales.js"></script>
+    <script type="module" src="js/turrets/wall_turret_loader.js"></script>
+    <script src="js/turret_manager.js"></script>
+    <script src="js/valkyrie_boss.js"></script>
+    <script src="js/intro.js"></script>
+    <script src="js/companion.js"></script>
+    <script src="js/halloween.js"></script>
+    <script src="js/boat.js"></script>
+    <script src="js/plataformer.js"></script>
+    <script src="js/touch.js"></script>
+    <script src="js/gamepad.js"></script>
+    <script src="js/pause.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const startBtn = document.getElementById('start-btn');
+            const controlsBtn = document.getElementById('controls-btn');
+            const creditsBtn = document.getElementById('credits-btn');
+            const controlsModal = document.getElementById('controls-modal');
+            const creditsModal = document.getElementById('credits-modal');
+            const closeControls = document.getElementById('close-controls');
+            const closeCredits = document.getElementById('close-credits');
+
+            const tabBtnPc = document.getElementById('tab-btn-pc');
+            const tabBtnMobile = document.getElementById('tab-btn-mobile');
+            const panelPc = document.getElementById('controls-pc-panel');
+            const panelMobile = document.getElementById('controls-mobile-panel');
+
+            let controlsAnimId = null;
+
+            function switchControlsTab(tab) {
+                if (tab === 'mobile') {
+                    if (tabBtnMobile) tabBtnMobile.classList.add('active');
+                    if (tabBtnPc) tabBtnPc.classList.remove('active');
+                    if (panelMobile) panelMobile.classList.add('active');
+                    if (panelPc) panelPc.classList.remove('active');
+                } else {
+                    if (tabBtnPc) tabBtnPc.classList.add('active');
+                    if (tabBtnMobile) tabBtnMobile.classList.remove('active');
+                    if (panelPc) panelPc.classList.add('active');
+                    if (panelMobile) panelMobile.classList.remove('active');
+                }
+            }
+
+            if (tabBtnPc) {
+                tabBtnPc.addEventListener('click', () => switchControlsTab('pc'));
+            }
+            if (tabBtnMobile) {
+                tabBtnMobile.addEventListener('click', () => switchControlsTab('mobile'));
+            }
+
+            function renderControlsPreviews(now) {
+                if (!controlsModal || !controlsModal.classList.contains('active')) {
+                    controlsAnimId = null;
+                    return;
+                }
+
+                const t = (now || performance.now()) * 0.003;
+                const canvases = controlsModal.querySelectorAll('.controls-panel.active .ctrl-peggy-canvas');
+
+                canvases.forEach(canvas => {
+                    const ctx = canvas.getContext('2d');
+                    if (!ctx) return;
+                    ctx.clearRect(0, 0, 64, 64);
+
+                    const action = canvas.getAttribute('data-action');
+                    const w = 26;
+                    const h = 26;
+                    const x = 19;
+                    const y = 22;
+
+                    const prevLvl = typeof currentLevel !== 'undefined' ? currentLevel : 0;
+                    const prevTime = typeof time !== 'undefined' ? time : 0;
+                    if (typeof currentLevel !== 'undefined') currentLevel = 0;
+                    if (typeof time !== 'undefined') time = t * 25;
+
+                    try {
+                        if (action === 'move' || action === 'touch-dpad') {
+                            const step = Math.sin(t * 7);
+                            const facing = Math.sin(t * 1.5) >= 0 ? 1 : -1;
+                            const scaleX = 1 + step * 0.1;
+                            const scaleY = 1 - step * 0.1;
+                            const py = y - Math.abs(step) * 2.5;
+                            if (typeof drawPlayerEnhanced === 'function') {
+                                drawPlayerEnhanced(ctx, x, py, w, h, facing, scaleX, scaleY, '#ff6666', 0, [], false, { state: 'run', health: 100 });
+                            }
+                            ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+                            ctx.beginPath();
+                            ctx.arc(facing === 1 ? x - 2 : x + w + 2, py + h - 1, 2.2, 0, Math.PI * 2);
+                            ctx.fill();
+                        } else if (action === 'jump' || action === 'touch-jump') {
+                            const jumpCycle = Math.sin(t * 3.5);
+                            const isAir = jumpCycle > -0.15;
+                            const py = isAir ? (y - 10 - jumpCycle * 7) : y;
+                            const scaleX = isAir ? 0.88 : 1.12;
+                            const scaleY = isAir ? 1.15 : 0.88;
+                            if (isAir) {
+                                ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+                                ctx.beginPath();
+                                ctx.ellipse(32, 53, 9, 3, 0, 0, Math.PI * 2);
+                                ctx.fill();
+                            }
+                            if (typeof drawPlayerEnhanced === 'function') {
+                                drawPlayerEnhanced(ctx, x, py, w, h, 1, scaleX, scaleY, '#ff6666', 0, [], false, { state: isAir ? 'jump' : 'idle', health: 100, vy: isAir ? -4 : 1 });
+                            }
+                        } else if (action === 'shoot' || action === 'touch-shoot') {
+                            const cycle = (t * 1.6) % 6;
+                            if (cycle < 2.2) {
+                                if (typeof drawPlayerEnhanced === 'function') {
+                                    drawPlayerEnhanced(ctx, x, y, w, h, 1, 1, 1, '#ff6666', 0, [], false, { state: 'idle', health: 100 });
+                                }
+                                const starProg = (cycle * 2.5) % 1;
+                                const sx = x + w + 2 + starProg * 14;
+                                const sy = y + h * 0.45;
+                                ctx.save();
+                                ctx.translate(sx, sy);
+                                ctx.rotate(t * 10);
+                                ctx.fillStyle = '#ffd700';
+                                ctx.shadowColor = '#ffd700';
+                                ctx.shadowBlur = 6;
+                                ctx.beginPath();
+                                ctx.arc(0, 0, 3.2, 0, Math.PI * 2);
+                                ctx.fill();
+                                ctx.restore();
+                            } else {
+                                const chargeLvl = Math.min(4, Math.max(1, Math.floor(cycle - 1.2)));
+                                if (typeof drawPlayerEnhanced === 'function') {
+                                    drawPlayerEnhanced(ctx, x, y, w, h, 1, 1, 1, '#ff6666', 0, [], false, { charging: true, chargeLevel: chargeLvl, health: 100 });
+                                }
+                            }
+                        } else if (action === 'vertical') {
+                            if (typeof drawPlayerEnhanced === 'function') {
+                                drawPlayerEnhanced(ctx, x, y + 2, w, h, 1, 0.95, 1.05, '#ff6666', 0, [], false, { state: 'idle', health: 100, vy: -1 });
+                            }
+                            const starProg = (t * 2.6) % 1;
+                            const sx = x + w / 2;
+                            const sy = y - 2 - starProg * 16;
+                            ctx.save();
+                            ctx.translate(sx, sy);
+                            ctx.rotate(t * 10);
+                            ctx.fillStyle = '#00ffff';
+                            ctx.shadowColor = '#00ffff';
+                            ctx.shadowBlur = 6;
+                            ctx.beginPath();
+                            ctx.arc(0, 0, 3.2, 0, Math.PI * 2);
+                            ctx.fill();
+                            ctx.restore();
+                        } else if (action === 'dash' || action === 'touch-dash') {
+                            const dashProg = (t * 2.2) % 1;
+                            const px = 10 + dashProg * 16;
+                            if (typeof drawPlayerEnhanced === 'function') {
+                                ctx.globalAlpha = 0.25;
+                                drawPlayerEnhanced(ctx, px - 10, y, w, h, 1, 1.15, 0.88, '#00ffff', 0, [], false, { dashTimer: 10, health: 100 });
+                                ctx.globalAlpha = 0.5;
+                                drawPlayerEnhanced(ctx, px - 5, y, w, h, 1, 1.15, 0.88, '#00ffff', 0, [], false, { dashTimer: 10, health: 100 });
+                                ctx.globalAlpha = 1.0;
+                                drawPlayerEnhanced(ctx, px, y, w, h, 1, 1.15, 0.88, '#ff6666', 0, [], false, { dashTimer: 10, health: 100 });
+                            }
+                        } else if (action === 'edash' || action === 'touch-edash') {
+                            const edashProg = (t * 2.5) % 1;
+                            const px = 10 + edashProg * 16;
+                            if (typeof drawPlayerEnhanced === 'function') {
+                                ctx.globalAlpha = 0.4;
+                                drawPlayerEnhanced(ctx, px - 8, y, w, h, 1, 1.2, 0.85, '#ff0055', 0, [], false, { dashTimer: 15, charging: true, chargeLevel: 4, health: 100 });
+                                ctx.globalAlpha = 1.0;
+                                drawPlayerEnhanced(ctx, px, y, w, h, 1, 1.2, 0.85, '#ff6666', 0, [], false, { dashTimer: 15, charging: true, chargeLevel: 4, health: 100 });
+                            }
+                        }
+                    } catch (e) {
+                    } finally {
+                        if (typeof currentLevel !== 'undefined') currentLevel = prevLvl;
+                        if (typeof time !== 'undefined') time = prevTime;
+                    }
+                });
+
+                controlsAnimId = requestAnimationFrame(renderControlsPreviews);
+            }
+
+            function startControlsPreview() {
+                if (controlsAnimId) cancelAnimationFrame(controlsAnimId);
+                controlsAnimId = requestAnimationFrame(renderControlsPreviews);
+            }
+
+            function stopControlsPreview() {
+                if (controlsAnimId) {
+                    cancelAnimationFrame(controlsAnimId);
+                    controlsAnimId = null;
+                }
+            }
+
+            if (startBtn) {
+                startBtn.addEventListener('click', () => {
+                    if (typeof startGameFromButton === 'function') startGameFromButton();
+                });
+            }
+            if (controlsBtn && controlsModal) {
+                controlsBtn.addEventListener('click', () => {
+                    const isMobile = (typeof window.isMobileOrTouch === 'function' && window.isMobileOrTouch()) || (window.innerWidth <= 768);
+                    switchControlsTab(isMobile ? 'mobile' : 'pc');
+                    controlsModal.classList.add('active');
+                    if (typeof updateUITranslations === 'function') updateUITranslations();
+                    startControlsPreview();
+                });
+                if (closeControls) {
+                    closeControls.addEventListener('click', () => {
+                        controlsModal.classList.remove('active');
+                        stopControlsPreview();
+                    });
+                }
+                controlsModal.addEventListener('click', (e) => {
+                    if (e.target === controlsModal) {
+                        controlsModal.classList.remove('active');
+                        stopControlsPreview();
+                    }
+                });
+            }
+            if (creditsBtn && creditsModal) {
+                creditsBtn.addEventListener('click', () => {
+                    creditsModal.classList.add('active');
+                    if (typeof updateUITranslations === 'function') updateUITranslations();
+                });
+                if (closeCredits) {
+                    closeCredits.addEventListener('click', () => {
+                        creditsModal.classList.remove('active');
+                    });
+                }
+                creditsModal.addEventListener('click', (e) => {
+                    if (e.target === creditsModal) creditsModal.classList.remove('active');
+                });
+            }
+
+            const victoryRestartBtn = document.getElementById('victory-restart-btn');
+            const victoryModal = document.getElementById('victory-modal');
+            if (victoryRestartBtn && victoryModal) {
+                victoryRestartBtn.addEventListener('click', () => {
+                    victoryModal.classList.remove('active');
+                    if (typeof restartGame === 'function') restartGame();
+                });
+            }
+
+            const retryBtn = document.getElementById('gameover-retry-btn');
+            const exitBtn = document.getElementById('gameover-exit-btn');
+            if (retryBtn) {
+                retryBtn.addEventListener('click', () => {
+                    if (typeof retryCurrentLevel === 'function') retryCurrentLevel();
+                });
+            }
+            if (exitBtn) {
+                exitBtn.addEventListener('click', () => {
+                    if (typeof exitToLevelMap === 'function') {
+                        exitToLevelMap();
+                    } else if (typeof exitToTitle === 'function') {
+                        exitToTitle();
+                    }
+                });
+            }
+        });
+
+        
+        function resizeGame() {
+            const c = document.getElementById('game-container');
+            const canvas = document.getElementById('gameCanvas');
+            if (!c) return;
+            const winW = window.visualViewport ? window.visualViewport.width : window.innerWidth;
+            const winH = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+            if (!winW || !winH) return;
+
+            const baseH = 576;
+            const aspect = winW / winH;
+            
+            
+            const targetW = Math.max(1024, Math.round(baseH * aspect));
+
+            
+            if (typeof VIEW_W !== 'undefined') {
+                VIEW_W = targetW;
+                window.VIEW_W = targetW;
+            }
+            if (typeof VIEW_H !== 'undefined') {
+                window.VIEW_H = baseH;
+            }
+
+            // Respect PerfQuality.pixelScale: the pixel buffer is downscaled while
+            // VIEW_W/VIEW_H stay logical. CSS size (set by perf.js) stretches it back.
+            const ps = (typeof window.PerfQuality !== 'undefined' && window.PerfQuality && typeof window.PerfQuality.pixelScale === 'number' && window.PerfQuality.pixelScale > 0) ? window.PerfQuality.pixelScale : 1;
+            const bufW = Math.round(targetW * ps);
+            const bufH = Math.round(baseH * ps);
+            if (canvas) {
+                if (canvas.width !== bufW) canvas.width = bufW;
+                if (canvas.height !== bufH) canvas.height = bufH;
+                // CSS size must always be the logical size so the (possibly
+                // downscaled) buffer is stretched back to fill the container.
+                canvas.style.width = targetW + 'px';
+                canvas.style.height = baseH + 'px';
+            }
+
+            
+            const s = winH / baseH;
+
+            c.style.position = 'fixed';
+            c.style.width = targetW + 'px';
+            c.style.height = baseH + 'px';
+            c.style.left = '0px';
+            c.style.top = '0px';
+            c.style.transform = 'scale(' + s + ')';
+            c.style.transformOrigin = 'top left';
+
+            
+            const isFullBleed = s < 0.98 || aspect > 1.75;
+            if (isFullBleed) {
+                c.style.borderWidth = '0';
+                c.style.borderRadius = '0';
+                c.style.boxShadow = 'none';
+            } else {
+                c.style.borderWidth = '';
+                c.style.borderRadius = '';
+                c.style.boxShadow = '';
+            }
+        }
+        window.resizeGame = resizeGame;
+        
+        resizeGame();
+        window.addEventListener('resize', resizeGame);
+        window.addEventListener('load', resizeGame);
+        window.addEventListener('orientationchange', () => { setTimeout(resizeGame, 100); setTimeout(resizeGame, 300); });
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', resizeGame);
+        }
+        document.addEventListener('fullscreenchange', () => setTimeout(resizeGame, 100));
+        document.addEventListener('webkitfullscreenchange', () => setTimeout(resizeGame, 100));
+    </script>
+</body>
+</html>

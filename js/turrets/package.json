@@ -1,0 +1,25 @@
+{
+  "name": "torrents-turrets",
+  "version": "1.0.0",
+  "description": "Modular turrets & boss, ready to import into HTML5 Canvas games.",
+  "type": "module",
+  "exports": {
+    "./assault-sentinel": "./src/assault_sentinel.js",
+    "./igneous-torrent": "./src/igneous_torrent.js",
+    "./wall-turret": "./src/wall_turret.js",
+    "./valkyrie": "./src/valkyrie.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src"
+  ],
+  "keywords": [
+    "canvas",
+    "game",
+    "turret",
+    "boss",
+    "html5",
+    "tower-defense"
+  ],
+  "license": "MIT"
+}

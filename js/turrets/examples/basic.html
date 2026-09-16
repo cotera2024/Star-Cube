@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Example — a turret</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            background: #0a0c14;
+            color: #eee;
+            font-family: system-ui, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 10px;
+        }
+        .card {
+            max-width: 900px;
+            width: 100%;
+            background: #131826;
+            border: 1px solid #2a3a5a;
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 14px;
+        }
+        h1 { font-size: 1.15rem; margin: 0 0 6px; color: #d0e4ff; }
+        h2 { font-size: 0.95rem; color: #8ab8ff; margin: 16px 0 8px; }
+        p, li { font-size: 0.85rem; color: #b8c8e0; line-height: 1.55; }
+        code {
+            background: #1c2434;
+            color: #ffcc66;
+            padding: 2px 6px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            font-family: ui-monospace, monospace;
+        }
+        ol { padding-left: 22px; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+            font-size: 0.8rem;
+        }
+        th, td {
+            border: 1px solid #2a3a5a;
+            padding: 6px 10px;
+            text-align: left;
+            color: #cfe0f5;
+        }
+        th { background: #1c2434; }
+        canvas {
+            border: 2px solid #2a3a5a;
+            border-radius: 12px;
+            background: #11161f;
+            cursor: crosshair;
+            max-width: 100%;
+        }
+        .footnote { font-size: 0.75rem; color: #6b82a6; margin-top: 8px; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <!-- Minimal integration of a turret in a canvas game; the mouse acts as the enemy. -->
+
+    <div class="card">
+        <h1> Minimal turret integration</h1>
+        <p>
+            This example uses the <code>AssaultSentinel</code> turret: it aims at the player
+            (who follows the mouse) and shoots. Everything your game needs is commented here, step by step.
+        </p>
+
+        <h2> How it works · 4 pieces</h2>
+        <ol>
+            <li>
+                <b>Import the class</b> from its own file:
+                <code>import { AssaultSentinel } from '../src/assault_sentinel.js'</code>
+            </li>
+            <li>
+                <b>Your player</b>: an object with <code>x</code>, <code>y</code>,
+                <code>width</code>, <code>height</code> and <code>takeDamage(amount, type)</code>.
+                That's the only contract the turret expects from the player.
+            </li>
+            <li>
+                <b>The services</b>: the bridge between the turret and your world
+                (who the player is, sound, explosions, damage). They're all
+                <b>optional</b> — each module has a fallback if you don't provide them.
+            </li>
+            <li>
+                <b>The game loop</b>: each frame you call
+                <code>update()</code> (logic, bullets, shooting) and
+                <code>draw(ctx)</code> (renders everything). That's it.
+            </li>
+        </ol>
+
+        <h2> Want to try another entity? Change 2 lines and you're done </h2>
+        <p>Edit the <code>import</code> (above) and the class used in <code>new</code> (below):</p>
+        <table>
+            <tr><th>If you want</th><th>Import line</th><th>Class for <code>new</code></th></tr>
+            <tr>
+                <td> Fire turret</td>
+                <td><code>import { IgneousTorrent } from '../src/igneous_torrent.js'</code></td>
+                <td><code>new IgneousTorrent(x, y, services)</code></td>
+            </tr>
+            <tr>
+                <td> Wall turret</td>
+                <td><code>import { WallTurret } from '../src/wall_turret.js'</code></td>
+                <td><code>new WallTurret(x, y, services)</code></td>
+            </tr>
+            <tr>
+                <td>Boss (3 phases)</td>
+                <td><code>import { Valkyrie } from '../src/valkyrie.js'</code></td>
+                <td><code>new Valkyrie(x, y, services)</code></td>
+            </tr>
+        </table>
+    </div>
+
+    <canvas id="game" width="900" height="500"></canvas>
+    <p class="footnote"> Move the mouse — the turret aims and shoots at you · open it with an HTTP server (python) or VS Code live server (check the README to get started)</p>
+
+    <!--
+         THE REAL CODE (everything you need to use a turret) -->
+    <script type="module">
+        // STEP 1 · IMPORT the class from its file
+        // to use another entity, change this import and the class in new 
+        import { AssaultSentinel } from '../src/assault_sentinel.js';
+
+        const canvas = document.getElementById('game');
+        const ctx = canvas.getContext('2d');
+
+        // STEP 2 · the PLAYER (the contract the turret expects)
+        // in your game this is the player character; here the mouse is used 
+        const player = { x: 450, y: 250, width: 30, height: 30, takeDamage: () => {} };
+
+        // (this block only makes the player follow the mouse — it isn't part of the module)
+        canvas.addEventListener('mousemove', (e) => {
+            const r = canvas.getBoundingClientRect();
+            player.x = (e.clientX - r.left) * canvas.width / r.width;
+            player.y = (e.clientY - r.top) * canvas.height / r.height;
+        });
+
+        // STEP 3 · SERVICES: callbacks the entity may invoke
+        // every function is OPTIONAL — each module has an internal fallback
+        const services = {
+            getPlayer: () => player,                          // returns the player
+            playSound: (name, volume) => { /* audio system */ },
+            createExplosion: (x, y, radius, duration) => {},  // explosion handler
+            applyShake: (intensity) => {},                    // screen shake
+            processGlobalDamage: (entity, amount) => {        // applies damage
+                entity.hp -= amount;
+                if (entity.hp <= 0) entity._alive = false;
+            }
+        };
+
+        // STEP 4 · create the entity — this is all it takes to have a turret
+        const turret = new AssaultSentinel(200, 250, services);
+
+        // STEP 5 · GAME LOOP — logic + drawing each frame
+        function loop() {
+            // canvas background
+            ctx.fillStyle = '#11161f';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // update the entity
+            turret.update(canvas.width, canvas.height);
+
+            // the turret draws itself (plus its bullets and effects)
+            turret.draw(ctx);
+
+            // draw the player (a simple square)
+            ctx.fillStyle = '#0ff';
+            ctx.fillRect(player.x - 15, player.y - 15, 30, 30);
+
+            requestAnimationFrame(loop);
+        }
+        loop();
+        // end of integration example
+    </script>
+    
+</body>
+</html>

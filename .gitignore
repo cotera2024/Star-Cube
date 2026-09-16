@@ -1,0 +1,11 @@
+# Dependencies
+node_modules/
+
+# Demos sueltos de torretas (ignorables)
+js/turrets/*.html
+js/turrets/demo.js
+
+# System files
+.DS_Store
+Thumbs.db
+*.log
