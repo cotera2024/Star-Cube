@@ -348,7 +348,6 @@
         bfShow = true;
         startCaceria();
     }
-    // Bind táctil + ratón para las elecciones Sí/No (evita el click sintético duplicado en móvil)
     function bindChoiceAction(btn, action) {
         let lastTouch = 0;
         btn.addEventListener("touchstart", e => {
@@ -603,7 +602,6 @@
         game.hideHealthBar = false;
         keys = {};
         try {
-            // Mata tweens de jefes de la sesión anterior (callbacks residuales de boss2/boss3)
             [ game.techBoss, game.yellowSquare, game.krakatoa, game.pumpkinBoss, game.blueSquare ].forEach(function(b) {
                 if (b && typeof gsap !== "undefined") gsap.killTweensOf(b);
             });
@@ -657,7 +655,6 @@
                 game.gate2Open = currentCheckpoint.gate2Open || respawnX >= 7400 && !isSubCaveRespawn;
                 game.meadowNight = currentCheckpoint.meadowNight !== false;
                 game.boss1Defeated = currentCheckpoint.boss1Defeated || false;
-                // Sincroniza la transición visual día/noche con el estado restaurado
                 if (game.meadowNight) game.nightTransitionProgress = 1;
                 else delete game.nightTransitionProgress;
             } else {
@@ -1087,7 +1084,6 @@
         game.blueSquare = null;
         game.demon = null;
         try {
-            // Mata tweens residuales de jefes de la sesión anterior
             [ game.techBoss, game.yellowSquare, game.krakatoa, game.pumpkinBoss, game.blueSquare ].forEach(function(b) {
                 if (b && typeof gsap !== "undefined") gsap.killTweensOf(b);
             });
@@ -5230,3 +5226,4 @@
     window.blackoutDiv = blackoutDiv;
     requestAnimationFrame(gameLoop);
 })();
+// Isaac Daniel Cotera - 2026 | Correo: isaacdanielcotera@gmail.com | Itch.io: https://cotera.itch.io | GitHub: https://github.com/cotera2024

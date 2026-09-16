@@ -41,8 +41,6 @@
         sys.glowMult = p.glow;
         sys.maxParticles = p.maxParticles;
         sys.maxBg = p.maxBg;
-        // pixelScale removed: canvas always renders at full logical resolution
-        // for a crisp image. sys.pixelScale stays 1 for legacy readers.
         sys.pixelScale = 1;
         try {
             localStorage.setItem("starcube_perf", name);
@@ -112,7 +110,6 @@
                     this.__sbValue = v;
                     const mult = window.PerfQuality && window.PerfQuality.glowMult;
                     if (mult === 0) {
-                        // Skip the GPU shadow path entirely — don't even set v*0
                         desc.set.call(this, 0);
                         return;
                     }
@@ -125,3 +122,4 @@
     patchShadowBlur();
     sys.measure();
 })();
+// Isaac Daniel Cotera - 2026 | Correo: isaacdanielcotera@gmail.com | Itch.io: https://cotera.itch.io | GitHub: https://github.com/cotera2024

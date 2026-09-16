@@ -95,30 +95,25 @@ function playBGM(trackName) {
     }
 }
 
-// Pool of clones per SFX key (up to 3) to avoid cutting overlapping sounds
 const _sfxPools = {};
 function playSFX(trackName) {
     if (window.postGameHorror && (trackName.startsWith("bgm_boss_") || trackName.startsWith("bgm_"))) {
         return;
     }
     if (!audios[trackName]) return;
-    // BGM-style tracks (looping) reuse the single instance directly
     if (audios[trackName].loop) {
         audios[trackName].currentTime = 0;
         audios[trackName].play().catch(e => {});
         return;
     }
-    // For short SFX use a round-robin pool of clones so overlapping calls don't cut each other
     if (!_sfxPools[trackName]) _sfxPools[trackName] = [];
     const pool = _sfxPools[trackName];
-    // Try to find an idle clone first
     let clone = pool.find(c => c.paused || c.ended || c.currentTime === 0);
     if (!clone && pool.length < 3) {
         clone = audios[trackName].cloneNode();
         pool.push(clone);
     }
     if (!clone) {
-        // All 3 busy — reuse the oldest (index 0, round-robin)
         clone = pool[0];
         pool.push(pool.shift());
     }
@@ -140,9 +135,6 @@ function preloadBGM(trackName) {
 
 function preloadNextLevelBGM(idx) {
     try {
-        // Only preload the immediately next level — not all remaining levels.
-        // Preloading every level from idx+2 onward forces ~40 MB of downloads
-        // on mobile at game start.
         if (typeof levels !== "undefined" && levels[idx + 1] && levels[idx + 1].bgm) {
             preloadBGM(levels[idx + 1].bgm);
         }
@@ -185,3 +177,4 @@ function playSound(freq, duration, type = "square", vol = .1, slideFreq = null, 
         osc.stop(audioCtx.currentTime + duration);
     } catch (e) {}
 }
+// Isaac Daniel Cotera - 2026 | Correo: isaacdanielcotera@gmail.com | Itch.io: https://cotera.itch.io | GitHub: https://github.com/cotera2024

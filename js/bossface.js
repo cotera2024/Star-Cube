@@ -267,3 +267,4 @@ function bfRenderFace(c2) {
     if (bfTeeth > 0 || bfShock > 0) bfRenderFangedMouth(c2, faceX, mouthY, mouthWidth, t, params);
     c2.restore();
 }
+// Isaac Daniel Cotera - 2026 | Correo: isaacdanielcotera@gmail.com | Itch.io: https://cotera.itch.io | GitHub: https://github.com/cotera2024

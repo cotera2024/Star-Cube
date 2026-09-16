@@ -781,8 +781,6 @@
                 return;
             }
             setTimeout(() => {
-                // Use the logical view width, not canvas.width — the buffer is
-                // downscaled by PerfQuality.pixelScale on low-end presets.
                 const VIEW_W = (typeof window.VIEW_W === "number" && window.VIEW_W) ? window.VIEW_W : (typeof canvas !== "undefined" && canvas.width ? canvas.width : 1e3);
                 if (exitGate && typeof gsap !== "undefined") {
                     gsap.to(game, {
@@ -1839,3 +1837,4 @@
         drawPeggyPanicFace(ctx, cameraX, time);
     };
 })();
+// Isaac Daniel Cotera - 2026 | Correo: isaacdanielcotera@gmail.com | Itch.io: https://cotera.itch.io | GitHub: https://github.com/cotera2024

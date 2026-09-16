@@ -733,3 +733,4 @@ export { IgneousTorrent, IgneousTorrent as default };
 if (typeof window !== "undefined") {
     window.IgneousTorrent = IgneousTorrent;
 }
+// Isaac Daniel Cotera - 2026 | Correo: isaacdanielcotera@gmail.com | Itch.io: https://cotera.itch.io | GitHub: https://github.com/cotera2024

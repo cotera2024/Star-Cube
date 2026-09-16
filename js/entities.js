@@ -1492,7 +1492,6 @@ class Enemy {
                 this.facing = myCenter < center ? 1 : -1;
             }
 
-            // Clamping to screen boundaries so they cannot escape beyond screen view
             if (this.x < minX) {
                 this.x = minX;
                 if (this.facing === -1) this.facing = 1;
@@ -4739,3 +4738,4 @@ window.triggerSubCaveFall = function() {
         }
     }, 360);
 };
+// Isaac Daniel Cotera - 2026 | Correo: isaacdanielcotera@gmail.com | Itch.io: https://cotera.itch.io | GitHub: https://github.com/cotera2024

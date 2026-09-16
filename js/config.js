@@ -1,10 +1,3 @@
-/* ============================================================
- *  StarCube
- *  Autor   : Isaac Daniel Cotera
- *  Correo  : isaacdanielcotera@gmail.com
- *  Año     : 2026
- *  © 2026 Isaac Daniel Cotera. Todos los derechos reservados.
- * ============================================================ */
 
 let VIEW_W = 1024;
 window.VIEW_W = VIEW_W;
@@ -32,14 +25,12 @@ const DASH_MAX_INVULN = 26;
 const DASH_MAX_TRAIL = 22;
 const BF_MAX_HIT = 25;
 
-/* Prevención de scroll en teclas de dirección y espacio */
 window.addEventListener("keydown", (event) => {
     if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " "].includes(event.key)) {
         event.preventDefault();
     }
 });
 
-/* Foco en canvas de juego */
 window.focusGameCanvas = function() {
     try {
         const canvas = document.getElementById("gameCanvas");
@@ -63,7 +54,6 @@ window.addEventListener("DOMContentLoaded", () => {
     } catch (e) {}
 });
 
-/* Motor de trucos */
 let _cheatBuffer = "";
 
 window.resetProgress = function() {
@@ -118,7 +108,6 @@ window.rayoSupremo = function() {
     const levelData = levels[currentLevel];
     if (!levelData) return;
 
-    // 1. Cancelar tweens activos en game o player y anular cinemáticas en vuelo
     try {
         if (typeof gsap !== "undefined") {
             gsap.killTweensOf(game);
@@ -129,7 +118,6 @@ window.rayoSupremo = function() {
         CINEMA_TOKEN++;
     } catch (e) {}
 
-    // 2. Desbloquear arena y eliminar cualquier restricción de cámara/jefe
     game.arenaLocked = false;
     delete game.arenaMinX;
     delete game.arenaMaxX;
@@ -141,7 +129,6 @@ window.rayoSupremo = function() {
     game.camY = 0;
     game._entryLock = 0;
 
-    // 3. Marcar jefes como derrotados/inactivos para evitar que las arenas atrapen al jugador
     if (game.blueSquare) {
         game.blueSquare.state = "defeated";
         game.blueSquare._defeatDialogShown = true;
@@ -176,7 +163,6 @@ window.rayoSupremo = function() {
     game.hideHealthBar = false;
     game.invertControls = false;
 
-    // 4. Elevar las puertas de las arenas de los jefes para que no bloqueen el paso
     if (Array.isArray(game.platforms)) {
         game.platforms.forEach(p => {
             if (p.isArenaGate) {
@@ -189,7 +175,6 @@ window.rayoSupremo = function() {
         });
     }
 
-    // 5. Ocultar HUD de jefe y cuadros de diálogo si estuvieran activos
     if (window.BossHUD && typeof window.BossHUD.hide === "function") {
         window.BossHUD.hide();
     }
@@ -197,7 +182,6 @@ window.rayoSupremo = function() {
     if (dialogBox) dialogBox.className = "dialog-hidden";
     if (typeof isDialogActive !== "undefined") isDialogActive = false;
 
-    // 6. Restaurar estado de movilidad del jugador
     game.spawnPortal = null;
     if (typeof game.player.dashTimer === "number") game.player.dashTimer = 0;
     game.player.frozen = false;
@@ -207,7 +191,6 @@ window.rayoSupremo = function() {
     game.player.facing = 1;
     game.player.onGround = true;
 
-    // 7. Teletransportar un paso antes de tocar el botón de rescate de la jaula
     if (levelData.jaula) {
         game.player.x = levelData.jaula.x - 140;
         const groundY = levelData.jaula.y + levelData.jaula.h;
@@ -227,12 +210,10 @@ window.rayoSupremo = function() {
         levelData.door.active = true;
     }
 
-    // 8. Actualizar cámara inmediatamente a la posición del jugador
     if (typeof cameraX !== "undefined" && typeof worldWidth !== "undefined") {
         cameraX = Math.max(0, Math.min(game.player.x - VIEW_W / 2 + (game.player.w || 32) / 2, worldWidth - VIEW_W));
     }
 
-    // 9. Feedback visual y sonoro
     if (typeof window.showAnimatedMessage === "function") {
         window.showAnimatedMessage("⚡ ¡RAYO SUPREMO! ⚡", true);
     }
@@ -275,7 +256,6 @@ window.addEventListener("keydown", (event) => {
     }
 });
 
-/* Standalone build (itch.io / GitHub) - CrazyGames SDK desactivado */
 window.crazyGameplayStart = function() {};
 window.crazyGameplayStop = function() {};
 window.crazyAdMuteAudio = function() {};
@@ -283,3 +263,4 @@ window.crazyAdRestoreAudio = function() {};
 window.requestCrazyMidroll = function(onDone) {
     if (typeof onDone === "function") onDone();
 };
+// Isaac Daniel Cotera - 2026 | Correo: isaacdanielcotera@gmail.com | Itch.io: https://cotera.itch.io | GitHub: https://github.com/cotera2024

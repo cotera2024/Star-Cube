@@ -208,8 +208,6 @@ function chooseLevel(n) {
     const modal = document.getElementById("level-map-modal");
     if (modal) modal.classList.remove("active");
     const idx = levelIndexFromMap(n);
-    // Resetar flag de revivir por anuncio: cada nuevo intento de nivel
-    // (desde mapa o desde reintento) debe poder ofrecer revivir si se muere.
     adReviveUsed = false;
     window.loadLevel(idx);
     gameState = "playing";
@@ -267,7 +265,7 @@ window.nowLevelClearAd = nowLevelClearAd;
 
 function unlockAndShowMap(nextLevel) {
     nowLevelClearAd();
-    adReviveUsed = false;     // Resetar para que el siguiente nivel pueda ofrecer revivir
+    adReviveUsed = false;
     let targetDoorNum = nextLevel;
     if (typeof currentLevel === "number" && (nextLevel === undefined || nextLevel === currentLevel + 2 || nextLevel === currentLevel + 1)) {
         targetDoorNum = getNextHubDoorNum(currentLevel);
@@ -467,8 +465,6 @@ function showGameOverModal() {
         getBlackoutDiv().style.opacity = 1;
     } catch (e) {}
     adReviveRunning = false;
-    // NO reseteamos adReviveUsed aquí: si ya usaste anuncio en este nivel,
-    // el botón no debe volver a aparecer hasta que reinicies el nivel o pases al siguiente.
     const modal = document.getElementById("gameover-modal");
     if (modal) modal.classList.add("active");
     setupAdReviveUI();
@@ -495,8 +491,6 @@ window.handlePlayerDefeat = function() {
     if (typeof window.updateLivesDisplay === "function") window.updateLivesDisplay();
     if (playerLives > 0) {
         gameState = "respawning";
-        // NOTE: Don't play lvl.bgm here — loadLevel() sets the correct BGM,
-        // including bgm_pumpkin_chase if the player dies mid-chase on level 6.
         try {
             showAnimatedMessage(__("msg_lives_left").replace("%n", playerLives), true);
         } catch (e) {}
@@ -579,3 +573,4 @@ function showChoice() {
 function hideChoice() {
     getChoiceDiv().style.display = "none";
 }
+// Isaac Daniel Cotera - 2026 | Correo: isaacdanielcotera@gmail.com | Itch.io: https://cotera.itch.io | GitHub: https://github.com/cotera2024

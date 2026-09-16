@@ -2016,16 +2016,12 @@
                 window.VIEW_H = baseH;
             }
 
-            // Respect PerfQuality.pixelScale: the pixel buffer is downscaled while
-            // VIEW_W/VIEW_H stay logical. CSS size (set by perf.js) stretches it back.
             const ps = (typeof window.PerfQuality !== 'undefined' && window.PerfQuality && typeof window.PerfQuality.pixelScale === 'number' && window.PerfQuality.pixelScale > 0) ? window.PerfQuality.pixelScale : 1;
             const bufW = Math.round(targetW * ps);
             const bufH = Math.round(baseH * ps);
             if (canvas) {
                 if (canvas.width !== bufW) canvas.width = bufW;
                 if (canvas.height !== bufH) canvas.height = bufH;
-                // CSS size must always be the logical size so the (possibly
-                // downscaled) buffer is stretched back to fill the container.
                 canvas.style.width = targetW + 'px';
                 canvas.style.height = baseH + 'px';
             }
@@ -2067,3 +2063,4 @@
     </script>
 </body>
 </html>
+<!-- Isaac Daniel Cotera - 2026 | Correo: isaacdanielcotera@gmail.com | Itch.io: https://cotera.itch.io | GitHub: https://github.com/cotera2024 -->

@@ -1015,3 +1015,4 @@
         if (game.krakatoa.sealActive) drawKrakatoaButtons(ctx, game.krakatoa, cameraX, time);
     };
 })();
+// Isaac Daniel Cotera - 2026 | Correo: isaacdanielcotera@gmail.com | Itch.io: https://cotera.itch.io | GitHub: https://github.com/cotera2024

@@ -695,3 +695,4 @@ function updateAndDrawPinkSquare(ctx, cameraX, time) {
     ctx.font = "18px Arial";
     ctx.fillText("🚀", eggX + 3, eggY + 40);
 }
+// Isaac Daniel Cotera - 2026 | Correo: isaacdanielcotera@gmail.com | Itch.io: https://cotera.itch.io | GitHub: https://github.com/cotera2024

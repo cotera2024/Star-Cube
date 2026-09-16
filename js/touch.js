@@ -510,3 +510,4 @@
     if (hand) hand.style.display = "none";
     if (cursor) cursor.style.display = "none";
 })();
+// Isaac Daniel Cotera - 2026 | Correo: isaacdanielcotera@gmail.com | Itch.io: https://cotera.itch.io | GitHub: https://github.com/cotera2024

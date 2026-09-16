@@ -10,9 +10,6 @@ window.getHandDiv = () => document.getElementById("handOverlay");
 
 window.getGameTitle = () => document.getElementById("game-title");
 
-// Cache for drawPlayerEnhanced body gradient.
-// Key: "level|iceMode|x|y|h" — only recreated when level/iceMode changes
-// or when the player's on-screen position/size changes between frames.
 const _playerGradCache = { key: null, grad: null };
 
 function drawEntityBase(ctx, x, y, w, h, scaleX, scaleY, color, isPlayer, facing, isScared) {
@@ -83,7 +80,6 @@ function drawPlayerEnhanced(ctx, x, y, w, h, facing, scaleX, scaleY, color, invu
     ctx.beginPath();
     ctx.ellipse(cx, y + h + 2, w * .44, 4, 0, 0, Math.PI * 2);
     ctx.fill();
-    // Use cached gradient — only rebuild when level, iceMode, or geometry changes
     const _gradKey = `${currentLevel}|${game && game.iceMode}|${x}|${y}|${h}`;
     if (_playerGradCache.key !== _gradKey) {
         const grad = ctx.createLinearGradient(x, y, x, y + h);
@@ -971,8 +967,6 @@ function drawPlayerEnhanced(ctx, x, y, w, h, facing, scaleX, scaleY, color, invu
         ctx.fillRect(x + 4, y + 2, w - 8, 4);
     }
     if (playerRef && playerRef.dashMax && playerRef.dashTimer > 0) {
-        // Reset to the base (logical) transform, NOT identity — the canvas
-        // buffer may be downscaled by PerfQuality.pixelScale on low-end presets.
         ctx.save();
         {
             const ps = typeof window.PerfQuality !== "undefined" && window.PerfQuality ? window.PerfQuality.pixelScale : 1;
@@ -4114,3 +4108,4 @@ window.drawHuntFace = drawHuntFace;
 window.huntMood = huntMood;
 
 window.drawMacabreFace = drawMacabreFace;
+// Isaac Daniel Cotera - 2026 | Correo: isaacdanielcotera@gmail.com | Itch.io: https://cotera.itch.io | GitHub: https://github.com/cotera2024

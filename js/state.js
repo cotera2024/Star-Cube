@@ -87,3 +87,4 @@ let bfShock = 0, bfNightmare = 0;
 let bfHitFrames = 0;
 
 let bfPointerX = VIEW_W / 2, bfPointerY = VIEW_H / 2;
+// Isaac Daniel Cotera - 2026 | Correo: isaacdanielcotera@gmail.com | Itch.io: https://cotera.itch.io | GitHub: https://github.com/cotera2024
