@@ -1,6 +1,32 @@
 (function() {
     const canvas = document.getElementById("gameCanvas");
-    const ctx = canvas.getContext("2d");
+    const realCtx = canvas.getContext("2d", { alpha: false, desynchronized: true }) || canvas.getContext("2d");
+    let ctx = realCtx;
+    const _dummyGradient = { addColorStop: function() {} };
+    const _noop = function() {};
+    const _dummyCtxTarget = {
+        isDummy: true,
+        save: _noop, restore: _noop, beginPath: _noop, closePath: _noop,
+        moveTo: _noop, lineTo: _noop, arc: _noop, ellipse: _noop, bezierCurveTo: _noop, quadraticCurveTo: _noop, arcTo: _noop, rect: _noop, roundRect: _noop,
+        fill: _noop, stroke: _noop, fillRect: _noop, strokeRect: _noop, clearRect: _noop,
+        translate: _noop, scale: _noop, rotate: _noop, setTransform: _noop, transform: _noop,
+        drawImage: _noop, fillText: _noop, strokeText: _noop,
+        measureText: function() { return { width: 10 }; },
+        createLinearGradient: function() { return _dummyGradient; },
+        createRadialGradient: function() { return _dummyGradient; },
+        createPattern: function() { return null; },
+        getLineDash: function() { return []; },
+        setLineDash: _noop, clip: _noop, isPointInPath: _noop,
+        canvas: canvas, globalAlpha: 1, globalCompositeOperation: "source-over",
+        fillStyle: "", strokeStyle: "", lineWidth: 1, shadowBlur: 0, shadowColor: "",
+        font: "", textAlign: "left", textBaseline: "top"
+    };
+    const _dummyCtx = typeof Proxy !== "undefined" ? new Proxy(_dummyCtxTarget, {
+        get: function(target, prop) {
+            if (prop in target) return target[prop];
+            return _noop;
+        }
+    }) : _dummyCtxTarget;
     const messageDiv = document.getElementById("message");
     const uiOverlay = document.getElementById("ui-overlay");
     const controlsInfo = document.getElementById("controls-info");
@@ -82,16 +108,19 @@
         window.showAnimatedMessage(__("msg_superate"), false);
     }
     function drawCheckpoint(ctx, cp, cameraX, t) {
-        let groundY = cp.y + 60;
-        if (game && Array.isArray(game.platforms)) {
-            for (let p of game.platforms) {
-                if (!p.broken && !p.spikes && cp.x + 12 >= p.x && cp.x + 12 <= p.x + p.w && p.y >= cp.y - 20 && p.y <= cp.y + 110) {
-                    groundY = p.y;
-                    break;
+        if (cp.groundY == null) {
+            let groundY = cp.y + 60;
+            if (game && Array.isArray(game.platforms)) {
+                for (let p of game.platforms) {
+                    if (!p.broken && !p.spikes && cp.x + 12 >= p.x && cp.x + 12 <= p.x + p.w && p.y >= cp.y - 20 && p.y <= cp.y + 110) {
+                        groundY = p.y;
+                        break;
+                    }
                 }
             }
+            cp.groundY = groundY;
         }
-        cp.groundY = groundY;
+        const groundY = cp.groundY;
         const screenX = cp.x - cameraX;
         const screenY = groundY - 60;
         if (screenX < -120 || screenX > VIEW_W + 120) return;
@@ -376,17 +405,12 @@
         if (titleBtns) titleBtns.classList.add("hidden");
         const langToggleBtn = document.getElementById("btn-lang-toggle");
         if (langToggleBtn) langToggleBtn.style.display = "none";
-        if (window.postGameHorror) {
-            loadHubLevel(Math.min(unlockedLevel - 1, 5));
-            return;
+        loadHubLevel(0);
+        if (typeof window.gameLoadingStop === "function") {
+            window.gameLoadingStop();
         }
-        try {
-            playBGM("bgm_menu_title");
-        } catch (e) {}
-        if (typeof window.startIntroCinematic === "function") {
-            window.startIntroCinematic();
-        } else {
-            gameState = "introStory";
+        if (typeof window.gameplayStart === "function") {
+            window.gameplayStart();
         }
         if (typeof window.focusGameCanvas === "function") {
             window.focusGameCanvas();
@@ -396,15 +420,27 @@
     window.addEventListener("keydown", e => {
         const inv = game.invertControls && gameState === "playing" && currentLevel === 1;
         const isArrowKey = e.key === "ArrowLeft" || e.key === "ArrowRight";
-        const isZXKey = e.key === "z" || e.key === "Z" || e.key === "x" || e.key === "X";
-        if (inv && (isArrowKey || isZXKey)) {
-            if (e.key === "ArrowLeft") keys["ArrowRight"] = true; else if (e.key === "ArrowRight") keys["ArrowLeft"] = true; else if (e.key === "z" || e.key === "Z") keys["x"] = true; else if (e.key === "x" || e.key === "X") keys[" "] = true;
+        const isSpaceKey = e.key === " " || e.key === "Spacebar" || e.code === "Space";
+        const isXKey = e.key === "x" || e.key === "X" || e.code === "KeyX";
+        if (inv) {
+            if (e.key === "ArrowLeft") {
+                keys["ArrowRight"] = true;
+            } else if (e.key === "ArrowRight") {
+                keys["ArrowLeft"] = true;
+            } else if (isSpaceKey) {
+                keys["x"] = true;
+            } else if (isXKey) {
+                keys[" "] = true;
+            } else if (e.key === "z" || e.key === "Z" || e.code === "KeyZ") {
+                // z no se usa
+            } else {
+                keys[e.key] = true;
+            }
         } else {
             keys[e.key] = true;
         }
         if (gameState === "playing" && game.player && !game.player.frozen) {
-            const invJump = inv && (e.key === "x" || e.key === "X");
-            const isJumpKey = e.key === " " || e.key === "Spacebar" || e.key === "w" || e.key === "W" || invJump;
+            const isJumpKey = inv ? isXKey : (isSpaceKey || e.key === "w" || e.key === "W");
             if (isJumpKey) game.player.jumpBufferTimer = Math.max(game.player.jumpBufferTimer, 12);
         }
         if ((e.key === "c" || e.key === "C") && gameState === "playing" && currentLevel !== 4 && game.player && !game.player.frozen) {
@@ -513,9 +549,22 @@
     window.addEventListener("keyup", e => {
         const invUp = game.invertControls && gameState === "playing" && currentLevel === 1;
         const isArrowUp = e.key === "ArrowLeft" || e.key === "ArrowRight";
-        const isZXUp = e.key === "z" || e.key === "Z" || e.key === "x" || e.key === "X";
-        if (invUp && (isArrowUp || isZXUp)) {
-            if (e.key === "ArrowLeft") keys["ArrowRight"] = false; else if (e.key === "ArrowRight") keys["ArrowLeft"] = false; else if (e.key === "z" || e.key === "Z") keys["x"] = false; else if (e.key === "x" || e.key === "X") keys[" "] = false;
+        const isSpaceUp = e.key === " " || e.key === "Spacebar" || e.code === "Space";
+        const isXUp = e.key === "x" || e.key === "X" || e.code === "KeyX";
+        if (invUp) {
+            if (e.key === "ArrowLeft") {
+                keys["ArrowRight"] = false;
+            } else if (e.key === "ArrowRight") {
+                keys["ArrowLeft"] = false;
+            } else if (isSpaceUp) {
+                keys["x"] = false;
+            } else if (isXUp) {
+                keys[" "] = false;
+            } else if (e.key === "z" || e.key === "Z" || e.code === "KeyZ") {
+                // z no se usa
+            } else {
+                keys[e.key] = false;
+            }
         } else {
             keys[e.key] = false;
         }
@@ -1560,12 +1609,27 @@
                 splashScreen.classList.add("hidden");
                 setTimeout(() => {
                     splashScreen.style.display = "none";
-                    if (langSelect) {
-                        if (closeLangBtn) closeLangBtn.style.display = "none";
-                        langSelect.style.display = "flex";
-                        setTimeout(() => langSelect.classList.add("visible"), 50);
-                        updateUITranslations();
+                    if (typeof updateUITranslations === "function") updateUITranslations();
+                    gameTitle.style.opacity = "1";
+                    const titleBtns = document.getElementById("title-buttons");
+                    if (titleBtns) titleBtns.classList.remove("hidden");
+                    if (langToggleBtn) langToggleBtn.style.display = "flex";
+                    gameReady = true;
+                    window.gameReady = true;
+                    window.GAME_PAUSED = false;
+                    if (typeof window.gameLoadingStop === "function") {
+                        window.gameLoadingStop();
                     }
+                    try {
+                        if (typeof drawEnhancedBackground === "function") {
+                            drawEnhancedBackground(ctx, currentLevel, cameraX, 0, game);
+                        }
+                    } catch (err) {}
+                    try {
+                        if (typeof currentBGM === "undefined" || !currentBGM || currentBGM.paused) {
+                            playBGM("bgm_menu_title");
+                        }
+                    } catch (e) {}
                 }, 500);
             }
         }
@@ -1656,6 +1720,9 @@
                 if (titleBtns) titleBtns.classList.add("hidden");
                 if (langToggleBtn) langToggleBtn.style.display = "none";
                 loadHubLevel(Math.min(unlockedLevel - 1, 5));
+                if (typeof window.gameLoadingStop === "function") window.gameLoadingStop();
+                if (typeof window.gameplayStart === "function") window.gameplayStart();
+                if (typeof window.focusGameCanvas === "function") window.focusGameCanvas();
             });
         }
     }
@@ -1687,6 +1754,10 @@
         if (typeof window.updateTouchControlsState === "function") {
             window.updateTouchControlsState();
         }
+        if (gameState === "start") {
+            drawEnhancedBackground(ctx, 0, 0, time, game);
+            return;
+        }
         if (game.isHub || currentLevel === "hub" || currentLevel < 4 || currentLevel === 6) {
             drawEnhancedBackground(ctx, currentLevel, cameraX, time, game);
         } else {
@@ -1705,10 +1776,6 @@
             ctx.translate(zx, zy);
             ctx.scale(game.cameraZoom, game.cameraZoom);
             ctx.translate(-zx, -zy);
-        }
-        if (gameState === "start") {
-            ctx.restore();
-            return;
         }
         if (gameState === "introStory") {
             ctx.restore();
@@ -1856,6 +1923,7 @@
                 if (targetCamX > worldWidth - VIEW_W) targetCamX = worldWidth - VIEW_W;
                 cameraX += (targetCamX - cameraX) * .1;
             }
+            cameraX = Math.round(cameraX);
         }
         if (currentLevel === 4 && game.lvl4State === "run_to_door") {
             const dX = 3500;
@@ -2629,7 +2697,6 @@
                 ctx.textAlign = "center";
                 drawKey(-60, -42, "X");
                 ctx.font = "bold 10px sans-serif";
-                ctx.fillText("NIVEL 4", -20, -42);
                 ctx.fillText(typeof __ === "function" ? __("ui_ctrl_lvl4") : "NIVEL 4", -20, -42);
                 ctx.font = "bold 14px sans-serif";
                 ctx.fillText("+", -60, -20);
@@ -2812,7 +2879,6 @@
                 ctx.textBaseline = "middle";
                 ctx.textAlign = "center";
                 ctx.fillStyle = isPlateActive ? "#ffffff" : "#94a3b8";
-                ctx.fillText("NIVEL " + door.levelNum, dx + door.w / 2, plateY + plateH / 2);
                 ctx.fillText(typeof __ === "function" ? __("ui_level_n", door.levelNum) : "NIVEL " + door.levelNum, dx + door.w / 2, plateY + plateH / 2);
                 ctx.restore();
                 if (game.player && game.player.x + game.player.w > door.x + 8 && game.player.x < door.x + door.w - 8 && game.player.y + game.player.h >= door.y && game.player.y <= door.y + door.h + 20) {
@@ -3047,7 +3113,6 @@
                             playSound(120, .15, "sawtooth", .2, 70);
                         } catch (e) {}
                         try {
-                            addFloatingText(standingDoor.x + standingDoor.w / 2, standingDoor.y - 10, "¡SUPERAR NIVEL ANTERIOR!", "#ff3355", 18);
                             addFloatingText(standingDoor.x + standingDoor.w / 2, standingDoor.y - 10, typeof __ === "function" ? __("flt_superar_nivel_anterior") : "¡SUPERAR NIVEL ANTERIOR!", "#ff3355", 18);
                         } catch (e) {}
                     }
@@ -3245,11 +3310,17 @@
             p.y += p.vy;
             const maxTrailLen = p.chargeLevel === 4 ? 10 : p.chargeLevel === 3 ? 8 : p.chargeLevel === 2 ? 6 : p.chargeLevel === 1 ? 5 : 4;
             if (!p.trail) p.trail = [];
-            p.trail.push({
-                x: p.x,
-                y: p.y
-            });
-            if (p.trail.length > maxTrailLen) p.trail.shift();
+            if (p.trail.length >= maxTrailLen) {
+                let first = p.trail.shift();
+                first.x = p.x;
+                first.y = p.y;
+                p.trail.push(first);
+            } else {
+                p.trail.push({
+                    x: p.x,
+                    y: p.y
+                });
+            }
             const sparkFreq = p.chargeLevel === 4 ? .45 : p.chargeLevel === 3 ? .35 : p.chargeLevel >= 1 ? .25 : .15;
             if (Math.random() < sparkFreq) {
                 let sparkCol;
@@ -4499,21 +4570,17 @@
                     playSound(110, .45, "sawtooth", .35, 40);
                     createExplosion(p.x + (p.radius || 25), p.y + (p.radius || 25), "#ffffff", 40, 24, [ "#ffffff", "#bae6fd", "#38bdf8" ]);
                     applyShake(9);
-                    addFloatingText(game.player.x + game.player.w / 2, game.player.y - 15, "⛄ ¡AVALANCHA!", "#38bdf8", 18);
                     addFloatingText(game.player.x + game.player.w / 2, game.player.y - 15, typeof __ === "function" ? __("flt_avalancha") : "⛄ ¡AVALANCHA!", "#38bdf8", 18);
                 } else if (p.isLongThorn) {
                     playSound(520, .18, "square", .22, 920);
                     createExplosion(p.x, p.y, "#84cc16", 20, 14, [ "#84cc16", "#a3e635", "#fef08a" ]);
-                    addFloatingText(game.player.x + game.player.w / 2, game.player.y - 15, "🌵 ¡PINCHAZO!", "#84cc16", 16);
                     addFloatingText(game.player.x + game.player.w / 2, game.player.y - 15, typeof __ === "function" ? __("flt_pinchazo") : "🌵 ¡PINCHAZO!", "#84cc16", 16);
                 } else if (p.isFlameSpray) {
                     playSound(280, .2, "sawtooth", .22, 110);
                     createExplosion(p.x, p.y, "#ff4500", 24, 16, [ "#ffffff", "#facc15", "#ff4500" ]);
-                    addFloatingText(game.player.x + game.player.w / 2, game.player.y - 15, "🔥 ¡LLAMARADA!", "#ff4500", 16);
                     addFloatingText(game.player.x + game.player.w / 2, game.player.y - 15, typeof __ === "function" ? __("flt_llamarada") : "🔥 ¡LLAMARADA!", "#ff4500", 16);
                 } else if (p.isElectric) {
                     playSound(700, .14, "sawtooth", .2, 120);
-                    addFloatingText(game.player.x + game.player.w / 2, game.player.y - 15, "⚡ ¡DESCARGA!", "#00f0ff", 16);
                     addFloatingText(game.player.x + game.player.w / 2, game.player.y - 15, typeof __ === "function" ? __("flt_descarga") : "⚡ ¡DESCARGA!", "#00f0ff", 16);
                 } else if (p.isParalyzeDiamond) {
                     if (typeof window.applyParalyzeEffect === "function") {
@@ -4531,7 +4598,6 @@
                 } else if (p.isWaterBullet) {
                     playSound(240, .14, "sine", .18, 80);
                     createExplosion(p.x, p.y, "#06b6d4", 16, 12, [ "#00ffff", "#ffffff", "#0284c7" ]);
-                    addFloatingText(game.player.x + game.player.w / 2, game.player.y - 15, "💧 ¡SPLASH!", "#38bdf8", 15);
                     addFloatingText(game.player.x + game.player.w / 2, game.player.y - 15, typeof __ === "function" ? __("flt_splash") : "💧 ¡SPLASH!", "#38bdf8", 15);
                 } else if (p.isKrakenBigBall) {
                     playSound(70, .9, "sawtooth", .55, 26);
@@ -4541,12 +4607,10 @@
                 } else if (p.isSlowBubble || p.isBubbleSpray) {
                     playSound(560, .18, "sine", .2, 350);
                     createExplosion(p.x, p.y, "#38bdf8", 16, 10, [ "#38bdf8", "#7dd3fc", "#ffffff" ]);
-                    addFloatingText(game.player.x + game.player.w / 2, game.player.y - 15, "🫧 ¡POP!", "#38bdf8", 15);
                     addFloatingText(game.player.x + game.player.w / 2, game.player.y - 15, typeof __ === "function" ? __("flt_pop") : "🫧 ¡POP!", "#38bdf8", 15);
                 } else if (p.isAppleArc) {
                     playSound(400, .18, "triangle", .2, 220);
                     createExplosion(p.x, p.y, "#ef4444", 18, 12, [ "#ef4444", "#f87171", "#22c55e", "#ffffff" ]);
-                    addFloatingText(game.player.x + game.player.w / 2, game.player.y - 15, "🍎 ¡MANZANAZO!", "#ef4444", 16);
                     addFloatingText(game.player.x + game.player.w / 2, game.player.y - 15, typeof __ === "function" ? __("flt_manzanazo") : "🍎 ¡MANZANAZO!", "#ef4444", 16);
                 } else if (p.isFrostBreath) {
                     playSound(280, .25, "sawtooth", .28, 100);
@@ -4597,8 +4661,13 @@
                     ctx.rotate(Math.sin(time * .05 + s.x) * .12);
                     ctx.scale(beat, beat);
                     ctx.fillStyle = "#ff4d6d";
-                    ctx.shadowColor = "#ff2e63";
-                    ctx.shadowBlur = 10;
+                    const glowMult = (typeof window !== "undefined" && window.PerfQuality && typeof window.PerfQuality.glowMult === "number") ? window.PerfQuality.glowMult : 1;
+                    if (glowMult > 0.4) {
+                        ctx.shadowColor = "#ff2e63";
+                        ctx.shadowBlur = 8;
+                    } else {
+                        ctx.shadowBlur = 0;
+                    }
                     ctx.beginPath();
                     ctx.moveTo(0, 6);
                     ctx.bezierCurveTo(-13, -3, -9, -14, 0, -7);
@@ -4909,15 +4978,20 @@
             }
         }
         if (blood.length > MAX_BLOOD) blood.splice(0, blood.length - MAX_BLOOD);
-        for (let b of blood) {
+        let bWrite = 0;
+        for (let i = 0; i < blood.length; i++) {
+            let b = blood[i];
             b.x += b.vx;
             b.y += b.vy;
             b.vy += .4;
             b.life--;
-            ctx.fillStyle = b.color;
-            ctx.fillRect(b.x, b.y, 5, 5);
+            if (b.life > 0) {
+                ctx.fillStyle = b.color;
+                ctx.fillRect(b.x, b.y, 5, 5);
+                blood[bWrite++] = b;
+            }
         }
-        blood = blood.filter(b => b.life > 0);
+        blood.length = bWrite;
         if (game.inHunt || game.lvl4State === "hunt") {
             slashes.forEach(s => {
                 s.t++;
@@ -5169,13 +5243,19 @@
             return;
         }
         _acc += dt;
-        let steps = 0;
-        while (_acc >= FRAME_INTERVAL && steps < MAX_STEPS) {
-            step();
+        const stepsNeeded = Math.min(Math.floor(_acc / FRAME_INTERVAL), MAX_STEPS);
+        for (let i = 0; i < stepsNeeded; i++) {
             _acc -= FRAME_INTERVAL;
-            steps++;
+            const isCatchUp = (i < stepsNeeded - 1);
+            ctx = isCatchUp ? _dummyCtx : realCtx;
+            try {
+                step();
+            } catch (stepErr) {
+                console.error("[gameLoop step error]:", stepErr);
+            }
         }
-        if (steps >= MAX_STEPS) _acc = 0;
+        ctx = realCtx;
+        if (_acc >= FRAME_INTERVAL) _acc = _acc % FRAME_INTERVAL;
     }
     canvas.addEventListener("click", e => {
         if (game.techBoss && game.techBoss.showChoice) {

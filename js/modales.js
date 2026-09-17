@@ -150,7 +150,6 @@ function selectLevelNode(n) {
     if (playBtn) {
         playBtn.style.opacity = isUnlocked ? "1" : "0.5";
         playBtn.style.cursor = isUnlocked ? "pointer" : "not-allowed";
-        playBtn.textContent = isUnlocked ? "▶ ¡JUGAR NIVEL!" : "🔒 BLOQUEADO";
         playBtn.textContent = isUnlocked ? (typeof __ === "function" ? __("map_btn_play") : "▶ ¡JUGAR NIVEL!") : (typeof __ === "function" ? __("map_btn_locked") : "🔒 BLOQUEADO");
     }
     try {
@@ -288,7 +287,14 @@ window.unlockAndShowMap = unlockAndShowMap;
 
 function cleanupLevelAudioAndFX() {
     try {
+        if (typeof window.adRestoreAudio === "function") window.adRestoreAudio();
+        if (typeof audios === "object" && audios) {
+            for (let k in audios) {
+                if (audios[k]) audios[k].muted = false;
+            }
+        }
         if (typeof currentBGM !== "undefined" && currentBGM) {
+            currentBGM.muted = false;
             currentBGM.pause();
             currentBGM.currentTime = 0;
         }
@@ -347,7 +353,6 @@ function exitToLevelMap() {
     window.GAME_PAUSED = false;
     if (typeof game !== "undefined" && game) game.paused = false;
     if (typeof window.forceUnpauseGame === "function") window.forceUnpauseGame();
-    if (typeof window.crazyGameplayStop === "function") window.crazyGameplayStop();
     [ "pause-modal", "gameover-modal", "defeat-modal", "victory-modal", "level-map-modal" ].forEach(function(id) {
         const m = document.getElementById(id);
         if (m) {
@@ -387,10 +392,27 @@ function returnToTitleScreen() {
     if (typeof game !== "undefined") {
         game.valkBossDefeated = false;
         game.eruptingMode = false;
+        game.subCaveMode = false;
+        game.meadowNight = false;
+        game.pixelMode = false;
+        game.stormMode = false;
+        game.isHub = false;
+        game.camY = 0;
+        game.cameraZoom = 1;
+        game.cameraOverrideX = null;
+        game.cameraOverrideY = null;
+        game.freeRoam = false;
+        game.happyMode = false;
+        if (game.player) {
+            game.player.frozen = false;
+            game.player.vx = 0;
+            game.player.vy = 0;
+        }
     }
     gameState = "start";
     window.GAME_PAUSED = false;
-    currentLevel = -1;
+    currentLevel = 0;
+    cameraX = 0;
     const uiOverlay = document.getElementById("ui-overlay");
     if (uiOverlay) uiOverlay.style.display = "none";
     const touchControls = document.getElementById("touch-controls");
@@ -409,6 +431,11 @@ function returnToTitleScreen() {
     if (langToggleBtn) langToggleBtn.style.display = "flex";
     if (typeof updateUITranslations === "function") updateUITranslations();
     gameReady = true;
+    try {
+        if (typeof drawEnhancedBackground === "function" && typeof ctx !== "undefined") {
+            drawEnhancedBackground(ctx, 0, 0, 0, game);
+        }
+    } catch (e) {}
     try {
         playBGM("bgm_menu_title");
     } catch (e) {}

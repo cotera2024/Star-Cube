@@ -78,18 +78,20 @@ function playBGM(trackName) {
             trackName = "bgm_world5_dread";
         }
     }
-    if (currentBGM && trackName && audios[trackName] && currentBGM === audios[trackName] && !currentBGM.paused) {
-        return;
-    }
-    if (currentBGM) {
-        currentBGM.pause();
-        currentBGM.currentTime = 0;
-    }
     if (trackName && audios[trackName]) {
+        audios[trackName].muted = false;
+        if (currentBGM && currentBGM === audios[trackName] && !currentBGM.paused) {
+            return;
+        }
+        if (currentBGM) {
+            currentBGM.pause();
+            currentBGM.currentTime = 0;
+        }
         if (audios[trackName].preload !== "auto") {
             audios[trackName].preload = "auto";
         }
         currentBGM = audios[trackName];
+        currentBGM.muted = false;
         currentBGM.volume = 1;
         currentBGM.play().catch(e => console.log("Esperando interacción..."));
     }

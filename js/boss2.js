@@ -1134,8 +1134,8 @@ function updateAndDrawTechBoss(ctx, cameraX, time) {
 
 function drawInvertControlsHUD(ctx, time) {
     ctx.save();
-    const hudW = 210;
-    const hudH = 46;
+    const hudW = 230;
+    const hudH = 58;
     const hudX = VIEW_W - hudW - 14;
     const hudY = 82;
     const isBlink = Math.floor(time * 12) % 2 === 0;
@@ -1147,8 +1147,8 @@ function drawInvertControlsHUD(ctx, time) {
     ctx.fill();
     ctx.stroke();
     const badgeX = hudX + 8;
-    const badgeY = hudY + 6;
-    const badgeS = 24;
+    const badgeY = hudY + 8;
+    const badgeS = 26;
     ctx.fillStyle = "rgba(255, 0, 128, 0.22)";
     ctx.beginPath();
     if (ctx.roundRect) ctx.roundRect(badgeX, badgeY, badgeS, badgeS, 5); else ctx.fillRect(badgeX, badgeY, badgeS, badgeS);
@@ -1163,12 +1163,14 @@ function drawInvertControlsHUD(ctx, time) {
     ctx.fillStyle = "#ffffff";
     ctx.textAlign = "left";
     ctx.textBaseline = "middle";
-    ctx.fillText(titleText, badgeX + badgeS + 7, badgeY + 7, hudW - badgeS - 18);
-    ctx.font = "bold 10px monospace";
+    ctx.fillText(titleText, badgeX + badgeS + 7, badgeY + 6, hudW - badgeS - 18);
+    ctx.font = "bold 9.5px monospace";
     ctx.fillStyle = isBlink ? "#ffd700" : "#00ffff";
-    ctx.fillText("⬅️ = ➡️  |  ➡️ = ⬅️", badgeX + badgeS + 7, badgeY + 20);
+    ctx.fillText("⬅️ = ➡️  |  ➡️ = ⬅️", badgeX + badgeS + 7, badgeY + 18);
+    ctx.fillStyle = isBlink ? "#00ffff" : "#ffd700";
+    ctx.fillText("ESPACIO = DISPARO | X = SALTO", badgeX + badgeS + 7, badgeY + 30);
     const barX = hudX + 8;
-    const barY = hudY + hudH - 8;
+    const barY = hudY + hudH - 6;
     const barW = hudW - 16;
     ctx.fillStyle = "rgba(255, 255, 255, 0.12)";
     ctx.fillRect(barX, barY, barW, 3);

@@ -2,7 +2,7 @@ let bgParticles = [];
 
 function initBgParticles() {
     bgParticles = [];
-    const budget = typeof window !== "undefined" && window.PerfQuality && window.PerfQuality.maxBg || 40;
+    const budget = typeof window !== "undefined" && window.PerfQuality && window.PerfQuality.maxBg !== undefined ? window.PerfQuality.maxBg : 40;
     for (let i = 0; i < budget; i++) {
         bgParticles.push({
             x: Math.random() * VIEW_W,
@@ -17,12 +17,18 @@ function initBgParticles() {
 }
 
 initBgParticles();
+if (typeof window !== "undefined") {
+    window.addEventListener("perfQualityChanged", () => {
+        initBgParticles();
+    });
+}
 
 const shootingStars = [];
 
 let shootingStarSpawnTimer = 0;
 
 window.spawnShootingStar = function(customX, customY, colorTheme) {
+    if (typeof window !== "undefined" && window.PerfQuality && window.PerfQuality.level === "low") return;
     const themes = [ {
         head: "#ffffff",
         tail: "rgba(244, 114, 182, "
@@ -80,6 +86,7 @@ function getSkyGradient(ctx, key, stops) {
 }
 
 function drawEnhancedBackground(ctx, level, camX, t, game) {
+    if (ctx && ctx.isDummy) return;
     if (window.postGameHorror) {
         const horrorSky = getSkyGradient(ctx, "postGameHorrorSky", [ [ 0, "#000000" ], [ .28, "#0a0202" ], [ .6, "#1a0303" ], [ 1, "#330505" ] ]);
         ctx.fillStyle = horrorSky;
@@ -144,31 +151,35 @@ function drawEnhancedBackground(ctx, level, camX, t, game) {
         return;
     }
     if (game.isHub || level === "hub") {
+        const isLow = typeof window !== "undefined" && window.PerfQuality && window.PerfQuality.level === "low";
         const cosmicSky = getSkyGradient(ctx, "cosmicHub", [ [ 0, "#03000a" ], [ .35, "#0e0524" ], [ .7, "#1e0842" ], [ 1, "#32065a" ] ]);
         ctx.fillStyle = cosmicSky;
         ctx.fillRect(0, 0, VIEW_W, VIEW_H);
-        const neb1X = (VIEW_W * .35 - camX * .05) % (VIEW_W + 200);
-        const neb1Grad = ctx.createRadialGradient(neb1X, VIEW_H * .3, 20, neb1X, VIEW_H * .3, 220);
-        neb1Grad.addColorStop(0, "rgba(192, 132, 252, 0.2)");
-        neb1Grad.addColorStop(.5, "rgba(126, 34, 206, 0.1)");
-        neb1Grad.addColorStop(1, "rgba(0, 0, 0, 0)");
-        ctx.fillStyle = neb1Grad;
-        ctx.fillRect(0, 0, VIEW_W, VIEW_H);
-        const neb2X = (VIEW_W * .75 - camX * .08) % (VIEW_W + 300);
-        const neb2Grad = ctx.createRadialGradient(neb2X, VIEW_H * .45, 30, neb2X, VIEW_H * .45, 260);
-        neb2Grad.addColorStop(0, "rgba(56, 189, 248, 0.16)");
-        neb2Grad.addColorStop(.6, "rgba(79, 70, 229, 0.08)");
-        neb2Grad.addColorStop(1, "rgba(0, 0, 0, 0)");
-        ctx.fillStyle = neb2Grad;
-        ctx.fillRect(0, 0, VIEW_W, VIEW_H);
+        if (!isLow) {
+            const neb1X = (VIEW_W * .35 - camX * .05) % (VIEW_W + 200);
+            const neb1Grad = ctx.createRadialGradient(neb1X, VIEW_H * .3, 20, neb1X, VIEW_H * .3, 220);
+            neb1Grad.addColorStop(0, "rgba(192, 132, 252, 0.2)");
+            neb1Grad.addColorStop(.5, "rgba(126, 34, 206, 0.1)");
+            neb1Grad.addColorStop(1, "rgba(0, 0, 0, 0)");
+            ctx.fillStyle = neb1Grad;
+            ctx.fillRect(0, 0, VIEW_W, VIEW_H);
+            const neb2X = (VIEW_W * .75 - camX * .08) % (VIEW_W + 300);
+            const neb2Grad = ctx.createRadialGradient(neb2X, VIEW_H * .45, 30, neb2X, VIEW_H * .45, 260);
+            neb2Grad.addColorStop(0, "rgba(56, 189, 248, 0.16)");
+            neb2Grad.addColorStop(.6, "rgba(79, 70, 229, 0.08)");
+            neb2Grad.addColorStop(1, "rgba(0, 0, 0, 0)");
+            ctx.fillStyle = neb2Grad;
+            ctx.fillRect(0, 0, VIEW_W, VIEW_H);
+        }
         ctx.save();
-        for (let i = 0; i < 65; i++) {
+        const starLimit = isLow ? 24 : 65;
+        for (let i = 0; i < starLimit; i++) {
             const depth = i % 3 + 1;
             const starX = ((i * 37 - camX * (depth * .04)) % VIEW_W + VIEW_W) % VIEW_W;
             const starY = i * 29 % (VIEW_H - 90);
             const twinkle = Math.sin(t * .05 + i * 2.1) * .4 + .6;
             const starAlpha = (.2 + depth * .25) * twinkle;
-            if (i % 7 === 0) {
+            if (!isLow && i % 7 === 0) {
                 ctx.strokeStyle = "rgba(255, 255, 255, " + starAlpha + ")";
                 ctx.lineWidth = 1;
                 const arm = 3.5 + depth;
@@ -202,6 +213,8 @@ function drawEnhancedBackground(ctx, level, camX, t, game) {
         ctx.lineTo(VIEW_W, VIEW_H);
         ctx.closePath();
         ctx.fill();
+        ctx.fillStyle = "rgba(192, 132, 252, 0.4)";
+        ctx.beginPath();
         bgParticles.forEach(p => {
             p.y -= p.vy * .45;
             p.x += Math.sin(t * .04 + p.y * .03) * .5;
@@ -209,12 +222,10 @@ function drawEnhancedBackground(ctx, level, camX, t, game) {
                 p.y = VIEW_H;
                 p.x = Math.random() * VIEW_W;
             }
-            const pCol = p.size > 3 ? "rgba(192, 132, 252, " : "rgba(56, 189, 248, ";
-            ctx.fillStyle = pCol + p.alpha * .5 + ")";
-            ctx.beginPath();
+            ctx.moveTo(p.x + p.size * .4, p.y);
             ctx.arc(p.x, p.y, p.size * .4, 0, Math.PI * 2);
-            ctx.fill();
         });
+        ctx.fill();
         ctx.restore();
         return;
     }
@@ -379,6 +390,8 @@ function drawEnhancedBackground(ctx, level, camX, t, game) {
             fogGrad.addColorStop(1, "rgba(170, 225, 255, 0.22)");
             ctx.fillStyle = fogGrad;
             ctx.fillRect(0, VIEW_H - 70, VIEW_W, 70);
+            ctx.fillStyle = "rgba(210, 245, 255, 0.85)";
+            ctx.beginPath();
             bgParticles.forEach(p => {
                 p.y += p.vy * 1.8;
                 p.x += Math.sin(t * .06 + p.y * .02) * 2.2 - 1.2;
@@ -389,22 +402,17 @@ function drawEnhancedBackground(ctx, level, camX, t, game) {
                 if (p.x < -10) {
                     p.x = VIEW_W + 10;
                 }
-                const isBig = p.size > 4;
-                ctx.fillStyle = isBig ? "#ffffff" : "rgba(210, 245, 255, 0.85)";
-                if (isBig) {
-                    ctx.shadowColor = "#00ffff";
-                    ctx.shadowBlur = 6;
-                }
-                ctx.beginPath();
+                ctx.moveTo(p.x + p.size * .75, p.y);
                 ctx.arc(p.x, p.y, p.size * .75, 0, Math.PI * 2);
-                ctx.fill();
-                if (isBig) ctx.shadowBlur = 0;
             });
+            ctx.fill();
             return;
         } else if (game.fireMode) {
             const fireSky = getSkyGradient(ctx, "fire0", [ [ 0, "#2a0005" ], [ .5, "#5e0b0b" ], [ 1, "#1a0000" ] ]);
             ctx.fillStyle = fireSky;
             ctx.fillRect(0, 0, VIEW_W, VIEW_H);
+            ctx.fillStyle = "#ff5500";
+            ctx.beginPath();
             bgParticles.forEach(p => {
                 p.y -= p.vy * 1.2;
                 p.x += Math.sin(t * .08 + p.y * .03) * 1.8;
@@ -412,14 +420,10 @@ function drawEnhancedBackground(ctx, level, camX, t, game) {
                     p.y = VIEW_H + 10;
                     p.x = Math.random() * VIEW_W;
                 }
-                ctx.fillStyle = p.y % 2 === 0 ? "#ff4400" : "#ffcc00";
-                ctx.shadowColor = "#ff3300";
-                ctx.shadowBlur = 6;
-                ctx.beginPath();
+                ctx.moveTo(p.x + p.size * .85, p.y);
                 ctx.arc(p.x, p.y, p.size * .85, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.shadowBlur = 0;
             });
+            ctx.fill();
             return;
         }
         const isNight = game.meadowNight || game.gate2Open && !game.subCaveMode && !game.iceMode && !game.fireMode;

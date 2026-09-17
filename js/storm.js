@@ -260,6 +260,7 @@
         ctx.save();
         ctx.strokeStyle = "rgba(186, 230, 253, 0.55)";
         ctx.lineWidth = 1.6;
+        ctx.beginPath();
         storm.rainDrops.forEach(d => {
             let vx = 0;
             let vy = d.speed;
@@ -293,11 +294,10 @@
             if (d.x > VIEW_W + 30) d.x = -20;
             const tailX = d.x - vx * (d.len / d.speed);
             const tailY = d.y - vy * (d.len / d.speed);
-            ctx.beginPath();
             ctx.moveTo(d.x, d.y);
             ctx.lineTo(tailX, tailY);
-            ctx.stroke();
         });
+        ctx.stroke();
         ctx.restore();
         storm.fogOffset1 += .45;
         storm.fogOffset2 += .25;

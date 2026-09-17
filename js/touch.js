@@ -5,13 +5,17 @@
     window.isMobileDevice = isTouch;
     const touchCtl = document.getElementById("touch-controls");
     if (touchCtl) touchCtl.style.display = "none";
+    let _lastVibe = 0;
     function triggerHaptic(type = "light") {
         if (typeof navigator === "undefined" || typeof navigator.vibrate !== "function") return;
+        const now = performance.now();
+        if (now - _lastVibe < 60) return;
+        _lastVibe = now;
         try {
-            if (type === "light") navigator.vibrate(12);
-            else if (type === "medium") navigator.vibrate(20);
-            else if (type === "dash") navigator.vibrate(28);
-            else if (type === "heavy") navigator.vibrate([35, 25, 35]);
+            if (type === "light") navigator.vibrate(10);
+            else if (type === "medium") navigator.vibrate(18);
+            else if (type === "dash") navigator.vibrate(25);
+            else if (type === "heavy") navigator.vibrate([30, 20, 30]);
             else if (typeof type === "number" || Array.isArray(type)) navigator.vibrate(type);
         } catch (e) {}
     }
@@ -40,19 +44,6 @@
         } catch (e) {}
     }
     window.forceFullscreen = forceFullscreen;
-    let fsTriggered = false;
-    document.addEventListener("pointerdown", function onFirstTouch() {
-        if (!fsTriggered) {
-            fsTriggered = true;
-            forceFullscreen();
-        }
-    }, {
-        passive: true
-    });
-    const startBtn = document.getElementById("start-btn");
-    if (startBtn) startBtn.addEventListener("click", forceFullscreen, {
-        capture: true
-    });
     const fsToggleBtn = document.getElementById("btn-fullscreen-toggle");
     if (fsToggleBtn) {
         fsToggleBtn.addEventListener("click", function(e) {
@@ -87,21 +78,26 @@
     function applyGameKey(type, key, code) {
         window.isMobileDevice = true;
         const isDown = type === "keydown";
+        const isSpace = key === " " || key === "Spacebar" || code === "Space";
+        const isX = key === "x" || key === "X" || code === "KeyX";
         if (typeof keys !== "undefined") {
             const inv = invActive();
             if (inv) {
-                if (key === "ArrowLeft") keys["ArrowRight"] = isDown; else if (key === "ArrowRight") keys["ArrowLeft"] = isDown; else if (key === "z" || key === "Z") keys["x"] = isDown; else if (key === "x" || key === "X") keys[" "] = isDown; else keys[key] = isDown;
+                if (key === "ArrowLeft") keys["ArrowRight"] = isDown;
+                else if (key === "ArrowRight") keys["ArrowLeft"] = isDown;
+                else if (isSpace) keys["x"] = isDown;
+                else if (isX) keys[" "] = isDown;
+                else if (key === "z" || key === "Z") {} // z no se usa
+                else keys[key] = isDown;
             } else {
                 keys[key] = isDown;
-                if (key === "z" || key === "Z") keys[" "] = isDown;
             }
         }
         if (isDown) {
             if (typeof initAudio === "function") initAudio();
             if (typeof gameState !== "undefined" && gameState === "playing" && typeof game !== "undefined" && game.player && !game.player.frozen) {
                 const inv = invActive();
-                const invJump = inv ? key === "x" || key === "X" : key === "z" || key === "Z";
-                const isJumpKey = key === " " || key === "Spacebar" || key === "w" || key === "W" || invJump;
+                const isJumpKey = inv ? isX : (isSpace || key === "w" || key === "W");
                 if (isJumpKey && (typeof currentLevel === "undefined" || currentLevel !== 4)) {
                     game.player.jumpBufferTimer = Math.max(game.player.jumpBufferTimer, 12);
                 }
@@ -112,39 +108,23 @@
         }
     }
     function emit(type, key, code) {
-        if (!key) return;
         applyGameKey(type, key, code);
         try {
-            const charCode = key && key.length === 1 ? key.toUpperCase().charCodeAt(0) : 0;
-            const keyCode = charCode || (key === " " ? 32 : key === "ArrowLeft" ? 37 : key === "ArrowUp" ? 38 : key === "ArrowRight" ? 39 : key === "ArrowDown" ? 40 : key === "c" || key === "C" ? 67 : key === "x" || key === "X" ? 88 : key === "z" || key === "Z" ? 90 : 0);
-            const ev = new KeyboardEvent(type, {
+            const evt = new KeyboardEvent(type, {
                 key: key,
-                code: code || (key.length === 1 ? "Key" + key.toUpperCase() : key),
-                keyCode: keyCode,
-                which: keyCode,
-                charCode: charCode,
+                code: code || key,
                 bubbles: true,
-                cancelable: true,
-                composed: true,
-                view: window
+                cancelable: true
             });
-            const targetEl = document.getElementById("gameCanvas") || document.body || document.documentElement || window;
-            targetEl.dispatchEvent(ev);
+            window.dispatchEvent(evt);
         } catch (e) {}
     }
-    function dirKey(d) {
-        const inv = invActive();
-        if (d === "left") return inv ? {
-            key: "ArrowRight",
-            code: "ArrowRight"
-        } : {
+    function dpadKey(d) {
+        if (d === "left") return {
             key: "ArrowLeft",
             code: "ArrowLeft"
         };
-        if (d === "right") return inv ? {
-            key: "ArrowLeft",
-            code: "ArrowLeft"
-        } : {
+        if (d === "right") return {
             key: "ArrowRight",
             code: "ArrowRight"
         };
@@ -158,17 +138,23 @@
         };
         return null;
     }
+    function dirKey(d) {
+        return dpadKey(d);
+    }
     function shootKey() {
         return invActive() ? {
-            key: "z",
-            code: "KeyZ"
+            key: " ",
+            code: "Space"
         } : {
             key: "x",
             code: "KeyX"
         };
     }
     function jumpKey() {
-        return {
+        return invActive() ? {
+            key: "x",
+            code: "KeyX"
+        } : {
             key: " ",
             code: "Space"
         };
@@ -252,7 +238,6 @@
         padZone.addEventListener("pointerdown", function(e) {
             e.preventDefault();
             e.stopPropagation();
-            forceFullscreen();
             if (dpadPointerId !== null || typeof window.GAME_PAUSED !== "undefined" && window.GAME_PAUSED) return;
             dpadPointerId = e.pointerId;
             const r = padZone.getBoundingClientRect();
@@ -284,201 +269,212 @@
     const energyDashBtn = document.getElementById("btn-energy-dash");
     const huntZone = document.getElementById("hunt-action-zone");
     const slashHuntBtn = document.getElementById("btn-slash-hunt");
-    if (dashBtnEl) {
-        dashBtnEl.addEventListener("pointerdown", function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            forceFullscreen();
-            dashBtnEl.classList.add("active");
-            emit("keydown", dashKey().key, dashKey().code);
-            if (typeof game !== "undefined" && game.player) game.player.dashBufferTimer = 6;
-        });
-        function onDashEnd(e) {
-            dashBtnEl.classList.remove("active");
-            emit("keyup", dashKey().key, dashKey().code);
-        }
-        dashBtnEl.addEventListener("pointerup", onDashEnd);
-        dashBtnEl.addEventListener("pointercancel", onDashEnd);
-    }
-    if (enterDoorBtn) {
-        function onDoorEnd(e) {
-            enterDoorBtn.classList.remove("active");
-            emit("keyup", "ArrowUp", "ArrowUp");
-            if (typeof keys !== "undefined") keys.ArrowUp = false;
-        }
-        enterDoorBtn.addEventListener("pointerdown", function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            forceFullscreen();
-            enterDoorBtn.classList.add("active");
-            emit("keydown", "ArrowUp", "ArrowUp");
-            if (typeof keys !== "undefined") keys.ArrowUp = true;
-            triggerHaptic("medium");
-        });
-        enterDoorBtn.addEventListener("pointerup", onDoorEnd);
-        enterDoorBtn.addEventListener("pointercancel", onDoorEnd);
-    }
-    if (energyDashBtn) {
-        energyDashBtn.addEventListener("pointerdown", function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            forceFullscreen();
-            energyDashBtn.classList.add("active");
-            emit("keydown", "c", "KeyC");
-            if (typeof game !== "undefined" && game.player) {
-                game.player.dashBufferTimer = 8;
-            }
-        });
-        function onEdEnd(e) {
-            energyDashBtn.classList.remove("active");
-            emit("keyup", "c", "KeyC");
-        }
-        energyDashBtn.addEventListener("pointerup", onEdEnd);
-        energyDashBtn.addEventListener("pointercancel", onEdEnd);
-    }
-    if (slashHuntBtn) {
-        slashHuntBtn.addEventListener("pointerdown", function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            forceFullscreen();
-            slashHuntBtn.classList.add("active");
-            emit("keydown", "x", "KeyX");
-            if (typeof keys !== "undefined") {
-                keys["x"] = true;
-                keys["X"] = true;
-            }
-            if (typeof triggerHaptic === "function") triggerHaptic("medium");
-        });
-        function onSlashEnd(e) {
-            slashHuntBtn.classList.remove("active");
-            emit("keyup", "x", "KeyX");
-            if (typeof keys !== "undefined") {
-                keys["x"] = false;
-                keys["X"] = false;
-            }
-        }
-        slashHuntBtn.addEventListener("pointerup", onSlashEnd);
-        slashHuntBtn.addEventListener("pointercancel", onSlashEnd);
-    }
-    let actionPointerId = null, currentActionBtn = null;
+    const activeActionPointers = new Map();
+
     function getActionBtnAt(x, y) {
-        const pad = 12;
+        const pad = 16;
         const dDoor = enterDoorBtn && enterDoorBtn.style.display !== "none" ? enterDoorBtn.getBoundingClientRect() : null;
         const s = shootBtnEl && shootBtnEl.style.display !== "none" ? shootBtnEl.getBoundingClientRect() : null;
-        const j = jumpBtnEl ? jumpBtnEl.getBoundingClientRect() : null;
-        const d = dashBtnEl ? dashBtnEl.getBoundingClientRect() : null;
-        if (dDoor && x >= dDoor.left - pad && x <= dDoor.left + dDoor.width + pad && y >= dDoor.top - pad && y <= dDoor.top + dDoor.height + pad) return "enter";
-        if (s && x >= s.left - pad && x <= s.left + s.width + pad && y >= s.top - pad && y <= s.top + s.height + pad) return "shoot";
-        if (j && x >= j.left - pad && x <= j.left + j.width + pad && y >= j.top - pad && y <= j.top + j.height + pad) return "jump";
-        if (d && x >= d.left - pad && x <= d.left + d.width + pad && y >= d.top - pad && y <= d.top + d.height + pad) return "dash";
+        const j = jumpBtnEl && jumpBtnEl.style.display !== "none" ? jumpBtnEl.getBoundingClientRect() : null;
+        const d = dashBtnEl && dashBtnEl.style.display !== "none" ? dashBtnEl.getBoundingClientRect() : null;
+        const ed = energyDashBtn && energyDashBtn.style.display !== "none" ? energyDashBtn.getBoundingClientRect() : null;
+        const sh = slashHuntBtn && slashHuntBtn.style.display !== "none" ? slashHuntBtn.getBoundingClientRect() : null;
+
+        if (dDoor && x >= dDoor.left - pad && x <= dDoor.right + pad && y >= dDoor.top - pad && y <= dDoor.bottom + pad) return "enter";
+        if (s && x >= s.left - pad && x <= s.right + pad && y >= s.top - pad && y <= s.bottom + pad) return "shoot";
+        if (j && x >= j.left - pad && x <= j.right + pad && y >= j.top - pad && y <= j.bottom + pad) return "jump";
+        if (d && x >= d.left - pad && x <= d.right + pad && y >= d.top - pad && y <= d.bottom + pad) return "dash";
+        if (ed && x >= ed.left - pad && x <= ed.right + pad && y >= ed.top - pad && y <= ed.bottom + pad) return "energyDash";
+        if (sh && x >= sh.left - pad && x <= sh.right + pad && y >= sh.top - pad && y <= sh.bottom + pad) return "slash";
         return null;
     }
-    function setActionState(which) {
-        if (which === currentActionBtn) return;
-        if (currentActionBtn === "shoot") {
-            if (shootBtnEl) shootBtnEl.classList.remove("active");
-            emit("keyup", shootKey().key, shootKey().code);
+
+    function updateActionButtonsState() {
+        const activeTypes = new Set(activeActionPointers.values());
+
+        // Jump
+        const wantJump = activeTypes.has("jump");
+        const jumpPressed = !!(typeof keys !== "undefined" && (keys[" "] || keys["Spacebar"]));
+        if (wantJump !== jumpPressed) {
+            if (jumpBtnEl) jumpBtnEl.classList.toggle("active", wantJump);
+            emit(wantJump ? "keydown" : "keyup", jumpKey().key, jumpKey().code);
+            if (wantJump) triggerHaptic("light");
         }
-        if (currentActionBtn === "jump") {
-            if (jumpBtnEl) jumpBtnEl.classList.remove("active");
-            emit("keyup", jumpKey().key, jumpKey().code);
+
+        // Shoot
+        const wantShoot = activeTypes.has("shoot");
+        const sk = shootKey();
+        const shootPressed = !!(typeof keys !== "undefined" && keys[sk.key]);
+        if (wantShoot !== shootPressed) {
+            if (shootBtnEl) shootBtnEl.classList.toggle("active", wantShoot);
+            emit(wantShoot ? "keydown" : "keyup", sk.key, sk.code);
+            if (wantShoot) triggerHaptic("light");
         }
-        if (currentActionBtn === "dash") {
-            if (dashBtnEl) dashBtnEl.classList.remove("active");
-            emit("keyup", dashKey().key, dashKey().code);
+
+        // Dash
+        const wantDash = activeTypes.has("dash") || activeTypes.has("energyDash");
+        const dk = dashKey();
+        const dashPressed = !!(typeof keys !== "undefined" && keys[dk.key]);
+        if (wantDash !== dashPressed) {
+            if (dashBtnEl) dashBtnEl.classList.toggle("active", wantDash);
+            if (energyDashBtn) energyDashBtn.classList.toggle("active", activeTypes.has("energyDash"));
+            emit(wantDash ? "keydown" : "keyup", dk.key, dk.code);
+            if (wantDash) triggerHaptic("dash");
         }
-        if (currentActionBtn === "enter") {
-            if (enterDoorBtn) enterDoorBtn.classList.remove("active");
-            emit("keyup", "ArrowUp", "ArrowUp");
-            if (typeof keys !== "undefined") keys.ArrowUp = false;
+
+        // Enter Door
+        const wantEnter = activeTypes.has("enter");
+        const enterPressed = !!(typeof keys !== "undefined" && keys["ArrowUp"]);
+        if (wantEnter !== enterPressed) {
+            if (enterDoorBtn) enterDoorBtn.classList.toggle("active", wantEnter);
+            emit(wantEnter ? "keydown" : "keyup", "ArrowUp", "ArrowUp");
+            if (wantEnter) triggerHaptic("medium");
         }
-        currentActionBtn = which;
-        if (which === "shoot") {
-            if (shootBtnEl) shootBtnEl.classList.add("active");
-            emit("keydown", shootKey().key, shootKey().code);
-            triggerHaptic("light");
-        }
-        if (which === "jump") {
-            if (jumpBtnEl) jumpBtnEl.classList.add("active");
-            emit("keydown", jumpKey().key, jumpKey().code);
-            triggerHaptic("light");
-        }
-        if (which === "dash") {
-            if (dashBtnEl) dashBtnEl.classList.add("active");
-            emit("keydown", dashKey().key, dashKey().code);
-            triggerHaptic("dash");
-            if (typeof game !== "undefined" && game.player) game.player.dashBufferTimer = 6;
-        }
-        if (which === "enter") {
-            if (enterDoorBtn) enterDoorBtn.classList.add("active");
-            emit("keydown", "ArrowUp", "ArrowUp");
-            if (typeof keys !== "undefined") keys.ArrowUp = true;
-            triggerHaptic("medium");
+
+        // Slash
+        const wantSlash = activeTypes.has("slash");
+        const slashPressed = !!(typeof keys !== "undefined" && keys["x"]);
+        if (wantSlash !== slashPressed) {
+            if (slashHuntBtn) slashHuntBtn.classList.toggle("active", wantSlash);
+            emit(wantSlash ? "keydown" : "keyup", "x", "KeyX");
+            if (wantSlash) triggerHaptic("medium");
         }
     }
+
+    function attachButtonListeners(el, typeName) {
+        if (!el) return;
+        el.addEventListener("pointerdown", function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            activeActionPointers.set(e.pointerId, typeName);
+            try { el.setPointerCapture(e.pointerId); } catch (er) {}
+            updateActionButtonsState();
+        });
+        el.addEventListener("pointermove", function(e) {
+            if (!activeActionPointers.has(e.pointerId)) return;
+            e.preventDefault();
+            const btn = getActionBtnAt(e.clientX, e.clientY);
+            if (btn && activeActionPointers.get(e.pointerId) !== btn) {
+                activeActionPointers.set(e.pointerId, btn);
+                updateActionButtonsState();
+            }
+        });
+        function onEnd(e) {
+            if (activeActionPointers.has(e.pointerId)) {
+                activeActionPointers.delete(e.pointerId);
+                updateActionButtonsState();
+            }
+        }
+        el.addEventListener("pointerup", onEnd);
+        el.addEventListener("pointercancel", onEnd);
+    }
+
+    attachButtonListeners(jumpBtnEl, "jump");
+    attachButtonListeners(shootBtnEl, "shoot");
+    attachButtonListeners(dashBtnEl, "dash");
+    attachButtonListeners(enterDoorBtn, "enter");
+    attachButtonListeners(energyDashBtn, "energyDash");
+    attachButtonListeners(slashHuntBtn, "slash");
+
     if (actionZone) {
         actionZone.addEventListener("pointerdown", function(e) {
             e.preventDefault();
             e.stopPropagation();
-            forceFullscreen();
-            if (actionPointerId !== null || typeof window.GAME_PAUSED !== "undefined" && window.GAME_PAUSED) return;
-            actionPointerId = e.pointerId;
-            try {
-                actionZone.setPointerCapture(e.pointerId);
-            } catch (er) {}
-            setActionState(getActionBtnAt(e.clientX, e.clientY));
+            const btn = getActionBtnAt(e.clientX, e.clientY);
+            if (btn) {
+                activeActionPointers.set(e.pointerId, btn);
+                try { actionZone.setPointerCapture(e.pointerId); } catch (er) {}
+                updateActionButtonsState();
+            }
         });
         actionZone.addEventListener("pointermove", function(e) {
-            if (e.pointerId !== actionPointerId) return;
+            if (!activeActionPointers.has(e.pointerId)) return;
             e.preventDefault();
-            setActionState(getActionBtnAt(e.clientX, e.clientY));
+            const btn = getActionBtnAt(e.clientX, e.clientY);
+            if (activeActionPointers.get(e.pointerId) !== btn) {
+                if (btn) activeActionPointers.set(e.pointerId, btn);
+                else activeActionPointers.delete(e.pointerId);
+                updateActionButtonsState();
+            }
         });
-        function onActionEnd(e) {
-            if (e.pointerId !== actionPointerId) return;
-            setActionState(null);
-            actionPointerId = null;
+        function onZoneEnd(e) {
+            if (activeActionPointers.has(e.pointerId)) {
+                activeActionPointers.delete(e.pointerId);
+                updateActionButtonsState();
+            }
         }
-        actionZone.addEventListener("pointerup", onActionEnd);
-        actionZone.addEventListener("pointercancel", onActionEnd);
+        actionZone.addEventListener("pointerup", onZoneEnd);
+        actionZone.addEventListener("pointercancel", onZoneEnd);
     }
+    let _lastShow = null, _lastMaxCharge = null, _lastCanEnter = null, _lastShoot = null, _lastJump = null, _lastDash = null, _lastZone = null, _lastInv = null;
     function updateTouchControlsState() {
         if (!touchCtl) return;
         const shouldShow = isTouch && !window.hasGamepad && (typeof gameState !== "undefined" && (gameState === "playing" || gameState === "hub" || gameState === "caceria"));
-        touchCtl.style.display = shouldShow ? "block" : "none";
+        if (_lastShow !== shouldShow) {
+            _lastShow = shouldShow;
+            touchCtl.style.display = shouldShow ? "block" : "none";
+        }
+        if (!shouldShow) return;
         const inHunt = typeof game !== "undefined" && (game.inHunt || game.lvl4State === "hunt");
         const isLevel6Dark = typeof currentLevel !== "undefined" && currentLevel === 4;
         if (energyDashBtn) {
             const hasMaxCharge = typeof game !== "undefined" && game.player && game.player.chargeLevel >= 4 && !game.inHunt && !game.player.frozen && !isLevel6Dark;
-            energyDashBtn.style.display = hasMaxCharge ? "flex" : "none";
+            if (_lastMaxCharge !== hasMaxCharge) {
+                _lastMaxCharge = hasMaxCharge;
+                energyDashBtn.style.display = hasMaxCharge ? "flex" : "none";
+            }
         }
         const canEnter = !!window.canEnterDoor;
         if (enterDoorBtn) {
-            enterDoorBtn.style.display = canEnter && !isLevel6Dark && !inHunt ? "flex" : "none";
+            const showEnter = canEnter && !isLevel6Dark && !inHunt;
+            if (_lastCanEnter !== showEnter) {
+                _lastCanEnter = showEnter;
+                enterDoorBtn.style.display = showEnter ? "flex" : "none";
+            }
         }
         if (shootBtnEl) {
             const isHubLevel = typeof game !== "undefined" && (game.isHub || currentLevel === "hub");
-            shootBtnEl.style.display = (canEnter || isHubLevel || isLevel6Dark || inHunt) ? "none" : "flex";
+            const showShoot = !(canEnter || isHubLevel || isLevel6Dark || inHunt);
+            if (_lastShoot !== showShoot) {
+                _lastShoot = showShoot;
+                shootBtnEl.style.display = showShoot ? "flex" : "none";
+            }
         }
         if (jumpBtnEl) {
-            jumpBtnEl.style.display = inHunt ? "none" : "flex";
+            const showJump = !inHunt;
+            if (_lastJump !== showJump) {
+                _lastJump = showJump;
+                jumpBtnEl.style.display = showJump ? "flex" : "none";
+            }
         }
         if (dashBtnEl) {
-            dashBtnEl.style.display = inHunt ? "none" : "flex";
+            const showDash = !inHunt;
+            if (_lastDash !== showDash) {
+                _lastDash = showDash;
+                dashBtnEl.style.display = showDash ? "flex" : "none";
+            }
         }
         if (actionZone && huntZone) {
-            if (inHunt) {
-                actionZone.style.display = "none";
-                huntZone.style.display = "block";
-            } else if (isLevel6Dark) {
-                actionZone.style.display = "none";
-                huntZone.style.display = "none";
-            } else {
-                actionZone.style.display = "block";
-                huntZone.style.display = "none";
+            const zoneMode = inHunt ? "hunt" : isLevel6Dark ? "dark" : "normal";
+            if (_lastZone !== zoneMode) {
+                _lastZone = zoneMode;
+                if (zoneMode === "hunt") {
+                    actionZone.style.display = "none";
+                    huntZone.style.display = "block";
+                } else if (zoneMode === "dark") {
+                    actionZone.style.display = "none";
+                    huntZone.style.display = "none";
+                } else {
+                    actionZone.style.display = "block";
+                    huntZone.style.display = "none";
+                }
             }
         }
         const inv = typeof game !== "undefined" && !!game.invertControls && typeof currentLevel !== "undefined" && currentLevel === 1;
-        touchCtl.classList.toggle("inverted-hands", inv);
+        if (_lastInv !== inv) {
+            _lastInv = inv;
+            touchCtl.classList.toggle("inverted-hands", inv);
+        }
     }
     window.updateTouchControlsState = updateTouchControlsState;
     const canvas = document.getElementById("gameCanvas");
@@ -486,7 +482,6 @@
         canvas.addEventListener("pointerup", function(e) {
             if (e.pointerType === "mouse") return;
             e.preventDefault();
-            forceFullscreen();
             try {
                 if (typeof isDialogActive !== "undefined" && isDialogActive) {
                     const locked = typeof techDialogLock !== "undefined" && techDialogLock;

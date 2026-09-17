@@ -18,7 +18,7 @@
         body { margin: 0; overflow: hidden; background: #000; color: #fff; font-family: 'Courier Prime', monospace; }
         #blackout { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000; opacity: 0; pointer-events: none; transition: opacity 0.2s; z-index: 10; }
         .ui-panel { position: absolute; padding: 10px 20px; z-index: 5; font-family: 'Fredoka One', cursive; text-shadow: 2px 2px 0 #000; }
-        #ui-overlay { top: 10px; left: 10px; right: 10px; display: none; justify-content: space-between; align-items: center; }
+        #ui-overlay { top: max(10px, env(safe-area-inset-top, 0px)); left: max(10px, env(safe-area-inset-left, 0px)); right: max(10px, env(safe-area-inset-right, 0px)); display: none; justify-content: space-between; align-items: center; }
         .health-bar-container { width: 200px; height: 20px; background: #333; border: 3px solid #fff; border-radius: 10px; overflow: hidden; }
         .health-bar-fill { height: 100%; background: linear-gradient(90deg, #ff66aa, #ff3388); width: 100%; transition: width 0.3s; }
         #score-display { font-size: 18px; color: #ffd700; letter-spacing: 2px; }
@@ -783,7 +783,12 @@
         
         
         #touch-controls {
-            position: absolute; inset: 0; pointer-events: none;
+            position: absolute;
+            top: env(safe-area-inset-top, 0px);
+            right: env(safe-area-inset-right, 0px);
+            bottom: env(safe-area-inset-bottom, 0px);
+            left: env(safe-area-inset-left, 0px);
+            pointer-events: none;
             z-index: 12; display: none;
             font-family: 'Fredoka One', cursive;
         }
@@ -1177,7 +1182,6 @@
         
         <div id="title-buttons" class="hidden">
             <button id="start-btn" class="title-btn" data-i18n="ui_btn_start">▶ EMPEZAR</button>
-            <button id="hub-btn" class="title-btn" style="border-color:#00ffff; color:#00ffff;" data-i18n="ui_btn_hub">🚪 NIVELES</button>
             <button id="controls-btn" class="title-btn secondary" data-i18n="ui_btn_controls">⌨ CONTROLES</button>
             <button id="credits-btn" class="title-btn secondary" data-i18n="ui_btn_credits">© CRÉDITOS</button>
         </div>
@@ -1268,8 +1272,6 @@
                 </button>
             </div>
 
-            
-            <button class="tc-btn" id="btn-fullscreen-toggle" aria-label="Pantalla Completa">⛶</button>
         </div>
     </div>
     <div id="handOverlay">✋</div>
@@ -1709,6 +1711,7 @@
                 <button id="pause-exit-btn" data-i18n="ui_pause_exit_map">🗺️ SALIR AL MAPA</button>
                 <button id="pause-title-btn" data-i18n="ui_pause_exit" style="display: none;">🏠 SALIR AL TÍTULO</button>
             </div>
+
             <p class="pause-hint" data-i18n="ui_pause_hint">Pulsa P (o toca ⏸) para reanudar</p>
         </div>
     </div>

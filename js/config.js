@@ -255,12 +255,4 @@ window.addEventListener("keydown", (event) => {
         return;
     }
 });
-
-window.crazyGameplayStart = function() {};
-window.crazyGameplayStop = function() {};
-window.crazyAdMuteAudio = function() {};
-window.crazyAdRestoreAudio = function() {};
-window.requestCrazyMidroll = function(onDone) {
-    if (typeof onDone === "function") onDone();
-};
 // Isaac Daniel Cotera - 2026 | Correo: isaacdanielcotera@gmail.com | Itch.io: https://cotera.itch.io | GitHub: https://github.com/cotera2024

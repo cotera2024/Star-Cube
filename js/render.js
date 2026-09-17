@@ -1237,6 +1237,9 @@ function drawHorrorEnemyOverlay(ctx, cx, cy, w, h, facing, lookX, lookY) {
 }
 
 function drawEnemyEnhanced(ctx, x, y, w, h, color, facing, scaleX, scaleY, health, maxHealth, type, mouthOpen = 0, blinkTimer = 0, isFire = false, enemyObj = null) {
+    if (ctx && ctx.isDummy) return;
+    const vw = typeof VIEW_W !== "undefined" ? VIEW_W : 1024;
+    if (x + w < -150 || x > vw + 150) return;
     ctx.save();
     if (window.postGameHorror) {
         color = "#3f3f46";
@@ -3835,10 +3838,13 @@ function drawPeggyDagger(ctx, kx, ky, facing, knifeShow, kills = 0) {
 }
 
 function drawNightmareFriend(ctx, enemy, offsetX, t) {
+    if (ctx && ctx.isDummy) return;
     const x = enemy.x - offsetX;
     const y = enemy.y;
     const w = enemy.w;
     const h = enemy.h;
+    const vw = typeof VIEW_W !== "undefined" ? VIEW_W : 1024;
+    if (x + w < -150 || x > vw + 150) return;
     const cx = x + w / 2;
     const cy = y + h / 2;
     const facing = enemy.facing || -1;

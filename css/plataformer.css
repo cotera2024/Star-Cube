@@ -65,8 +65,7 @@ canvas:focus {
     gap: 25px;
     align-items: center;
     padding: 8px 26px;
-    background: rgba(255, 255, 255, 0.94);
-    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.95);
     border: 3px solid #ff66aa;
     border-radius: 24px;
     box-shadow: 0 8px 25px rgba(255, 102, 170, 0.3);
@@ -130,8 +129,7 @@ canvas:focus {
     text-align: center;
     padding: 20px 45px;
     opacity: 0;
-    background: rgba(30, 15, 60, 0.94);
-    backdrop-filter: blur(12px);
+    background: rgba(30, 15, 60, 0.96);
     border-radius: 26px;
     border: 4px solid #ffd700;
     font-family: 'Fredoka One', cursive;
@@ -146,8 +144,7 @@ canvas:focus {
     transform: translateX(-50%);
     width: 85%;
     max-width: 800px;
-    background: rgba(255, 255, 255, 0.96);
-    backdrop-filter: blur(12px);
+    background: rgba(255, 255, 255, 0.97);
     border: 4px solid #ff66aa;
     border-radius: 24px;
     padding: 16px 24px;
@@ -269,8 +266,7 @@ body.no-cursor, body.no-cursor * { cursor: none !important; }
     display: none;
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(19, 9, 36, 0.88);
-    backdrop-filter: blur(8px);
+    background: rgba(19, 9, 36, 0.92);
     z-index: 9999;
     justify-content: center;
     align-items: center;
@@ -918,11 +914,10 @@ body.no-cursor, body.no-cursor * { cursor: none !important; }
     display: flex;
     flex-direction: column;
     align-items: center;
-    background: rgba(15, 23, 42, 0.85);
+    background: rgba(15, 23, 42, 0.92);
     border: 1.5px solid rgba(255, 255, 255, 0.15);
     border-radius: 12px;
     padding: 4px 12px;
-    backdrop-filter: blur(4px);
     transition: all 0.3s ease;
 }
 
@@ -1021,7 +1016,6 @@ body.no-cursor, body.no-cursor * { cursor: none !important; }
     justify-content: space-between;
     gap: 20px;
     z-index: 10;
-    backdrop-filter: blur(8px);
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
 }
 
@@ -1170,4 +1164,27 @@ body.no-cursor, body.no-cursor * { cursor: none !important; }
         letter-spacing: 1px;
     }
 }
+
+/* Low-performance optimization rules for low-end mobile and weak GPUs */
+body.low-perf #game-container {
+    box-shadow: none !important;
+    border-width: 2px !important;
+}
+body.low-perf #ui-overlay {
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+}
+body.low-perf .ui-panel,
+body.low-perf #dialog-box,
+body.low-perf #message {
+    box-shadow: none !important;
+    text-shadow: none !important;
+}
+body.low-perf .health-bar-fill {
+    box-shadow: none !important;
+}
+body.low-perf .life-icon {
+    box-shadow: none !important;
+}
+
 /* Isaac Daniel Cotera - 2026 | Correo: isaacdanielcotera@gmail.com | Itch.io: https://cotera.itch.io | GitHub: https://github.com/cotera2024 */

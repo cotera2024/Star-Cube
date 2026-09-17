@@ -53,7 +53,7 @@ function detectInitialLang() {
         let navLang = (navigator.language || navigator.userLanguage || "en").slice(0, 2).toLowerCase();
         if (SUPPORTED_LANGS.includes(navLang)) return navLang;
     } catch (e) {}
-    return "es";
+    return "en";
 }
 
 let currentLang = detectInitialLang();
@@ -81,8 +81,8 @@ async function loadLang(langCode) {
         return data;
     } catch (e) {
         console.error(`Error cargando idioma ${langCode}:`, e);
-        if (langCode !== "es") {
-            return loadLang("es");
+        if (langCode !== "en") {
+            return loadLang("en");
         }
         return {};
     }
@@ -91,6 +91,9 @@ async function loadLang(langCode) {
 async function preloadAllLangs() {
     const promises = SUPPORTED_LANGS.map(code => loadLang(code));
     await Promise.all(promises);
+    if (typeof window !== "undefined" && typeof window.updateUITranslations === "function") {
+        try { window.updateUITranslations(); } catch (e) {}
+    }
 }
 
 function __(key, ...args) {
@@ -99,24 +102,27 @@ function __(key, ...args) {
         const langData = translations[currentLang];
         if (langData && langData[touchKey] !== undefined) {
             key = touchKey;
-        } else if (translations["es"] && translations["es"][touchKey] !== undefined) {
+        } else if (translations["en"] && translations["en"][touchKey] !== undefined) {
             key = touchKey;
         }
     }
     const langData = translations[currentLang];
-    if (!langData) return key;
+    if (!langData) {
+        const fallbackData = translations["en"] || translations["es"];
+        return fallbackData?.[key] || key;
+    }
     let text = langData[key];
     if (text === undefined) {
-        const esData = translations["es"];
-        text = esData?.[key] || key;
+        const enData = translations["en"] || translations["es"];
+        text = enData?.[key] || key;
     }
-    if (args.length > 0) {
+    if (args.length > 0 && typeof text === "string") {
         text = text.replace(/%(\d+)/g, (match, num) => {
             const idx = parseInt(num) - 1;
             return idx < args.length ? args[idx] : match;
         });
     }
-    return text;
+    return text || key;
 }
 
 async function setLanguage(langCode) {
@@ -137,4 +143,6 @@ async function setLanguage(langCode) {
 function getCurrentLang() {
     return currentLang;
 }
+
+preloadAllLangs();
 // Isaac Daniel Cotera - 2026 | Correo: isaacdanielcotera@gmail.com | Itch.io: https://cotera.itch.io | GitHub: https://github.com/cotera2024

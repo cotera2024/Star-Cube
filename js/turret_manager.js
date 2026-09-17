@@ -187,8 +187,12 @@
         },
         draw: function(ctx, cameraX) {
             var self = this;
+            var vw = typeof VIEW_W !== "undefined" ? VIEW_W : 1024;
             this.turrets.forEach(function(t) {
                 if (!t || t._level !== currentLevel || !t._alive) return;
+                var sx = t.x - cameraX;
+                var rad = (t.baseRadius || 50) * (t.scale || 1) + 100;
+                if (sx + rad < -120 || sx - rad > vw + 120) return;
                 ctx.save();
                 ctx.translate(-cameraX, 0);
                 t.draw(ctx);
@@ -207,10 +211,7 @@
             ctx.fillStyle = "rgba(0,0,0,0.7)";
             ctx.fillRect(bx - 1, by - 1, bw + 2, bh + 2);
             ctx.fillStyle = col;
-            ctx.shadowColor = col;
-            ctx.shadowBlur = 6;
             ctx.fillRect(bx, by, bw * hp, bh);
-            ctx.shadowBlur = 0;
             ctx.strokeStyle = "#0ff";
             ctx.lineWidth = 1;
             ctx.strokeRect(bx - 1, by - 1, bw + 2, bh + 2);
@@ -226,13 +227,17 @@
                     if (!b.alive) continue;
                     var cx = Math.max(player.x, Math.min(b.x, player.x + player.w));
                     var cy = Math.max(player.y, Math.min(b.y, player.y + player.h));
-                    var dist = Math.hypot(b.x - cx, b.y - cy);
-                    if (dist < b.radius) {
-                        if (typeof player.takeDamage === "function") player.takeDamage(b.damage || 23);
-                        b.alive = false;
-                        try {
-                            if (typeof createExplosion === "function") createExplosion(b.x, b.y, "#0ff", 12, 8);
-                        } catch (e) {}
+                    var dx = Math.abs(b.x - cx);
+                    var dy = Math.abs(b.y - cy);
+                    if (dx <= b.radius && dy <= b.radius) {
+                        var dist = Math.hypot(b.x - cx, b.y - cy);
+                        if (dist < b.radius) {
+                            if (typeof player.takeDamage === "function") player.takeDamage(b.damage || 23);
+                            b.alive = false;
+                            try {
+                                if (typeof createExplosion === "function") createExplosion(b.x, b.y, "#0ff", 12, 8);
+                            } catch (e) {}
+                        }
                     }
                     if (!b.alive) bullets.splice(i, 1);
                 }
@@ -246,13 +251,18 @@
                     var p = projectiles[i];
                     var px = p.x + (p.w ? p.w / 2 : 4);
                     var py = p.y + (p.h ? p.h / 2 : 4);
-                    var dist = Math.hypot(px - turret.x, py - turret.y);
-                    if (dist < radius + (p.w ? p.w / 2 : 4)) {
-                        turret.takeDamage(__godDmg(p.damage || 1), "normal");
-                        try {
-                            if (typeof createExplosion === "function") createExplosion(px, py, "#0ff", 10, 6);
-                        } catch (e) {}
-                        projectiles.splice(i, 1);
+                    var dx = Math.abs(px - turret.x);
+                    var dy = Math.abs(py - turret.y);
+                    var maxD = radius + (p.w ? p.w / 2 : 4);
+                    if (dx <= maxD && dy <= maxD) {
+                        var dist = Math.hypot(px - turret.x, py - turret.y);
+                        if (dist < maxD) {
+                            turret.takeDamage(__godDmg(p.damage || 1), "normal");
+                            try {
+                                if (typeof createExplosion === "function") createExplosion(px, py, "#0ff", 10, 6);
+                            } catch (e) {}
+                            projectiles.splice(i, 1);
+                        }
                     }
                 }
             });

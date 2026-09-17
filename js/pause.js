@@ -43,6 +43,7 @@
             if (exitBtn) exitBtn.style.display = "inline-block";
             if (titleBtn) titleBtn.style.display = "none";
         }
+        if (typeof updatePerfButtonText === "function") updatePerfButtonText();
         modal.classList.add("active");
         btn.classList.add("active");
     }
@@ -119,6 +120,7 @@
             if (typeof returnToTitleScreen === "function") returnToTitleScreen();
         } catch (e) {}
     });
+
     setInterval(function() {
         try {
             const inDialog = typeof isDialogActive !== "undefined" && isDialogActive;

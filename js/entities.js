@@ -53,7 +53,9 @@ class Player {
             this.vy += GRAVITY;
             this.y += this.vy;
             if (platforms && Array.isArray(platforms)) {
+                const pxMin = this.x - 100, pxMax = this.x + this.w + 100;
                 for (let plat of platforms) {
+                    if (plat.x > pxMax || plat.x + plat.w < pxMin) continue;
                     if (plat.broken) continue;
                     if (this.x + this.w > plat.x && this.x < plat.x + plat.w && this.y + this.h >= plat.y && this.y + this.h <= plat.y + plat.h + this.vy + 2) {
                         this.y = plat.y - this.h;
@@ -242,32 +244,12 @@ class Player {
                     try {
                         const cx = this.x + this.w / 2;
                         const cy = this.y + this.h / 2;
-                        createExplosion(cx, cy, "#ff00e0", 50, 38, [ "#ff00e0", "#00ffff", "#ffffff", "#ffd700" ]);
-                        if (typeof particles !== "undefined" && Array.isArray(particles)) {
-                            for (let i = 0; i < 28; i++) {
-                                const ang = Math.random() * Math.PI * 2;
-                                const spd = 4.5 + Math.random() * 8.5;
-                                particles.push({
-                                    x: cx,
-                                    y: cy,
-                                    vx: Math.cos(ang) * spd,
-                                    vy: Math.sin(ang) * spd,
-                                    life: 14 + Math.random() * 10,
-                                    maxLife: 24,
-                                    color: [ "#ff00e0", "#00ffff", "#ffffff", "#ffd700" ][Math.floor(Math.random() * 4)],
-                                    size: 2.5 + Math.random() * 3.5,
-                                    type: "spark"
-                                });
-                            }
-                        }
+                        createExplosion(cx, cy, "#ff00e0", 35, 12, [ "#ff00e0", "#00ffff" ]);
                         try {
-                            applyShake(8);
+                            applyShake(5);
                         } catch (e) {}
                         try {
-                            playSound(680, .22, "sawtooth", .4, 180);
-                        } catch (e) {}
-                        try {
-                            addFloatingText(cx, cy - 20, "⚡ BOOM! ⚡", "#00ffff", 24);
+                            playSound(680, .2, "sawtooth", .3, 180);
                         } catch (e) {}
                     } catch (e) {}
                 }
@@ -279,47 +261,31 @@ class Player {
                 try {
                     const cx = this.x + this.w / 2;
                     const cy = this.y + this.h / 2;
-                    particles.push({
-                        x: cx - this.dashDir * 10,
-                        y: cy,
-                        vx: -this.dashDir * 1.5,
-                        vy: (Math.random() - .5) * 1.5,
-                        life: 16,
-                        maxLife: 16,
-                        color: [ "#ff00e0", "#00ffff", "#ffd700" ][Math.floor(Math.random() * 3)],
-                        size: Math.max(this.w, this.h) * .55,
-                        glow: 20,
-                        type: "afterimage"
-                    });
-                    if (this.dashTimer % 3 === 0) {
+                    if (this.dashTimer % 2 === 0) {
                         particles.push({
-                            x: cx,
+                            x: cx - this.dashDir * 10,
                             y: cy,
-                            radius: 8,
-                            maxRadius: 36,
-                            life: 14,
-                            maxLife: 14,
-                            color: "#00ffff",
-                            glow: 15,
-                            lineWidth: 2.5,
-                            type: "ring"
+                            vx: -this.dashDir * 1.5,
+                            vy: (Math.random() - .5) * 1.5,
+                            life: 12,
+                            maxLife: 12,
+                            color: [ "#ff00e0", "#00ffff" ][Math.floor(Math.random() * 2)],
+                            size: Math.max(this.w, this.h) * .55,
+                            type: "afterimage"
                         });
                     }
-                    for (let i = 0; i < 4; i++) {
-                        const ang = Math.random() * Math.PI * 2;
-                        const spd = 2 + Math.random() * 5;
-                        particles.push({
-                            x: this.x + this.w / 2 + (Math.random() - .5) * this.w,
-                            y: this.y + Math.random() * this.h,
-                            vx: -this.dashDir * (3 + Math.random() * 3) + Math.cos(ang) * spd,
-                            vy: (Math.random() - .5) * 4 + Math.sin(ang) * spd,
-                            life: 10 + Math.random() * 8,
-                            color: [ "#ff00e0", "#00ffff", "#ffffff", "#ffd700" ][Math.floor(Math.random() * 4)],
-                            size: 2.5 + Math.random() * 3,
-                            glow: 12,
-                            type: "spark"
-                        });
-                    }
+                    const ang = Math.random() * Math.PI * 2;
+                    const spd = 2 + Math.random() * 4;
+                    particles.push({
+                        x: this.x + this.w / 2 + (Math.random() - .5) * this.w,
+                        y: this.y + Math.random() * this.h,
+                        vx: -this.dashDir * (2 + Math.random() * 2) + Math.cos(ang) * spd,
+                        vy: (Math.random() - .5) * 3 + Math.sin(ang) * spd,
+                        life: 8 + Math.random() * 6,
+                        color: [ "#ff00e0", "#00ffff", "#ffffff" ][Math.floor(Math.random() * 3)],
+                        size: 2 + Math.random() * 2,
+                        type: "spark"
+                    });
                 } catch (e) {}
             } else {
                 this.vx = DASH_SPEED * this.dashDir;
@@ -710,8 +676,10 @@ class Player {
                 }
             } catch (e) {}
         }
-        if (platforms) {
+        if (platforms && Array.isArray(platforms)) {
+            const pxMin = this.x - 120, pxMax = this.x + this.w + 120;
             for (let plat of platforms) {
+                if (plat.x > pxMax || plat.x + plat.w < pxMin) continue;
                 if (!plat.dashBlock || plat.broken) continue;
                 if (plat._hitCooldown > 0) plat._hitCooldown--;
                 if (plat._dashImpactCd > 0) plat._dashImpactCd--;
@@ -825,8 +793,10 @@ class Player {
         let wasOnGround = this.onGround;
         this.onGround = false;
         this.currentPlatform = null;
-        if (game.lvl4State !== "falling") {
+        if (game.lvl4State !== "falling" && platforms && Array.isArray(platforms)) {
+            const pxMin = this.x - 250, pxMax = this.x + this.w + 250;
             for (let plat of platforms) {
+                if (plat.x > pxMax || plat.x + plat.w < pxMin) continue;
                 if (plat.broken || plat.dashBlock || plat.isGateObstacle) continue;
                 if (plat.spikes && (currentLevel < 4 || currentLevel === 6 || currentLevel === "hub")) {
                     if (this.x + this.w > plat.x && this.x < plat.x + plat.w && this.y + this.h > plat.y && this.y < plat.y + plat.h && this.vy >= 0) {
@@ -1103,6 +1073,7 @@ class Player {
         }
     }
     draw(ctx, offsetX) {
+        if (ctx && ctx.isDummy) return;
         if (this.hidden || this.eaten) return;
         ctx.globalAlpha = this.alpha != null ? this.alpha : 1;
         if (this.lavaBounceTimer <= 0 && this.invulnerable > 0 && Math.floor(this.invulnerable / 4) % 2 === 0) return;
@@ -2809,6 +2780,9 @@ class Enemy {
     }
     draw(ctx, offsetX) {
         if (!this.active) return;
+        const screenX = this.x - offsetX;
+        const vw = typeof VIEW_W !== "undefined" ? VIEW_W : 1024;
+        if (screenX + this.w < -120 || screenX > vw + 120) return;
         const hover = this.onGround ? 0 : Math.sin(time * .1 + this.hoverOffset) * 2;
         const tremble = game.sadEnemies ? (Math.random() - .5) * 3 : this.enraged ? (Math.random() - .5) * 4 : 0;
         if (game.inHunt || game.sadEnemies || this === game.huntEnemy || currentLevel === 4 && game.happyMode) {
@@ -3430,6 +3404,7 @@ class Platform {
         return this._crystalCanvas;
     }
     draw(ctx, offsetX) {
+        if (ctx && ctx.isDummy) return;
         if (this.broken) return;
         const px = this.x - offsetX;
         if (px + this.w < -100 || px > VIEW_W + 100) return;
@@ -4667,9 +4642,12 @@ class BossDemon {
     }
     draw(ctx, offsetX) {
         if (!this.active || this.state === "hidden" || !demonSprite.complete || !demonSprite.naturalWidth) return;
+        const dw = this.w * 1.5, dh = this.h * 1.5;
+        const sx = this.x - offsetX;
+        const vw = typeof VIEW_W !== "undefined" ? VIEW_W : 1024;
+        if (sx + dw < -150 || sx > vw + 150) return;
         const frameW = demonSprite.width / 10;
         const frameH = demonSprite.height / 5;
-        const dw = this.w * 1.5, dh = this.h * 1.5;
         ctx.save();
         ctx.globalAlpha = (this.visualOnly ? .4 : 1) * this.opacity;
         if (this.facing === 1) {

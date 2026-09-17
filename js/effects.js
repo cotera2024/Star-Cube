@@ -31,6 +31,7 @@ function applyShake(amount) {
 }
 
 function createExplosion(x, y, color, size, amount, extraColors = []) {
+    const isLow = typeof window !== "undefined" && window.PerfQuality && window.PerfQuality.level === "low";
     const colors = [ color, ...extraColors ];
     particles.push({
         x: x,
@@ -42,7 +43,8 @@ function createExplosion(x, y, color, size, amount, extraColors = []) {
         type: "ring",
         color: colors[0]
     });
-    for (let i = 0; i < amount; i++) {
+    const finalAmount = isLow ? Math.min(amount, 8) : amount;
+    for (let i = 0; i < finalAmount; i++) {
         const angle = Math.random() * Math.PI * 2;
         const speed = Math.random() * 6 + 2;
         const col = colors[Math.floor(Math.random() * colors.length)];
@@ -57,7 +59,8 @@ function createExplosion(x, y, color, size, amount, extraColors = []) {
             type: "spark"
         });
     }
-    for (let i = 0; i < 5; i++) {
+    const smokeCount = isLow ? 0 : 4;
+    for (let i = 0; i < smokeCount; i++) {
         particles.push({
             x: x + (Math.random() - .5) * 20,
             y: y + (Math.random() - .5) * 20,
@@ -73,16 +76,18 @@ function createExplosion(x, y, color, size, amount, extraColors = []) {
 
 function updateAndDrawParticles(ctx, cameraX) {
     const MAX_P = maxParticlesAllowed();
-    if (particles.length > MAX_P) particles.splice(0, particles.length - MAX_P);
+    if (particles.length > MAX_P) {
+        particles.splice(0, particles.length - MAX_P);
+    }
+    const isDummy = ctx && ctx.isDummy;
     let write = 0;
+    const vw = typeof VIEW_W !== "undefined" ? VIEW_W : 1024;
+    const isLow = typeof window !== "undefined" && window.PerfQuality && window.PerfQuality.level === "low";
     for (let i = 0; i < particles.length; i++) {
         let p = particles[i];
         p.life--;
         if (p.life <= 0) continue;
-        if (p.type === "spark" || p.type === "smoke") {
-            p.x += p.vx || 0;
-            p.y += p.vy || 0;
-        } else if (p.type === "afterimage") {
+        if (p.type === "spark" || p.type === "smoke" || p.type === "afterimage") {
             p.x += p.vx || 0;
             p.y += p.vy || 0;
         } else if (p.type === "ring") {
@@ -92,13 +97,17 @@ function updateAndDrawParticles(ctx, cameraX) {
             p.y += p.vy || 0;
             if (p.sineWave) p.x += Math.sin((p.life || 0) * .15) * .8;
         }
+        if (isDummy) {
+            particles[write++] = p;
+            continue;
+        }
         const sx = p.x - cameraX;
-        const inView = sx > -140 && sx < VIEW_W + 140;
+        const inView = sx > -140 && sx < vw + 140;
         if (inView) {
             const maxL = p.maxLife || 40;
             if (p.type === "spark") {
                 const alpha = Math.max(0, p.life / maxL);
-                if (p.glow) {
+                if (p.glow && !isLow) {
                     ctx.fillStyle = p.color;
                     ctx.globalAlpha = alpha * .35;
                     ctx.fillRect(sx - 2, p.y - 2, p.size + 4, p.size + 4);
@@ -108,11 +117,13 @@ function updateAndDrawParticles(ctx, cameraX) {
                 ctx.fillRect(sx, p.y, p.size, p.size);
             } else if (p.type === "afterimage") {
                 const alpha = Math.max(0, p.life / maxL * (p.alpha || .7));
-                ctx.fillStyle = p.color;
-                ctx.globalAlpha = alpha * .35;
-                ctx.beginPath();
-                ctx.arc(sx, p.y, p.size + 3, 0, Math.PI * 2);
-                ctx.fill();
+                if (!isLow) {
+                    ctx.fillStyle = p.color;
+                    ctx.globalAlpha = alpha * .35;
+                    ctx.beginPath();
+                    ctx.arc(sx, p.y, p.size + 3, 0, Math.PI * 2);
+                    ctx.fill();
+                }
                 ctx.globalAlpha = alpha;
                 ctx.beginPath();
                 ctx.arc(sx, p.y, p.size, 0, Math.PI * 2);
@@ -146,24 +157,41 @@ function updateAndDrawParticles(ctx, cameraX) {
 }
 
 function updateAndDrawFloatingTexts(ctx, cameraX) {
-    if (floatingTexts.length > MAX_FLOATING_TEXTS) floatingTexts.splice(0, floatingTexts.length - MAX_FLOATING_TEXTS);
+    if (floatingTexts.length > MAX_FLOATING_TEXTS) {
+        floatingTexts.splice(0, floatingTexts.length - MAX_FLOATING_TEXTS);
+    }
+    const isDummy = ctx && ctx.isDummy;
     let write = 0;
+    const vw = typeof VIEW_W !== "undefined" ? VIEW_W : 1024;
+    ctx.textAlign = "center";
+    let lastFont = "";
     for (let i = 0; i < floatingTexts.length; i++) {
         let ft = floatingTexts[i];
         ft.y += ft.vy;
         ft.life--;
         if (ft.life <= 0) continue;
-        ctx.save();
+        if (isDummy) {
+            floatingTexts[write++] = ft;
+            continue;
+        }
+        const screenX = ft.x - cameraX;
+        if (screenX < -150 || screenX > vw + 150) {
+            floatingTexts[write++] = ft;
+            continue;
+        }
         ctx.globalAlpha = Math.min(1, ft.life / 15);
-        ctx.font = `bold ${ft.fontSize}px 'Fredoka One', cursive`;
+        const fontStr = `bold ${ft.fontSize}px 'Fredoka One', cursive`;
+        if (lastFont !== fontStr) {
+            ctx.font = fontStr;
+            lastFont = fontStr;
+        }
+        ctx.fillStyle = "#000000";
+        ctx.fillText(ft.text, (screenX + 1) | 0, (ft.y + 1) | 0);
         ctx.fillStyle = ft.color;
-        ctx.shadowColor = "#000000";
-        ctx.shadowBlur = 4;
-        ctx.textAlign = "center";
-        ctx.fillText(ft.text, ft.x - cameraX, ft.y);
-        ctx.restore();
+        ctx.fillText(ft.text, screenX | 0, ft.y | 0);
         floatingTexts[write++] = ft;
     }
+    ctx.globalAlpha = 1;
     floatingTexts.length = write;
 }
 // Isaac Daniel Cotera - 2026 | Correo: isaacdanielcotera@gmail.com | Itch.io: https://cotera.itch.io | GitHub: https://github.com/cotera2024
