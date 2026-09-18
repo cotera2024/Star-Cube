@@ -270,6 +270,11 @@
     const huntZone = document.getElementById("hunt-action-zone");
     const slashHuntBtn = document.getElementById("btn-slash-hunt");
     const activeActionPointers = new Map();
+    let _isJumpPressed = false;
+    let _isShootPressed = false;
+    let _isDashPressed = false;
+    let _isEnterPressed = false;
+    let _isSlashPressed = false;
 
     function getActionBtnAt(x, y) {
         const pad = 16;
@@ -294,38 +299,54 @@
 
         // Jump
         const wantJump = activeTypes.has("jump");
-        const jumpPressed = !!(typeof keys !== "undefined" && (keys[" "] || keys["Spacebar"]));
-        if (wantJump !== jumpPressed) {
+        if (wantJump !== _isJumpPressed) {
+            _isJumpPressed = wantJump;
             if (jumpBtnEl) jumpBtnEl.classList.toggle("active", wantJump);
-            emit(wantJump ? "keydown" : "keyup", jumpKey().key, jumpKey().code);
+            const jk = jumpKey();
+            emit(wantJump ? "keydown" : "keyup", jk.key, jk.code);
             if (wantJump) triggerHaptic("light");
         }
 
         // Shoot
         const wantShoot = activeTypes.has("shoot");
-        const sk = shootKey();
-        const shootPressed = !!(typeof keys !== "undefined" && keys[sk.key]);
-        if (wantShoot !== shootPressed) {
+        if (wantShoot !== _isShootPressed) {
+            _isShootPressed = wantShoot;
             if (shootBtnEl) shootBtnEl.classList.toggle("active", wantShoot);
+            const sk = shootKey();
             emit(wantShoot ? "keydown" : "keyup", sk.key, sk.code);
-            if (wantShoot) triggerHaptic("light");
+            if (wantShoot) {
+                triggerHaptic("light");
+                if (typeof game !== "undefined" && game && game.player && !game.inHunt && !game.player.frozen && (typeof currentLevel !== "undefined" && (currentLevel < 4 || currentLevel === 6 || currentLevel === "hub"))) {
+                    game.player.charging = true;
+                    game.player.chargeTimer = 0;
+                    game.player.chargeLevel = 0;
+                }
+            } else {
+                if (typeof game !== "undefined" && game && game.player && !game.inHunt && !game.player.frozen && (typeof currentLevel !== "undefined" && (currentLevel < 4 || currentLevel === 6 || currentLevel === "hub"))) {
+                    const k = typeof keys !== "undefined" ? keys : {};
+                    game.player.fireChargedShot(k);
+                    game.player.charging = false;
+                    game.player.chargeTimer = 0;
+                    game.player.chargeLevel = 0;
+                }
+            }
         }
 
         // Dash
         const wantDash = activeTypes.has("dash") || activeTypes.has("energyDash");
-        const dk = dashKey();
-        const dashPressed = !!(typeof keys !== "undefined" && keys[dk.key]);
-        if (wantDash !== dashPressed) {
+        if (wantDash !== _isDashPressed) {
+            _isDashPressed = wantDash;
             if (dashBtnEl) dashBtnEl.classList.toggle("active", wantDash);
             if (energyDashBtn) energyDashBtn.classList.toggle("active", activeTypes.has("energyDash"));
+            const dk = dashKey();
             emit(wantDash ? "keydown" : "keyup", dk.key, dk.code);
             if (wantDash) triggerHaptic("dash");
         }
 
         // Enter Door
         const wantEnter = activeTypes.has("enter");
-        const enterPressed = !!(typeof keys !== "undefined" && keys["ArrowUp"]);
-        if (wantEnter !== enterPressed) {
+        if (wantEnter !== _isEnterPressed) {
+            _isEnterPressed = wantEnter;
             if (enterDoorBtn) enterDoorBtn.classList.toggle("active", wantEnter);
             emit(wantEnter ? "keydown" : "keyup", "ArrowUp", "ArrowUp");
             if (wantEnter) triggerHaptic("medium");
@@ -333,8 +354,8 @@
 
         // Slash
         const wantSlash = activeTypes.has("slash");
-        const slashPressed = !!(typeof keys !== "undefined" && keys["x"]);
-        if (wantSlash !== slashPressed) {
+        if (wantSlash !== _isSlashPressed) {
+            _isSlashPressed = wantSlash;
             if (slashHuntBtn) slashHuntBtn.classList.toggle("active", wantSlash);
             emit(wantSlash ? "keydown" : "keyup", "x", "KeyX");
             if (wantSlash) triggerHaptic("medium");
@@ -406,6 +427,61 @@
         actionZone.addEventListener("pointerup", onZoneEnd);
         actionZone.addEventListener("pointercancel", onZoneEnd);
     }
+
+    window.addEventListener("pointerup", function(e) {
+        if (dpadPointerId !== null && e.pointerId === dpadPointerId) {
+            applyDpadDirections([]);
+            dpadPointerId = null;
+        }
+        if (activeActionPointers.has(e.pointerId)) {
+            activeActionPointers.delete(e.pointerId);
+            updateActionButtonsState();
+        }
+    });
+    window.addEventListener("pointercancel", function(e) {
+        if (dpadPointerId !== null && e.pointerId === dpadPointerId) {
+            applyDpadDirections([]);
+            dpadPointerId = null;
+        }
+        if (activeActionPointers.has(e.pointerId)) {
+            activeActionPointers.delete(e.pointerId);
+            updateActionButtonsState();
+        }
+    });
+    window.addEventListener("touchend", function(e) {
+        if (e.touches && e.touches.length === 0) {
+            if (dpadPointerId !== null) {
+                applyDpadDirections([]);
+                dpadPointerId = null;
+            }
+            if (activeActionPointers.size > 0) {
+                activeActionPointers.clear();
+                updateActionButtonsState();
+            }
+        }
+    }, { passive: true });
+    window.addEventListener("touchcancel", function(e) {
+        if (e.touches && e.touches.length === 0) {
+            if (dpadPointerId !== null) {
+                applyDpadDirections([]);
+                dpadPointerId = null;
+            }
+            if (activeActionPointers.size > 0) {
+                activeActionPointers.clear();
+                updateActionButtonsState();
+            }
+        }
+    }, { passive: true });
+    window.addEventListener("blur", function() {
+        if (dpadPointerId !== null) {
+            applyDpadDirections([]);
+            dpadPointerId = null;
+        }
+        if (activeActionPointers.size > 0) {
+            activeActionPointers.clear();
+            updateActionButtonsState();
+        }
+    });
     let _lastShow = null, _lastMaxCharge = null, _lastCanEnter = null, _lastShoot = null, _lastJump = null, _lastDash = null, _lastZone = null, _lastInv = null;
     function updateTouchControlsState() {
         if (!touchCtl) return;
