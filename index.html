@@ -572,10 +572,11 @@
         .credits-modal-box {
             max-width: 800px;
             width: 94%;
-            background: linear-gradient(145deg, #1b132e 0%, #0f0a1c 100%);
-            border: 2px solid #ffd700;
-            box-shadow: 0 0 50px rgba(255, 215, 0, 0.22), inset 0 0 25px rgba(255, 215, 0, 0.05);
+            background: linear-gradient(145deg, #181226 0%, #0c0817 100%);
+            border: 2px solid rgba(255, 215, 0, 0.7);
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.18), inset 0 0 25px rgba(255, 215, 0, 0.04);
             border-radius: 20px;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
         }
         .credits-showcase {
             display: flex;
@@ -587,55 +588,66 @@
             display: flex;
             align-items: center;
             gap: 16px;
-            padding: 12px 18px;
-            background: radial-gradient(circle at 10% 50%, rgba(255, 215, 0, 0.16), rgba(15, 10, 28, 0.7));
+            padding: 14px 20px;
+            background: radial-gradient(circle at 10% 50%, rgba(255, 215, 0, 0.14), rgba(15, 10, 28, 0.75));
             border-radius: 14px;
-            border: 1px solid rgba(255, 215, 0, 0.35);
+            border: 1px solid rgba(255, 215, 0, 0.3);
         }
-        .credits-logo-icon {
-            font-size: 36px;
-            filter: drop-shadow(0 0 10px #ffd700);
+        .credits-cube-badge {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #ffd700 0%, #f59e0b 100%);
+            box-shadow: 0 0 14px rgba(255, 215, 0, 0.5);
+            flex-shrink: 0;
+            border: 2px solid #fff;
         }
         .credits-hero-text h3 {
             font-family: 'Fredoka One', cursive;
             font-size: 24px;
             color: #ffd700;
             margin: 0 0 2px 0;
-            letter-spacing: 2px;
+            letter-spacing: 1.5px;
         }
         .credits-hero-text .credits-sub {
-            font-family: 'Courier Prime', monospace;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             font-size: 13px;
-            color: #cbd5e1;
+            font-weight: 500;
+            color: #94a3b8;
             margin: 0;
+            letter-spacing: 0.5px;
         }
         .credits-card-highlight {
             display: flex;
             align-items: center;
             gap: 16px;
-            padding: 14px 18px;
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.12), rgba(168, 85, 247, 0.12));
-            border: 1.5px solid rgba(255, 215, 0, 0.45);
+            padding: 14px 20px;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(147, 51, 234, 0.1));
+            border: 1.5px solid rgba(255, 215, 0, 0.35);
             border-radius: 14px;
         }
-        .author-avatar {
-            font-size: 32px;
-            background: rgba(255, 215, 0, 0.2);
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
+        .author-badge {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: rgba(255, 215, 0, 0.15);
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 1px solid #ffd700;
+            border: 1.5px solid #ffd700;
             flex-shrink: 0;
+            font-family: 'Fredoka One', cursive;
+            font-size: 14px;
+            color: #ffd700;
+            letter-spacing: 1px;
         }
         .author-role {
-            font-family: 'Courier Prime', monospace;
-            font-size: 12px;
-            color: #fef08a;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-size: 11.5px;
+            font-weight: 600;
+            color: #fde047;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.2px;
             display: block;
         }
         .author-name {
@@ -643,7 +655,8 @@
             font-size: 22px;
             color: #ffffff;
             margin: 2px 0 0 0;
-            text-shadow: 0 0 12px rgba(255, 215, 0, 0.5);
+            text-shadow: 0 0 12px rgba(255, 215, 0, 0.4);
+            letter-spacing: 0.5px;
         }
         .credits-grid-details {
             display: grid;
@@ -653,54 +666,58 @@
         .credits-tile {
             display: flex;
             gap: 14px;
-            align-items: flex-start;
-            padding: 12px 16px;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            align-items: stretch;
+            padding: 12px 18px;
+            background: rgba(255, 255, 255, 0.035);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 12px;
         }
-        .tile-icon {
-            font-size: 24px;
-            min-width: 30px;
-            padding-top: 2px;
+        .tile-accent {
+            width: 3px;
+            border-radius: 2px;
+            background: linear-gradient(180deg, #ffd700, rgba(255, 215, 0, 0.15));
+            flex-shrink: 0;
         }
         .tile-content h4 {
-            font-family: 'Fredoka One', cursive;
-            font-size: 15px;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-size: 14px;
+            font-weight: 700;
             margin: 0 0 4px 0;
             color: #ffd700;
+            letter-spacing: 0.5px;
         }
         .tile-content p {
-            font-family: 'Courier Prime', monospace;
-            font-size: 12.5px;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-size: 13px;
             margin: 0;
             color: #cbd5e1;
-            line-height: 1.4;
+            line-height: 1.45;
         }
         .credits-note-box {
             margin-top: 8px;
-            padding: 6px 10px;
-            background: rgba(255, 0, 85, 0.12);
-            border-left: 3px solid #ff0055;
+            padding: 6px 12px;
+            background: rgba(244, 63, 94, 0.1);
+            border-left: 3px solid #f43f5e;
             border-radius: 4px;
-            font-family: 'Courier Prime', monospace;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             font-size: 12px;
-            color: #fca5a5;
+            color: #fecdd3;
             display: flex;
             align-items: center;
-            gap: 8px;
         }
         .credits-footer {
             text-align: center;
-            padding: 6px 0;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px 0 2px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
         }
         .credits-cr {
-            font-family: 'Courier Prime', monospace;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             font-size: 12px;
-            color: #94a3b8;
+            color: #64748b;
             margin: 0;
+            letter-spacing: 0.3px;
         }
+
 
         .modal-close-btn {
             font-family: 'Fredoka One', cursive;
@@ -1464,14 +1481,14 @@
     <div id="credits-modal" class="modal-overlay">
         <div class="modal-box credits-modal-box">
             <div class="modal-header">
-                <h2 data-i18n="ui_credits_title">© CRÉDITOS</h2>
+                <h2 data-i18n="ui_credits_title">CRÉDITOS</h2>
                 <div class="modal-badge gold-badge" data-i18n="ui_info_badge">INFO</div>
             </div>
 
             <div class="credits-showcase">
                 
                 <div class="credits-hero">
-                    <div class="credits-logo-icon">⭐</div>
+                    <div class="credits-cube-badge"></div>
                     <div class="credits-hero-text">
                         <h3 data-i18n="ui_credits_game">StarCube</h3>
                         <p class="credits-sub" data-i18n="ui_credits_levels">Aventura de Plataformas 2D</p>
@@ -1480,9 +1497,9 @@
 
                 
                 <div class="credits-card-highlight">
-                    <div class="author-avatar">👨‍💻</div>
+                    <div class="author-badge">DEV</div>
                     <div class="author-info">
-                        <span class="author-role" data-i18n="ui_credits_author_role">👨‍💻 Dirección, Programación & Arte</span>
+                        <span class="author-role" data-i18n="ui_credits_author_role">Dirección, Programación & Arte</span>
                         <h4 class="author-name" data-i18n="ui_credits_author">Isaac Daniel Cotera</h4>
                     </div>
                 </div>
@@ -1491,21 +1508,20 @@
                 <div class="credits-grid-details">
                     
                     <div class="credits-tile">
-                        <div class="tile-icon">⚙️</div>
+                        <div class="tile-accent"></div>
                         <div class="tile-content">
-                            <h4 data-i18n="ui_credits_engine">⚙️ Programación & Motor</h4>
+                            <h4 data-i18n="ui_credits_engine">Programación & Motor</h4>
                             <p data-i18n="ui_credits_engine_desc">Programación artesanal 100% Vanilla JavaScript, HTML5 Canvas 2D & GSAP. ¡Diversión pura sin frameworks pesados!</p>
                         </div>
                     </div>
 
                     
                     <div class="credits-tile">
-                        <div class="tile-icon">🎨</div>
+                        <div class="tile-accent"></div>
                         <div class="tile-content">
-                            <h4 data-i18n="ui_credits_art">🎨 Arte & Diseño Gráfico</h4>
+                            <h4 data-i18n="ui_credits_art">Arte & Diseño Gráfico</h4>
                             <p data-i18n="ui_credits_art_desc">Isaac Daniel Cotera — Arte vectorial puro en Canvas 2D, iluminación dinámica, físicas de partículas y animaciones</p>
                             <div class="credits-note-box">
-                                <span class="demon-icon">👾</span>
                                 <span data-i18n="ui_credits_demon_note">Sprite del Demonio Volador hecho por Kelano Studio (OpenGameArt / CC0)</span>
                             </div>
                         </div>
@@ -1513,9 +1529,9 @@
 
                     
                     <div class="credits-tile">
-                        <div class="tile-icon">🎵</div>
+                        <div class="tile-accent"></div>
                         <div class="tile-content">
-                            <h4 data-i18n="ui_credits_audio">🎵 Audio & Efectos Sonoros</h4>
+                            <h4 data-i18n="ui_credits_audio">Audio & Efectos Sonoros</h4>
                             <p data-i18n="ui_credits_audio_desc">Música de libre descarga y efectos sonoros generados en tiempo real por el navegador (Web Audio API)</p>
                         </div>
                     </div>
@@ -1527,7 +1543,7 @@
                 </div>
             </div>
 
-            <button id="close-credits" class="modal-close-btn gold-btn" data-i18n="ui_btn_close">✓ CERRAR</button>
+            <button id="close-credits" class="modal-close-btn gold-btn" data-i18n="ui_btn_close">CERRAR</button>
         </div>
     </div>
 

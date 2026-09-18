@@ -3786,13 +3786,13 @@ class Platform {
                 const arrowX = 7370 - offsetX;
                 const bob = Math.sin(Date.now() / 180) * 10;
                 const arrowY = 360 + bob;
-                ctx.shadowBlur = 18;
+                ctx.shadowBlur = 14;
                 ctx.shadowColor = "#00f0ff";
-                const txt = typeof __ === "function" ? __("flt_cavern_arrow") : "⬇ CAVERNA SECRETA ⬇";
-                ctx.font = "900 20px system-ui, -apple-system, sans-serif";
+                const txt = typeof __ === "function" ? __("flt_cavern_arrow") : "ADÉNTRATE EN LA CUEVA";
+                ctx.font = "900 19px system-ui, -apple-system, sans-serif";
                 ctx.textAlign = "center";
                 ctx.fillStyle = "#00f0ff";
-                ctx.fillText(txt, arrowX, arrowY - 36);
+                ctx.fillText(txt, arrowX, arrowY - 48);
                 ctx.fillStyle = "#38bdf8";
                 ctx.strokeStyle = "#0284c7";
                 ctx.lineWidth = 3;

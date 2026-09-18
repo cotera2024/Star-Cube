@@ -136,7 +136,7 @@ function updateAndDrawBlueSquare(ctx, cameraX, time) {
             bs.isBoss = true;
             bs.w = 90;
             bs.h = 90;
-            const baseHp = window.postGameHorror ? 36 : 18;
+            const baseHp = window.postGameHorror ? 44 : 24;
             bs.health = baseHp;
             bs.maxHealth = baseHp;
             const entranceGateObj = game.platforms.find(p => p.isArenaGate === "entrance");
@@ -152,7 +152,7 @@ function updateAndDrawBlueSquare(ctx, cameraX, time) {
             });
             if (typeof window.playBossPresentation === "function") {
                 window.playBossPresentation({
-                    name: __("boss_name_1") || "CUADRITO AZUL",
+                    name: __("boss_name_1") || "ESPECTRO GÉLIDO",
                     title: __("boss_title_1") || "TITÁN DEL PÁRAMO GLACIAL",
                     icon: "❄️",
                     themeColor: "#00e5ff",
@@ -163,7 +163,7 @@ function updateAndDrawBlueSquare(ctx, cameraX, time) {
                     duration: 2.8
                 }, cinema(() => {
                     if (typeof window.BossHUD !== "undefined") {
-                        window.BossHUD.show(__("boss_name_1") || "CUADRITO AZUL", bs.health, bs.maxHealth, "#00e5ff");
+                        window.BossHUD.show(__("boss_name_1") || "ESPECTRO GÉLIDO", bs.health, bs.maxHealth, "#00e5ff");
                     }
                     if (!window.postGameHorror) {
                         if (currentBGM) {
@@ -175,7 +175,7 @@ function updateAndDrawBlueSquare(ctx, cameraX, time) {
                 }));
             } else {
                 if (typeof window.BossHUD !== "undefined") {
-                    window.BossHUD.show(__("boss_name_1") || "CUADRITO AZUL", bs.health, bs.maxHealth, "#00e5ff");
+                    window.BossHUD.show(__("boss_name_1") || "ESPECTRO GÉLIDO", bs.health, bs.maxHealth, "#00e5ff");
                 }
                 if (!window.postGameHorror) {
                     if (currentBGM) {
