@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <img src="galeria/starcube.jpg" alt="Star Cube Cover" width="100%" />
+  <img src="galeria/starcube.jpeg" alt="Star Cube Cover" width="100%" />
 </p>
 
 <p align="center">
