@@ -5,7 +5,7 @@
   "identifier": "com.cotera.starcube",
   "build": {
     "frontendDist": "../dist",
-    "beforeBuildCommand": "node ../scripts/prepare-dist.js"
+    "beforeBuildCommand": "node scripts/prepare-dist.js"
   },
   "app": {
     "windows": [
