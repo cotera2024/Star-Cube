@@ -2324,9 +2324,6 @@
 @media (max-width: 900px) and (pointer: coarse), (max-height: 520px) {
     .hide-on-mobile { display: none !important; }
 
-    #game-title .starcube-title:hover { filter: drop-shadow(0 0 25px rgba(251, 191, 36, 0.45)) !important; }
-    #game-title .starcube-title { text-shadow: 0 5px 15px rgba(0,0,0,0.5) !important; }
-
     .modal-box {
         background: rgba(10, 15, 30, 0.95) !important;
         backdrop-filter: blur(16px) !important;
@@ -2360,8 +2357,17 @@
         letter-spacing: 1px !important;
     }
     
-    .options-modal-box, .pause-modal-box, .credits-modal-box, .controls-modal-box {
+    .pause-modal-box, .credits-modal-box, .controls-modal-box {
         width: 92% !important; max-width: 500px !important; height: auto !important; max-height: 85vh !important; padding: 20px !important;
+    }
+    
+    /* Options Modal - Fullscreen */
+    .options-modal-box {
+        width: 100vw !important; max-width: 100vw !important;
+        height: 100vh !important; max-height: 100vh !important;
+        border-radius: 0 !important; border: none !important;
+        padding: 20px !important;
+        justify-content: flex-start !important;
     }
 
     .options-content, .credits-content {
@@ -2369,11 +2375,40 @@
         display: flex !important; flex-direction: column !important; gap: 12px !important; overflow-y: auto !important;
     }
     
-    .settings-section, .controls-section {
-        background: rgba(255,255,255,0.06) !important; border-radius: 14px !important; padding: 14px !important; border: 1px solid rgba(255,255,255,0.08) !important;
+    /* Audio Controls Side by Side */
+    .audio-controls-card {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        gap: 10px !important;
+        background: transparent !important;
+        padding: 0 !important;
+        border: none !important;
     }
-    .slider-row { flex-direction: column !important; align-items: flex-start !important; gap: 6px !important; margin-bottom: 10px !important; }
-    input[type=range] { width: 100% !important; height: 16px !important; border-radius: 10px !important; }
+    .audio-row {
+        flex: 1 !important;
+        background: rgba(255,255,255,0.06) !important;
+        border-radius: 12px !important;
+        padding: 12px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        border: 1px solid rgba(255,255,255,0.08) !important;
+    }
+    .audio-label-group {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 4px !important;
+        margin-bottom: 8px !important;
+    }
+    .audio-label { font-size: 14px !important; }
+    .audio-pct { align-self: flex-end !important; font-size: 16px !important; margin-top: -24px !important; }
+    
+    .audio-slider-group {
+        display: flex !important; flex-direction: row !important; align-items: center !important; gap: 8px !important;
+    }
+    .audio-slider-group input[type=range] { flex: 1 !important; height: 12px !important; }
+    .opt-mute-btn { width: 30px !important; height: 30px !important; font-size: 14px !important; padding: 0 !important; display: flex !important; align-items: center !important; justify-content: center !important; }
     
     .pause-modal-box .pause-btn {
         width: 100% !important; padding: 14px !important; font-size: 16px !important; border-radius: 14px !important; margin-bottom: 10px !important;
@@ -2403,11 +2438,14 @@
     }
     
     #lang-select { background: rgba(5, 5, 15, 0.95) !important; backdrop-filter: blur(12px) !important; }
+    
+    /* Center the flags properly */
     .lang-grid {
-        display: grid !important; grid-template-columns: repeat(2, 1fr) !important; gap: 12px !important;
+        display: flex !important; flex-wrap: wrap !important; justify-content: center !important; gap: 12px !important;
         width: 100% !important; max-width: 450px !important; padding: 0 !important; margin-bottom: 20px !important;
     }
     .lang-btn {
+        flex: 1 1 40% !important; max-width: 48% !important;
         background: rgba(255,255,255,0.08) !important; border-radius: 16px !important; padding: 12px !important;
         border: 2px solid rgba(255,255,255,0.15) !important; box-shadow: 0 4px 15px rgba(0,0,0,0.6) !important;
         display: flex !important; flex-direction: column !important; align-items: center !important; gap: 6px !important;
@@ -2415,72 +2453,18 @@
     .lang-btn .flag { font-size: 32px !important; margin-bottom: 2px !important; }
     .lang-btn .name { font-size: 14px !important; font-weight: bold !important; }
 
-    #hud-level-name { font-size: 22px !important; }
-    #boss-name-label { font-size: 20px !important; }
+    #level-display { font-size: 20px !important; }
+    .boss-hud-name { font-size: 20px !important; }
     
-    #btn-fullscreen-toggle {
-        position: relative !important;
-        top: 0 !important; right: 0 !important; left: 0 !important;
-        width: 40px !important; height: 40px !important;
-        margin-top: 6px !important;
-        align-self: flex-start !important;
+    /* Make pause button larger */
+    #pause-btn {
+        width: 46px !important; height: 46px !important; font-size: 24px !important;
     }
 }
 
 
-    
-    #title-buttons {
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        gap: 15px !important;
-        top: 60% !important;
-        width: 100% !important;
-    }
-    .title-btn {
-        width: 80% !important;
-        max-width: 320px !important;
-        padding: 16px 24px !important;
-        font-size: 20px !important;
-        border-radius: 30px !important;
-        background: linear-gradient(135deg, rgba(255, 0, 127, 0.8), rgba(0, 204, 255, 0.8)) !important;
-        border: 2px solid rgba(255,255,255,0.4) !important;
-        box-shadow: 0 8px 25px rgba(255, 0, 127, 0.4) !important;
-        text-transform: uppercase !important;
-        letter-spacing: 2px !important;
-    }
-    .title-btn.secondary {
-        background: rgba(15, 23, 42, 0.9) !important;
-        border: 2px solid rgba(0, 204, 255, 0.5) !important;
-        box-shadow: 0 4px 15px rgba(0, 204, 255, 0.2) !important;
-        font-size: 16px !important;
-        width: 60% !important;
-        max-width: 250px !important;
-        padding: 12px 18px !important;
-    }
-    
-    #game-title {
-        top: 15% !important;
-    }
-    #game-title .starcube-title {
-        font-size: 85px !important;
-        background: linear-gradient(180deg, #fff 0%, #ffd700 100%);
-        -webkit-background-clip: text;
-        color: transparent;
-        letter-spacing: 6px !important;
-    }
-    #game-title .starcube-subtitle {
-        font-size: 22px !important;
-        letter-spacing: 4px !important;
-        margin-top: -5px !important;
-    }
 
-    #level-display { font-size: 26px !important; }
-    .boss-hud-name { font-size: 24px !important; }
-    .boss-hud-bar { width: 300px !important; height: 18px !important; }
-    .boss-hud-notch { width: 3px !important; }
-    .health-bar-container { height: 26px !important; width: 220px !important; }
-    #hp-text { font-size: 16px !important; }
+    
 </style>
 </head>
 <body>
