@@ -2317,7 +2317,127 @@
             color: #ffffff;
             background: rgba(255, 255, 255, 0.12);
         }
+
+@media (max-width: 900px) and (pointer: coarse), (max-height: 520px) {
+    #game-title .starcube-title:hover { filter: drop-shadow(0 0 25px rgba(251, 191, 36, 0.45)) !important; }
+    #game-title .starcube-title { text-shadow: 0 5px 15px rgba(0,0,0,0.5) !important; }
+
+    .modal-box {
+        background: rgba(10, 15, 30, 0.95) !important;
+        backdrop-filter: blur(16px) !important;
+        border: 2px solid rgba(255, 0, 127, 0.5) !important;
+        border-radius: 28px !important;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.8), inset 0 0 20px rgba(255, 0, 127, 0.15) !important;
+        display: flex !important; flex-direction: column !important;
+        justify-content: space-evenly !important; align-items: stretch !important;
+    }
+    
+    .modal-header { border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important; padding-bottom: 12px !important; margin-bottom: 12px !important; }
+    .modal-box h2 { font-size: 26px !important; text-align: center !important; margin: 0 auto !important; letter-spacing: 2px !important; }
+    
+    .options-modal-box, .pause-modal-box, .credits-modal-box {
+        width: 88% !important; max-width: 450px !important; height: auto !important; max-height: 90vh !important; padding: 24px !important;
+    }
+
+    .options-content { display: flex !important; flex-direction: column !important; gap: 16px !important; overflow-y: auto !important; }
+    .settings-section, .controls-section {
+        background: rgba(255,255,255,0.06) !important; border-radius: 18px !important; padding: 18px !important; border: 1px solid rgba(255,255,255,0.08) !important;
+    }
+    .slider-row { flex-direction: column !important; align-items: flex-start !important; gap: 10px !important; margin-bottom: 15px !important; }
+    input[type=range] { width: 100% !important; height: 16px !important; border-radius: 10px !important; }
+    
+    .pause-modal-box .pause-btn {
+        width: 100% !important; padding: 16px !important; font-size: 18px !important; border-radius: 20px !important; margin-bottom: 12px !important;
+        background: rgba(255,255,255,0.1) !important; border: 1px solid rgba(255,255,255,0.2) !important;
+    }
+    
+    .modal-close-btn, #close-options, .close-icon-btn, #close-lang-btn {
+        background: linear-gradient(180deg, #ff007f 0%, #cc0066 100%) !important; border-radius: 50px !important;
+        height: 48px !important; line-height: 48px !important; padding: 0 24px !important; font-size: 18px !important;
+        margin-top: 15px !important; width: 100% !important; border: none !important; color: white !important; font-weight: bold !important;
+    }
+    .close-icon-btn { display: none !important; } 
+    
+    #lang-select { background: rgba(5, 5, 15, 0.95) !important; backdrop-filter: blur(12px) !important; }
+    .lang-grid {
+        display: grid !important; grid-template-columns: repeat(2, 1fr) !important; gap: 16px !important;
+        width: 100% !important; max-width: 400px !important; padding: 0 10px !important; margin-bottom: 20px !important;
+    }
+    .lang-btn {
+        background: rgba(255,255,255,0.08) !important; border-radius: 24px !important; padding: 18px !important;
+        border: 2px solid rgba(255,255,255,0.15) !important; box-shadow: 0 4px 15px rgba(0,0,0,0.6) !important;
+        display: flex !important; flex-direction: column !important; align-items: center !important; gap: 8px !important;
+    }
+    .lang-btn .flag { font-size: 40px !important; margin-bottom: 5px !important; }
+    .lang-btn .name { font-size: 16px !important; font-weight: bold !important; }
+
+    #hud-level-name { font-size: 22px !important; }
+    #boss-name-label { font-size: 20px !important; }
+    
+    
+    #btn-fullscreen-toggle {
+        position: relative !important;
+        top: 0 !important; right: 0 !important; left: 0 !important;
+        width: 44px !important; height: 44px !important;
+        margin-top: 6px !important;
+        align-self: flex-start !important;
+    }
+}
     </style>
+
+    
+    #title-buttons {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 15px !important;
+        top: 60% !important;
+        width: 100% !important;
+    }
+    .title-btn {
+        width: 80% !important;
+        max-width: 320px !important;
+        padding: 16px 24px !important;
+        font-size: 20px !important;
+        border-radius: 30px !important;
+        background: linear-gradient(135deg, rgba(255, 0, 127, 0.8), rgba(0, 204, 255, 0.8)) !important;
+        border: 2px solid rgba(255,255,255,0.4) !important;
+        box-shadow: 0 8px 25px rgba(255, 0, 127, 0.4) !important;
+        text-transform: uppercase !important;
+        letter-spacing: 2px !important;
+    }
+    .title-btn.secondary {
+        background: rgba(15, 23, 42, 0.9) !important;
+        border: 2px solid rgba(0, 204, 255, 0.5) !important;
+        box-shadow: 0 4px 15px rgba(0, 204, 255, 0.2) !important;
+        font-size: 16px !important;
+        width: 60% !important;
+        max-width: 250px !important;
+        padding: 12px 18px !important;
+    }
+    
+    #game-title {
+        top: 15% !important;
+    }
+    #game-title .starcube-title {
+        font-size: 85px !important;
+        background: linear-gradient(180deg, #fff 0%, #ffd700 100%);
+        -webkit-background-clip: text;
+        color: transparent;
+        letter-spacing: 6px !important;
+    }
+    #game-title .starcube-subtitle {
+        font-size: 22px !important;
+        letter-spacing: 4px !important;
+        margin-top: -5px !important;
+    }
+
+    #level-display { font-size: 26px !important; }
+    .boss-hud-name { font-size: 24px !important; }
+    .boss-hud-bar { width: 300px !important; height: 18px !important; }
+    .boss-hud-notch { width: 3px !important; }
+    .health-bar-container { height: 26px !important; width: 220px !important; }
+    #hp-text { font-size: 16px !important; }
 </head>
 <body>
     <div id="game-container">
@@ -2369,6 +2489,7 @@
                     <span id="score-display">SCORE: 0</span>
                 </div>
                 
+                <button id="btn-fullscreen-toggle" type="button" aria-label="Fullscreen" title="Fullscreen">⛶</button>
                 <div id="lives-container" aria-label="Lives">
                     <span class="life-icon"></span>
                     <span class="life-icon"></span>
@@ -2403,7 +2524,6 @@
     </div>
 
     <div id="touch-controls">
-        <button id="btn-fullscreen-toggle" type="button" aria-label="Fullscreen" title="Fullscreen">⛶</button>
         <div id="pad-zone" class="dpad-container">
             <div class="dpad-cross">
                 <button class="tc-btn dpad-btn" id="pad-up" data-dir="up" aria-label="Up">▲</button>

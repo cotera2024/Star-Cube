@@ -1561,7 +1561,7 @@
         }) ];
         game.enemies = [];
         const isMobileHub = typeof window !== "undefined" && (window.isMobileDevice || (typeof window.isMobileOrTouch === "function" && window.isMobileOrTouch()));
-        const hubDoorOffset = isMobileHub ? 180 : 0;
+        const hubDoorOffset = isMobileHub ? 450 : 0;
         game.hubDoors = [ {
             levelIndex: 0,
             levelNum: 1,
