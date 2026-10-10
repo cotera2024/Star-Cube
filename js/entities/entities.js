@@ -210,7 +210,7 @@ class Player {
         if (this.dashCooldown > 0) this.dashCooldown--;
         if (this.dashTrailT > 0) this.dashTrailT--;
         if (this.dashBufferTimer > 0) this.dashBufferTimer--;
-        const wantDash = currentLevel !== 4 && (!game || !game.inHunt) && (keys["c"] || keys["C"] || this.dashBufferTimer > 0);
+        const wantDash = currentLevel !== 4 && (!game || !game.inHunt) && (keys["c"] || keys["C"] || keys["l"] || keys["L"] || this.dashBufferTimer > 0);
         const maxCharge = this.chargeLevel >= 4;
         if (wantDash && this.dashTimer <= 0 && this.dashCooldown <= 0 && !this.frozen) {
             this.dashBufferTimer = 0;
@@ -331,7 +331,7 @@ class Player {
             moving = true;
         }
         if (!this.onGround && this.vy < 0) this.state = "jump"; else if (!this.onGround && this.vy >= 0) this.state = "fall"; else if (moving) this.state = "run"; else this.state = "idle";
-        const hasInput = moving || wantDash || this.charging || (keys["x"] || keys["X"] || keys["k"]) || (keys["z"] || keys["Z"] || keys[" "] || keys["w"] || keys["W"]) || !this.onGround;
+        const hasInput = moving || wantDash || this.charging || (keys["x"] || keys["X"] || keys["j"] || keys["J"]) || (keys["z"] || keys["Z"] || keys[" "] || keys["w"] || keys["W"] || keys["k"] || keys["K"]) || !this.onGround;
         if (hasInput || window.postGameHorror) {
             this.afkTimer = 0;
             this.afkState = null;
@@ -406,7 +406,7 @@ class Player {
         } else {
             this.animFrame = 0;
         }
-        if ((!game || !game.inHunt) && (keys[" "] || keys["w"] || keys["W"])) {
+        if ((!game || !game.inHunt) && (keys[" "] || keys["w"] || keys["W"] || keys["k"] || keys["K"])) {
             this.jumpBufferTimer = 8;
         }
         if (this.onGround) {
@@ -418,7 +418,7 @@ class Player {
             this.jumpBufferTimer--;
         }
         if ((!game || !game.inHunt) && this.jumpBufferTimer > 0 && this.coyoteTimer > 0 && !this.frozen) {
-            this._jumpHeldAtStart = !!(keys[" "] || keys["z"] || keys["Z"] || keys["w"] || keys["W"]);
+            this._jumpHeldAtStart = !!(keys[" "] || keys["z"] || keys["Z"] || keys["w"] || keys["W"] || keys["k"] || keys["K"]);
             let stormJumpMult = 1;
             if (currentLevel === 3 && game.stormMode && typeof window.getStormWind === "function") {
                 const wind = window.getStormWind();
@@ -470,14 +470,14 @@ class Player {
                 }
             }
         }
-        const charging = (!game || !game.inHunt) && (keys["x"] || keys["X"] || keys["k"]) && (currentLevel < 4 || currentLevel === 6 || currentLevel === "hub") && !this.frozen;
-        const jumpHeld = keys[" "] || keys["w"] || keys["W"];
+        const charging = (!game || !game.inHunt) && (keys["x"] || keys["X"] || keys["j"] || keys["J"]) && (currentLevel < 4 || currentLevel === 6 || currentLevel === "hub") && !this.frozen;
+        const jumpHeld = keys[" "] || keys["w"] || keys["W"] || keys["k"] || keys["K"];
         if (!charging && this._jumpHeldAtStart && this._bounceGuard <= 0 && !jumpHeld && this.vy < -4) {
             this.vy *= .6;
         }
         this.scaleX += (1 - this.scaleX) * .15;
         this.scaleY += (1 - this.scaleY) * .15;
-        if ((!game || !game.inHunt) && (keys["x"] || keys["X"] || keys["k"]) && (currentLevel < 4 || currentLevel === 6 || currentLevel === "hub") && !this.frozen) {
+        if ((!game || !game.inHunt) && (keys["x"] || keys["X"] || keys["j"] || keys["J"]) && (currentLevel < 4 || currentLevel === 6 || currentLevel === "hub") && !this.frozen) {
             if (!this.charging) {
                 this.charging = true;
                 this.chargeTimer = 0;
@@ -559,7 +559,7 @@ class Player {
             this.chargeTimer = 0;
             this.chargeLevel = 0;
         }
-        if (game.inHunt && (keys["x"] || keys["X"] || keys["k"]) && this.slashCooldown <= 0 && !this.frozen) {
+        if (game.inHunt && (keys["x"] || keys["X"] || keys["j"] || keys["J"]) && this.slashCooldown <= 0 && !this.frozen) {
             this.slashCooldown = 24;
             const sx = this.x + (this.facing === 1 ? this.w : 0);
             const sy = this.y + this.h * .5;
@@ -1233,10 +1233,10 @@ class Player {
     }
     fireChargedShot(keys) {
         let dirX = 0, dirY = 0;
-        if (keys["ArrowUp"] || keys["w"]) {
+        if (keys["ArrowUp"] || keys["w"] || keys["W"]) {
             dirY = -1;
             dirX = 0;
-        } else if (keys["ArrowDown"] || keys["s"]) {
+        } else if (keys["ArrowDown"] || keys["s"] || keys["S"]) {
             dirY = 1;
             dirX = 0;
         } else {

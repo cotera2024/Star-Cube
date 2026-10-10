@@ -2734,6 +2734,10 @@
             </div>
 
             <div id="controls-pc-panel" class="controls-panel active">
+                <div style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 10px 16px; margin-bottom: 14px; display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: space-around; font-size: 0.82rem; font-weight: 600; text-align: center;">
+                    <div><span style="color:#60a5fa;">Clásico:</span> Flechas + Espacio + C + X</div>
+                    <div><span style="color:#34d399;">Moderno:</span> WASD + K (Salto) + L (Dash) + J (Disparo)</div>
+                </div>
                 <div class="controls-cards-grid">
                     <div class="ctrl-card">
                         <div class="ctrl-canvas-box">
@@ -2742,6 +2746,8 @@
                         <div class="ctrl-details">
                             <div class="ctrl-badges">
                                 <span class="key-badge">←</span><span class="key-badge">→</span>
+                                <span class="key-separator">/</span>
+                                <span class="key-badge">A</span><span class="key-badge">D</span>
                             </div>
                             <h4 data-i18n="ui_ctrl_move">Moverse</h4>
                             <p data-i18n="ui_ctrl_move_desc">Caminar a la izquierda o derecha con respuesta física ágil</p>
@@ -2755,6 +2761,8 @@
                         <div class="ctrl-details">
                             <div class="ctrl-badges">
                                 <span class="key-badge wide" data-i18n="ui_key_space">ESPACIO</span>
+                                <span class="key-separator">/</span>
+                                <span class="key-badge">K</span>
                             </div>
                             <h4 data-i18n="ui_ctrl_jump">Saltar</h4>
                             <p data-i18n="ui_ctrl_jump_desc">Salto reactivo con altura variable según la pulsación</p>
@@ -2768,6 +2776,8 @@
                         <div class="ctrl-details">
                             <div class="ctrl-badges">
                                 <span class="key-badge">C</span>
+                                <span class="key-separator">/</span>
+                                <span class="key-badge">L</span>
                             </div>
                             <h4 data-i18n="ui_ctrl_dash">Dash (Impulso)</h4>
                             <p data-i18n="ui_ctrl_dash_desc">Aceleración horizontal rápida para cruzar abismos y evadir trampas</p>
@@ -2783,9 +2793,11 @@
                                 <span class="badge-tag gold-tag" data-i18n="ui_ctrl_lvl4">CARGA NVL 4</span>
                                 <span class="key-separator">+</span>
                                 <span class="key-badge">C</span>
+                                <span class="key-separator">/</span>
+                                <span class="key-badge">L</span>
                             </div>
                             <h4 data-i18n="ui_ctrl_edash">Energy Dash (Dash Cargado)</h4>
-                            <p data-i18n="ui_ctrl_edash_desc">Con carga nivel 4 (Mega Esfera), pulsa C para un potente impulso electrizante de 120 de daño</p>
+                            <p data-i18n="ui_ctrl_edash_desc">Con carga nivel 4 (Mega Esfera), pulsa C o L para un potente impulso electrizante de 120 de daño</p>
                         </div>
                     </div>
 
@@ -2796,11 +2808,15 @@
                         <div class="ctrl-details">
                             <div class="ctrl-badges">
                                 <span class="key-badge">↑</span>
+                                <span class="key-separator">/</span>
+                                <span class="key-badge">W</span>
                                 <span class="key-separator">+</span>
                                 <span class="key-badge">X</span>
+                                <span class="key-separator">/</span>
+                                <span class="key-badge">J</span>
                             </div>
                             <h4 data-i18n="ui_ctrl_shoot_up">Disparo Arriba</h4>
-                            <p data-i18n="ui_ctrl_shoot_up_desc">Mantén pulsada la Flecha Arriba mientras disparas para lanzar proyectiles al cielo</p>
+                            <p data-i18n="ui_ctrl_shoot_up_desc">Mantén pulsada la Flecha Arriba o W mientras disparas para lanzar proyectiles al cielo</p>
                         </div>
                     </div>
 
@@ -2811,11 +2827,15 @@
                         <div class="ctrl-details">
                             <div class="ctrl-badges">
                                 <span class="key-badge">↓</span>
+                                <span class="key-separator">/</span>
+                                <span class="key-badge">S</span>
                                 <span class="key-separator">+</span>
                                 <span class="key-badge">X</span>
+                                <span class="key-separator">/</span>
+                                <span class="key-badge">J</span>
                             </div>
                             <h4 data-i18n="ui_ctrl_shoot_down">Disparo Abajo (En el aire)</h4>
-                            <p data-i18n="ui_ctrl_shoot_down_desc">En el aire, mantén pulsada la Flecha Abajo y dispara para atacar hacia el suelo</p>
+                            <p data-i18n="ui_ctrl_shoot_down_desc">En el aire, mantén pulsada la Flecha Abajo o S y dispara para atacar hacia el suelo</p>
                         </div>
                     </div>
 
@@ -2826,10 +2846,12 @@
                         <div class="ctrl-details">
                             <div class="ctrl-badges">
                                 <span class="key-badge">X</span>
+                                <span class="key-separator">/</span>
+                                <span class="key-badge">J</span>
                                 <span class="badge-tag cyan-tag">NIVELES 1 A 5</span>
                             </div>
                             <h4 data-i18n="ui_ctrl_shoot_levels">5 Niveles de Disparo de Plasma</h4>
-                            <p data-i18n="ui_ctrl_shoot_levels_desc">Nivel 1: Estrella rápida (pulsar X) | Nivel 2: Carga ligera | Nivel 3: Esfera de plasma | Nivel 4: Mega Esfera (activa Energy Dash) | Nivel 5: Super Rayo Cósmico</p>
+                            <p data-i18n="ui_ctrl_shoot_levels_desc">Nivel 1: Estrella rápida (pulsar X / J) | Nivel 2: Carga ligera | Nivel 3: Esfera de plasma | Nivel 4: Mega Esfera (activa Energy Dash) | Nivel 5: Super Rayo Cósmico</p>
                         </div>
                     </div>
 
@@ -2840,6 +2862,8 @@
                         <div class="ctrl-details">
                             <div class="ctrl-badges">
                                 <span class="key-badge">X</span>
+                                <span class="key-separator">/</span>
+                                <span class="key-badge">J</span>
                                 <span class="key-separator">+</span>
                                 <span class="badge-tag cyan-tag" data-i18n="ui_ctrl_lvl5_tag">NVL 5 MAX</span>
                             </div>

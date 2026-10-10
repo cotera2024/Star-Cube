@@ -648,30 +648,52 @@
     window.startGameFromButton = startGameFromButton;
     window.addEventListener("keydown", e => {
         const inv = game.invertControls && gameState === "playing" && currentLevel === 1;
-        const isArrowKey = e.key === "ArrowLeft" || e.key === "ArrowRight";
         const isSpaceKey = e.key === " " || e.key === "Spacebar" || e.code === "Space";
         const isXKey = e.key === "x" || e.key === "X" || e.code === "KeyX";
+        const isJKey = e.key === "j" || e.key === "J" || e.code === "KeyJ";
+        const isKKey = e.key === "k" || e.key === "K" || e.code === "KeyK";
+        const isLKey = e.key === "l" || e.key === "L" || e.code === "KeyL";
+        const isShootKey = isXKey || isJKey;
+        const isJumpKeyCandidate = isSpaceKey || isKKey || e.key === "w" || e.key === "W";
+        const isDashKeyCandidate = e.key === "c" || e.key === "C" || isLKey;
+        const isLeftKey = e.key === "ArrowLeft" || e.key === "a" || e.key === "A";
+        const isRightKey = e.key === "ArrowRight" || e.key === "d" || e.key === "D";
+        const isUpKey = e.key === "ArrowUp" || e.key === "w" || e.key === "W";
+        const isDownKey = e.key === "ArrowDown" || e.key === "s" || e.key === "S";
+
         if (inv) {
-            if (e.key === "ArrowLeft") {
+            if (isLeftKey) {
                 keys["ArrowRight"] = true;
-            } else if (e.key === "ArrowRight") {
+                keys["d"] = true;
+            } else if (isRightKey) {
                 keys["ArrowLeft"] = true;
-            } else if (isSpaceKey) {
+                keys["a"] = true;
+            } else if (isJumpKeyCandidate) {
                 keys["x"] = true;
-            } else if (isXKey) {
+                keys["j"] = true;
+            } else if (isShootKey) {
                 keys[" "] = true;
+                keys["k"] = true;
             } else if (e.key === "z" || e.key === "Z" || e.code === "KeyZ") {
             } else {
                 keys[e.key] = true;
             }
         } else {
             keys[e.key] = true;
+            if (isLeftKey) { keys["ArrowLeft"] = true; keys["a"] = true; }
+            if (isRightKey) { keys["ArrowRight"] = true; keys["d"] = true; }
+            if (isUpKey) { keys["ArrowUp"] = true; keys["w"] = true; }
+            if (isDownKey) { keys["ArrowDown"] = true; keys["s"] = true; }
+            if (isShootKey) { keys["x"] = true; keys["j"] = true; }
+            if (isJumpKeyCandidate) { keys[" "] = true; keys["k"] = true; }
+            if (isDashKeyCandidate) { keys["c"] = true; keys["l"] = true; }
         }
+
         if (gameState === "playing" && game.player && !game.player.frozen) {
-            const isJumpKey = inv ? isXKey : (isSpaceKey || e.key === "w" || e.key === "W");
+            const isJumpKey = inv ? isShootKey : isJumpKeyCandidate;
             if (isJumpKey) game.player.jumpBufferTimer = Math.max(game.player.jumpBufferTimer, 12);
         }
-        if ((e.key === "c" || e.key === "C") && gameState === "playing" && currentLevel !== 4 && game.player && !game.player.frozen) {
+        if (isDashKeyCandidate && gameState === "playing" && currentLevel !== 4 && game.player && !game.player.frozen) {
             game.player.dashBufferTimer = 30;
         }
         initAudio();
@@ -722,26 +744,26 @@
             return;
         }
         if (game.techBoss && (game.techBoss.showChoice || game.techBoss._desktopCinematicActive)) {
-            if (e.key === " " || e.key === "Spacebar" || e.key === "Enter") e.preventDefault();
+            if (e.key === " " || e.key === "Spacebar" || e.key === "Enter" || isKKey) e.preventDefault();
             return;
         }
-        if (isDialogActive && (e.key === " " || e.key === "Spacebar" || e.key === "Enter" || e.key === "z" || e.key === "Z" || e.key === "x" || e.key === "X")) {
+        if (isDialogActive && (e.key === " " || e.key === "Spacebar" || e.key === "Enter" || e.key === "z" || e.key === "Z" || isShootKey || isJumpKeyCandidate)) {
             advanceOrSkipDialogue();
             return;
         }
         if (gameState === "introStory") {
-            if (e.key === " " || e.key === "Spacebar" || e.key === "Enter" || e.key === "Escape") {
+            if (e.key === " " || e.key === "Spacebar" || e.key === "Enter" || e.key === "Escape" || isKKey) {
                 if (typeof window.handleIntroInput === "function") {
                     window.handleIntroInput(e.key);
                 }
                 return;
             }
         }
-        if ((e.key === " " || e.key === "Spacebar" || e.key === "Enter") && gameState === "start") {
+        if ((e.key === " " || e.key === "Spacebar" || e.key === "Enter" || isKKey) && gameState === "start") {
             gameReady = true;
             window.gameReady = true;
             startGameFromButton();
-        } else if ((e.key === " " || e.key === "Spacebar") && gameState === "preNivel4") {
+        } else if ((e.key === " " || e.key === "Spacebar" || isKKey) && gameState === "preNivel4") {
             let lines = [ __("story_prenivel4_1"), __("story_prenivel4_2"), __("story_prenivel4_3"), __("story_prenivel4_4"), __("story_prenivel4_5"), __("story_prenivel4_6"), __("story_prenivel4_7"), __("story_prenivel4_8"), __("story_prenivel4_9"), __("story_prenivel4_10"), __("story_prenivel4_11"), __("story_prenivel4_12") ];
             const fullLine = lines[game.storyLine] || "";
             if (game.storyChar >= fullLine.length) {
@@ -761,24 +783,44 @@
     });
     window.addEventListener("keyup", e => {
         const invUp = game.invertControls && gameState === "playing" && currentLevel === 1;
-        const isArrowUp = e.key === "ArrowLeft" || e.key === "ArrowRight";
-        const isSpaceUp = e.key === " " || e.key === "Spacebar" || e.code === "Space";
-        const isXUp = e.key === "x" || e.key === "X" || e.code === "KeyX";
+        const isSpaceKey = e.key === " " || e.key === "Spacebar" || e.code === "Space";
+        const isXKey = e.key === "x" || e.key === "X" || e.code === "KeyX";
+        const isJKey = e.key === "j" || e.key === "J" || e.code === "KeyJ";
+        const isKKey = e.key === "k" || e.key === "K" || e.code === "KeyK";
+        const isLKey = e.key === "l" || e.key === "L" || e.code === "KeyL";
+        const isShootKey = isXKey || isJKey;
+        const isJumpKeyCandidate = isSpaceKey || isKKey || e.key === "w" || e.key === "W";
+        const isDashKeyCandidate = e.key === "c" || e.key === "C" || isLKey;
+        const isLeftKey = e.key === "ArrowLeft" || e.key === "a" || e.key === "A";
+        const isRightKey = e.key === "ArrowRight" || e.key === "d" || e.key === "D";
+        const isUpKey = e.key === "ArrowUp" || e.key === "w" || e.key === "W";
+        const isDownKey = e.key === "ArrowDown" || e.key === "s" || e.key === "S";
+
+        keys[e.key] = false;
         if (invUp) {
-            if (e.key === "ArrowLeft") {
+            if (isLeftKey) {
                 keys["ArrowRight"] = false;
-            } else if (e.key === "ArrowRight") {
+                keys["d"] = false;
+            } else if (isRightKey) {
                 keys["ArrowLeft"] = false;
-            } else if (isSpaceUp) {
+                keys["a"] = false;
+            } else if (isJumpKeyCandidate) {
                 keys["x"] = false;
-            } else if (isXUp) {
+                keys["j"] = false;
+            } else if (isShootKey) {
                 keys[" "] = false;
-            } else if (e.key === "z" || e.key === "Z" || e.code === "KeyZ") {
+                keys["k"] = false;
             } else {
                 keys[e.key] = false;
             }
         } else {
-            keys[e.key] = false;
+            if (isLeftKey) { keys["ArrowLeft"] = false; keys["a"] = false; }
+            if (isRightKey) { keys["ArrowRight"] = false; keys["d"] = false; }
+            if (isUpKey) { keys["ArrowUp"] = false; keys["w"] = false; }
+            if (isDownKey) { keys["ArrowDown"] = false; keys["s"] = false; }
+            if (isShootKey) { keys["x"] = false; keys["j"] = false; }
+            if (isJumpKeyCandidate) { keys[" "] = false; keys["k"] = false; }
+            if (isDashKeyCandidate) { keys["c"] = false; keys["l"] = false; }
         }
     });
     function loadLevel(idx, keepCheckpoint = false) {
