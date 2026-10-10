@@ -331,7 +331,7 @@ class Player {
             moving = true;
         }
         if (!this.onGround && this.vy < 0) this.state = "jump"; else if (!this.onGround && this.vy >= 0) this.state = "fall"; else if (moving) this.state = "run"; else this.state = "idle";
-        const hasInput = moving || wantDash || this.charging || (keys["x"] || keys["X"] || keys["j"] || keys["J"]) || (keys["z"] || keys["Z"] || keys[" "] || keys["w"] || keys["W"] || keys["k"] || keys["K"]) || !this.onGround;
+        const hasInput = moving || wantDash || this.charging || (keys["x"] || keys["X"] || keys["j"] || keys["J"]) || (keys["z"] || keys["Z"] || keys[" "] || keys["k"] || keys["K"]) || (keys["ArrowUp"] || keys["w"] || keys["W"]) || !this.onGround;
         if (hasInput || window.postGameHorror) {
             this.afkTimer = 0;
             this.afkState = null;
@@ -406,7 +406,7 @@ class Player {
         } else {
             this.animFrame = 0;
         }
-        if ((!game || !game.inHunt) && (keys[" "] || keys["w"] || keys["W"] || keys["k"] || keys["K"])) {
+        if ((!game || !game.inHunt) && (keys[" "] || keys["k"] || keys["K"])) {
             this.jumpBufferTimer = 8;
         }
         if (this.onGround) {
@@ -418,7 +418,7 @@ class Player {
             this.jumpBufferTimer--;
         }
         if ((!game || !game.inHunt) && this.jumpBufferTimer > 0 && this.coyoteTimer > 0 && !this.frozen) {
-            this._jumpHeldAtStart = !!(keys[" "] || keys["z"] || keys["Z"] || keys["w"] || keys["W"] || keys["k"] || keys["K"]);
+            this._jumpHeldAtStart = !!(keys[" "] || keys["z"] || keys["Z"] || keys["k"] || keys["K"]);
             let stormJumpMult = 1;
             if (currentLevel === 3 && game.stormMode && typeof window.getStormWind === "function") {
                 const wind = window.getStormWind();
@@ -471,7 +471,7 @@ class Player {
             }
         }
         const charging = (!game || !game.inHunt) && (keys["x"] || keys["X"] || keys["j"] || keys["J"]) && (currentLevel < 4 || currentLevel === 6 || currentLevel === "hub") && !this.frozen;
-        const jumpHeld = keys[" "] || keys["w"] || keys["W"] || keys["k"] || keys["K"];
+        const jumpHeld = keys[" "] || keys["k"] || keys["K"];
         if (!charging && this._jumpHeldAtStart && this._bounceGuard <= 0 && !jumpHeld && this.vy < -4) {
             this.vy *= .6;
         }

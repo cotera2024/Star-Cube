@@ -654,7 +654,7 @@
         const isKKey = e.key === "k" || e.key === "K" || e.code === "KeyK";
         const isLKey = e.key === "l" || e.key === "L" || e.code === "KeyL";
         const isShootKey = isXKey || isJKey;
-        const isJumpKeyCandidate = isSpaceKey || isKKey || e.key === "w" || e.key === "W";
+        const isJumpKeyCandidate = isSpaceKey || isKKey;
         const isDashKeyCandidate = e.key === "c" || e.key === "C" || isLKey;
         const isLeftKey = e.key === "ArrowLeft" || e.key === "a" || e.key === "A";
         const isRightKey = e.key === "ArrowRight" || e.key === "d" || e.key === "D";
@@ -789,7 +789,7 @@
         const isKKey = e.key === "k" || e.key === "K" || e.code === "KeyK";
         const isLKey = e.key === "l" || e.key === "L" || e.code === "KeyL";
         const isShootKey = isXKey || isJKey;
-        const isJumpKeyCandidate = isSpaceKey || isKKey || e.key === "w" || e.key === "W";
+        const isJumpKeyCandidate = isSpaceKey || isKKey;
         const isDashKeyCandidate = e.key === "c" || e.key === "C" || isLKey;
         const isLeftKey = e.key === "ArrowLeft" || e.key === "a" || e.key === "A";
         const isRightKey = e.key === "ArrowRight" || e.key === "d" || e.key === "D";
