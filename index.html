@@ -1173,14 +1173,16 @@
     
         body { overscroll-behavior: none; touch-action: none; -ms-touch-action: none; }
         canvas { touch-action: none; }
-        html, body { position: fixed; width: 100%; height: 100%; }
+        html, body { position: fixed; width: 100%; height: 100%; height: 100dvh; }
 
         #touch-controls {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100vw;
-            height: 100vh;
+            width: 100%;
+            height: 100%;
+            width: 100dvw;
+            height: 100dvh;
             pointer-events: none;
             z-index: 95;
             display: none;
@@ -1329,10 +1331,10 @@
 
         #pad-zone {
             position: absolute;
-            left: max(18px, env(safe-area-inset-left, 18px));
-            bottom: max(16px, env(safe-area-inset-bottom, 16px));
-            width: 204px;
-            height: 204px;
+            left: max(16px, env(safe-area-inset-left, 16px));
+            bottom: max(18px, env(safe-area-inset-bottom, 18px));
+            width: 168px;
+            height: 168px;
             pointer-events: auto;
             touch-action: none;
             transition: left 0.3s ease, right 0.3s ease;
@@ -1342,16 +1344,16 @@
             width: 100%;
             height: 100%;
             display: grid;
-            grid-template-columns: 64px 76px 64px;
-            grid-template-rows: 64px 76px 64px;
+            grid-template-columns: 50px 68px 50px;
+            grid-template-rows: 50px 68px 50px;
             justify-content: center;
             align-content: center;
-            filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.7));
+            filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.7));
         }
         .dpad-btn {
             background: linear-gradient(180deg, rgba(32, 38, 54, 0.88) 0%, rgba(16, 20, 30, 0.94) 100%);
             border: 2.5px solid rgba(255, 255, 255, 0.35);
-            font-size: 28px;
+            font-size: 26px;
             color: #f0f6fc;
             box-shadow: 0 4px 14px rgba(0,0,0,0.6), inset 0 1px 2px rgba(255,255,255,0.3);
             backdrop-filter: blur(6px);
@@ -1369,64 +1371,64 @@
         }
         #pad-up {
             grid-column: 2; grid-row: 1;
-            border-radius: 20px 20px 6px 6px;
+            border-radius: 18px 18px 6px 6px;
             border-bottom: 0;
         }
         #pad-down {
             grid-column: 2; grid-row: 3;
-            border-radius: 6px 6px 20px 20px;
+            border-radius: 6px 6px 18px 18px;
             border-top: 0;
         }
         #pad-left {
             grid-column: 1; grid-row: 2;
-            border-radius: 20px 6px 6px 20px;
+            border-radius: 18px 6px 6px 18px;
             border-right: 0;
         }
         #pad-right {
             grid-column: 3; grid-row: 2;
-            border-radius: 6px 20px 20px 6px;
+            border-radius: 6px 18px 18px 6px;
             border-left: 0;
         }
         .dpad-center {
             grid-column: 2; grid-row: 2;
             background: rgba(20, 25, 36, 0.92);
             border: 2px solid rgba(255, 255, 255, 0.2);
-            border-radius: 12px;
+            border-radius: 10px;
             pointer-events: none;
             position: relative;
         }
         .dpad-center::after {
             content: '';
             position: absolute;
-            inset: 18px;
+            inset: 16px;
             border-radius: 50%;
             background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.04) 100%);
         }
 
         #action-zone {
             position: absolute;
-            right: max(18px, env(safe-area-inset-right, 18px));
-            bottom: max(16px, env(safe-area-inset-bottom, 16px));
-            width: 270px;
-            height: 204px;
+            right: max(16px, env(safe-area-inset-right, 16px));
+            bottom: max(18px, env(safe-area-inset-bottom, 18px));
+            width: 220px;
+            height: 176px;
             pointer-events: none;
             transition: left 0.3s ease, right 0.3s ease;
         }
         #btn-jump {
             position: absolute;
-            right: 8px;
+            right: 6px;
             bottom: 6px;
-            width: 86px;
-            height: 86px;
+            width: 72px;
+            height: 72px;
             border-radius: 50%;
             background: linear-gradient(135deg, #ff3377 0%, #be123c 100%);
             border: 3.5px solid #ffa4cb;
-            box-shadow: 0 8px 24px rgba(190, 18, 60, 0.65), inset 0 2px 4px rgba(255,255,255,0.4), inset 0 -4px 10px rgba(0,0,0,0.4);
-            font-size: 28px;
+            box-shadow: 0 6px 20px rgba(190, 18, 60, 0.65), inset 0 2px 4px rgba(255,255,255,0.4), inset 0 -4px 10px rgba(0,0,0,0.4);
+            font-size: 26px;
             line-height: 1;
         }
         #btn-jump .lbl {
-            font-size: 11px;
+            font-size: 10.5px;
             letter-spacing: 1.2px;
             font-weight: bold;
             opacity: 0.95;
@@ -1435,19 +1437,19 @@
 
         #btn-shoot {
             position: absolute;
-            right: 104px;
-            bottom: 18px;
-            width: 78px;
-            height: 78px;
+            right: 88px;
+            bottom: 10px;
+            width: 66px;
+            height: 66px;
             border-radius: 50%;
             background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
             border: 3.5px solid #7dd3fc;
-            box-shadow: 0 8px 22px rgba(3, 105, 161, 0.65), inset 0 2px 4px rgba(255,255,255,0.4), inset 0 -4px 10px rgba(0,0,0,0.4);
-            font-size: 24px;
+            box-shadow: 0 6px 18px rgba(3, 105, 161, 0.65), inset 0 2px 4px rgba(255,255,255,0.4), inset 0 -4px 10px rgba(0,0,0,0.4);
+            font-size: 22px;
             line-height: 1;
         }
         #btn-shoot .lbl {
-            font-size: 10px;
+            font-size: 9.5px;
             letter-spacing: 1px;
             font-weight: bold;
             opacity: 0.95;
@@ -1456,19 +1458,19 @@
 
         #btn-dash {
             position: absolute;
-            right: 56px;
-            bottom: 106px;
-            width: 68px;
-            height: 68px;
+            right: 28px;
+            bottom: 88px;
+            width: 58px;
+            height: 58px;
             border-radius: 50%;
             background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%);
             border: 3px solid #fef08a;
-            box-shadow: 0 6px 18px rgba(180, 83, 9, 0.65), inset 0 2px 4px rgba(255,255,255,0.4), inset 0 -3px 8px rgba(0,0,0,0.4);
-            font-size: 22px;
+            box-shadow: 0 5px 16px rgba(180, 83, 9, 0.65), inset 0 2px 4px rgba(255,255,255,0.4), inset 0 -3px 8px rgba(0,0,0,0.4);
+            font-size: 20px;
             line-height: 1;
         }
         #btn-dash .lbl {
-            font-size: 9.5px;
+            font-size: 9px;
             letter-spacing: 1px;
             font-weight: bold;
             opacity: 0.95;
@@ -1477,19 +1479,19 @@
 
         #btn-enter-door {
             position: absolute;
-            right: 138px;
-            bottom: 108px;
-            width: 66px;
-            height: 66px;
+            right: 98px;
+            bottom: 88px;
+            width: 56px;
+            height: 56px;
             border-radius: 50%;
             background: linear-gradient(135deg, #10b981 0%, #047857 100%);
             border: 3px solid #a7f3d0;
-            box-shadow: 0 6px 18px rgba(4, 120, 87, 0.65), inset 0 2px 4px rgba(255,255,255,0.4);
-            font-size: 22px;
+            box-shadow: 0 5px 16px rgba(4, 120, 87, 0.65), inset 0 2px 4px rgba(255,255,255,0.4);
+            font-size: 20px;
             line-height: 1;
         }
         #btn-enter-door .lbl {
-            font-size: 9.5px;
+            font-size: 9px;
             letter-spacing: 1px;
             font-weight: bold;
             opacity: 0.95;
@@ -1521,23 +1523,23 @@
 
         #touch-controls.inverted-hands #pad-zone {
             left: auto !important;
-            right: max(18px, env(safe-area-inset-right, 18px)) !important;
+            right: max(16px, env(safe-area-inset-right, 16px)) !important;
         }
         #touch-controls.inverted-hands #action-zone {
             right: auto !important;
-            left: max(18px, env(safe-area-inset-left, 18px)) !important;
+            left: max(16px, env(safe-area-inset-left, 16px)) !important;
         }
         #touch-controls.inverted-hands #btn-jump {
-            right: auto !important; left: 8px !important;
+            right: auto !important; left: 6px !important;
         }
         #touch-controls.inverted-hands #btn-shoot {
-            right: auto !important; left: 104px !important;
+            right: auto !important; left: 88px !important;
         }
         #touch-controls.inverted-hands #btn-dash {
-            right: auto !important; left: 56px !important;
+            right: auto !important; left: 28px !important;
         }
         #touch-controls.inverted-hands #btn-enter-door {
-            right: auto !important; left: 138px !important;
+            right: auto !important; left: 98px !important;
         }
         #touch-controls.inverted-hands #hunt-action-zone {
             right: auto !important;
@@ -1681,44 +1683,45 @@
             }
         }
     
-        @media (max-height: 350px) {
+        @media (max-height: 380px) {
             #pad-zone {
-                width: 178px !important; height: 178px !important;
+                width: 154px !important; height: 154px !important;
                 left: max(10px, env(safe-area-inset-left, 10px)) !important;
-                bottom: max(8px, env(safe-area-inset-bottom, 8px)) !important;
+                bottom: max(10px, env(safe-area-inset-bottom, 10px)) !important;
             }
             .dpad-cross {
-                grid-template-columns: 56px 66px 56px !important;
-                grid-template-rows: 56px 66px 56px !important;
+                grid-template-columns: 46px 62px 46px !important;
+                grid-template-rows: 46px 62px 46px !important;
             }
             #action-zone {
-                width: 240px !important; height: 180px !important;
+                width: 200px !important; height: 155px !important;
                 right: max(10px, env(safe-area-inset-right, 10px)) !important;
-                bottom: max(8px, env(safe-area-inset-bottom, 8px)) !important;
+                bottom: max(10px, env(safe-area-inset-bottom, 10px)) !important;
             }
             #btn-jump {
-                width: 76px !important; height: 76px !important;
-                right: 6px !important; bottom: 4px !important;
-                font-size: 24px !important;
-            }
-            #btn-shoot {
-                width: 70px !important; height: 70px !important;
-                right: 92px !important; bottom: 12px !important;
+                width: 66px !important; height: 66px !important;
+                right: 4px !important; bottom: 4px !important;
                 font-size: 22px !important;
             }
-            #btn-dash {
+            #btn-shoot {
                 width: 60px !important; height: 60px !important;
-                right: 50px !important; bottom: 92px !important;
-                font-size: 19px !important;
+                right: 78px !important; bottom: 8px !important;
+                font-size: 20px !important;
+            }
+            #btn-dash {
+                width: 52px !important; height: 52px !important;
+                right: 22px !important; bottom: 78px !important;
+                font-size: 18px !important;
             }
             #btn-enter-door {
-                width: 58px !important; height: 58px !important;
-                right: 122px !important; bottom: 94px !important;
+                width: 50px !important; height: 50px !important;
+                right: 84px !important; bottom: 78px !important;
+                font-size: 18px !important;
             }
-            #touch-controls.inverted-hands #btn-jump { right: auto !important; left: 6px !important; }
-            #touch-controls.inverted-hands #btn-shoot { right: auto !important; left: 92px !important; }
-            #touch-controls.inverted-hands #btn-dash { right: auto !important; left: 50px !important; }
-            #touch-controls.inverted-hands #btn-enter-door { right: auto !important; left: 122px !important; }
+            #touch-controls.inverted-hands #btn-jump { right: auto !important; left: 4px !important; }
+            #touch-controls.inverted-hands #btn-shoot { right: auto !important; left: 78px !important; }
+            #touch-controls.inverted-hands #btn-dash { right: auto !important; left: 22px !important; }
+            #touch-controls.inverted-hands #btn-enter-door { right: auto !important; left: 84px !important; }
         }
 
         @media (max-width: 800px), (max-height: 520px) {
@@ -2597,9 +2600,10 @@
             </div>
 
             <p class="pause-hint" data-i18n="ui_pause_hint">Press P (or tap ⏸) to resume</p>
+        </div>
     </div>
 
-    <div id="rotate-prompt-overlay" style="display: none;">
+    <div id="rotate-prompt-overlay">
         <div class="rotate-prompt-content">
             <div class="rotate-anim-box">
                 <div class="rotate-phone-device">
@@ -2951,7 +2955,7 @@
                     const prompt = document.getElementById('rotate-prompt-overlay');
                     if (prompt) {
                         prompt.classList.add('dismissed');
-                        prompt.style.display = 'none';
+                        prompt.style.setProperty('display', 'none', 'important');
                     }
                 });
             }
@@ -2964,85 +2968,75 @@
         function resizeGame() {
             const c = document.getElementById('game-container');
             const canvas = document.getElementById('gameCanvas');
-            if (!c) return;
-            const winW = window.visualViewport ? window.visualViewport.width : window.innerWidth;
-            const winH = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+            const touchControls = document.getElementById('touch-controls');
+            if (!c || !canvas) return;
+            const vv = window.visualViewport;
+            const winW = (vv && vv.width) ? vv.width : window.innerWidth;
+            const winH = (vv && vv.height) ? vv.height : window.innerHeight;
             if (!winW || !winH) return;
 
+            const baseW = 1024;
             const baseH = 576;
-            const minW = 1024;
-            const aspect = winW / winH;
 
-            let targetW = minW;
-            let s = 1;
-            let offX = 0;
-            let offY = 0;
+            const scale = Math.min(winW / baseW, winH / baseH);
+            const dispW = Math.round(baseW * scale);
+            const dispH = Math.round(baseH * scale);
+            const offX = Math.round((winW - dispW) / 2);
+            const offY = Math.round((winH - dispH) / 2);
 
-            if (aspect >= minW / baseH) {
-                targetW = Math.round(baseH * aspect);
-                s = winH / baseH;
-                offX = 0;
-                offY = 0;
-            } else {
-                targetW = minW;
-                s = winW / minW;
-                offX = 0;
-                offY = Math.round((winH - baseH * s) / 2);
-            }
-
-            if (typeof VIEW_W !== 'undefined') {
-                VIEW_W = targetW;
-                window.VIEW_W = targetW;
-            }
-            if (typeof VIEW_H !== 'undefined') {
-                window.VIEW_H = baseH;
-            }
+            window.VIEW_W = baseW;
+            window.VIEW_H = baseH;
+            if (typeof VIEW_W !== 'undefined') VIEW_W = baseW;
 
             const ps = (typeof window.PerfQuality !== 'undefined' && window.PerfQuality && typeof window.PerfQuality.pixelScale === 'number' && window.PerfQuality.pixelScale > 0) ? window.PerfQuality.pixelScale : 1;
-            const bufW = Math.round(targetW * ps);
+            const bufW = Math.round(baseW * ps);
             const bufH = Math.round(baseH * ps);
-            if (canvas) {
-                if (canvas.width !== bufW) canvas.width = bufW;
-                if (canvas.height !== bufH) canvas.height = bufH;
-                canvas.style.width = targetW + 'px';
-                canvas.style.height = baseH + 'px';
-            }
+            if (canvas.width !== bufW) canvas.width = bufW;
+            if (canvas.height !== bufH) canvas.height = bufH;
+            canvas.style.width = baseW + 'px';
+            canvas.style.height = baseH + 'px';
 
             c.style.position = 'fixed';
-            c.style.width = targetW + 'px';
+            c.style.width = baseW + 'px';
             c.style.height = baseH + 'px';
             c.style.left = offX + 'px';
             c.style.top = offY + 'px';
-            c.style.transform = 'scale(' + s + ')';
+            c.style.transform = 'scale(' + scale + ')';
             c.style.transformOrigin = 'top left';
+
+            const isTouchOrMobile = (
+                (window.matchMedia && window.matchMedia("(pointer: coarse)").matches) ||
+                ('ontouchstart' in window) ||
+                (navigator.maxTouchPoints > 0) ||
+                winW < 1024 ||
+                winH < 576
+            );
+            if (isTouchOrMobile) {
+                c.style.border = 'none';
+                c.style.borderRadius = '0';
+                c.style.boxShadow = 'none';
+            } else {
+                c.style.border = '';
+                c.style.borderRadius = '';
+                c.style.boxShadow = '';
+            }
+
+            if (touchControls) {
+                touchControls.style.width = winW + 'px';
+                touchControls.style.height = winH + 'px';
+            }
 
             const isPortrait = (winH > winW);
             const rotatePrompt = document.getElementById('rotate-prompt-overlay');
             if (rotatePrompt) {
                 if (isPortrait) {
                     if (!rotatePrompt.classList.contains('dismissed')) {
-                        rotatePrompt.style.display = 'flex';
+                        rotatePrompt.style.setProperty('display', 'flex', 'important');
                     }
                 } else {
-                    rotatePrompt.style.display = 'none';
+                    rotatePrompt.style.setProperty('display', 'none', 'important');
                     rotatePrompt.classList.remove('dismissed');
                 }
-            }
-
-            const isMobileCoarse = typeof window !== 'undefined' && (
-                (window.matchMedia && window.matchMedia("(pointer: coarse)").matches) ||
-                ('ontouchstart' in window) ||
-                (navigator.maxTouchPoints > 0)
-            );
-            const isFullBleed = (aspect >= 1.75 && s >= 0.98) || isMobileCoarse;
-            if (isFullBleed) {
-                c.style.borderWidth = '0';
-                c.style.borderRadius = '0';
-                c.style.boxShadow = 'none';
-            } else {
-                c.style.borderWidth = '';
-                c.style.borderRadius = '';
-                c.style.boxShadow = '';
             }
         }
         window.resizeGame = resizeGame;

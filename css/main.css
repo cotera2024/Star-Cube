@@ -34,6 +34,7 @@ body {
     box-shadow: 0 12px 40px rgba(255, 51, 136, 0.35), 0 0 20px rgba(56, 189, 248, 0.2);
     border: 4px solid #ff66aa;
     transition: border-color 0.5s, box-shadow 0.5s;
+    box-sizing: border-box;
 }
 
 canvas {
@@ -1110,43 +1111,13 @@ body.no-cursor, body.no-cursor * { cursor: none !important; }
 }
 
 #btn-enter-door {
-    position: absolute;
-    right: 114px;
-    bottom: 8px;
-    width: 96px;
-    height: 96px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #10b981, #047857);
-    border: 3px solid #34d399;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), 0 0 16px rgba(52, 211, 153, 0.6), inset 0 -4px 10px rgba(0, 0, 0, 0.3);
-    font-size: 26px;
-    line-height: 1;
     display: none;
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    z-index: 10;
     cursor: pointer;
     color: #fff;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
-}
-
-#btn-enter-door .lbl {
-    font-size: 11px;
-    letter-spacing: 1.2px;
-    opacity: 0.95;
-    margin-top: 3px;
-    font-family: 'Fredoka One', cursive;
-}
-
-#btn-enter-door.active {
-    filter: brightness(1.3) contrast(1.1);
-    transform: scale(0.92);
-}
-
-.inverted-hands #btn-enter-door {
-    right: auto !important;
-    left: 114px !important;
 }
 
 @media (max-height: 480px) {
