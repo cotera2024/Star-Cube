@@ -300,7 +300,7 @@
     let _isSlashPressed = false;
 
     function getActionBtnAt(x, y) {
-        const pad = 16;
+        const pad = 20;
         const dDoor = enterDoorBtn && enterDoorBtn.style.display !== "none" ? enterDoorBtn.getBoundingClientRect() : null;
         const s = shootBtnEl && shootBtnEl.style.display !== "none" ? shootBtnEl.getBoundingClientRect() : null;
         const j = jumpBtnEl && jumpBtnEl.style.display !== "none" ? jumpBtnEl.getBoundingClientRect() : null;

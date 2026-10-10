@@ -591,7 +591,12 @@
         if (titleBtns) titleBtns.classList.add("hidden");
         const langToggleBtn = document.getElementById("btn-lang-toggle");
         if (langToggleBtn) langToggleBtn.style.display = "none";
-        if (typeof window.startIntroCinematic === "function") {
+        let hasSeenIntro = false;
+        try {
+            const val = typeof window.storageGet === "function" ? window.storageGet("starcube_intro_seen") : localStorage.getItem("starcube_intro_seen");
+            hasSeenIntro = (val === "true" || val === true);
+        } catch (e) {}
+        if (!hasSeenIntro && typeof window.startIntroCinematic === "function") {
             window.startIntroCinematic();
         } else {
             loadHubLevel(0);

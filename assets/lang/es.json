@@ -851,5 +851,6 @@
   "dlg_pumpkin_defeated_horror": "¡¡MALDITA PEGGY... ARDEREMOS JUNTOS EN EL FUEGO DEL AVERNO...!!",
   "hub_death_altar_speech": "Por la atrocidad de tus actos, tu alma ha sido sentenciada a las simas del infierno. Recorre una vez más cada mundo en su semblante más retorcido y aterrador... Todos aquellos a quienes arrebataste la paz han resurgido implacables, sedientos de tu sufrimiento —en especial las bestias que aguardan al final. Disfruta de tu tormento por la eternidad, mientras los lamentos y ecos desgarradores de tus amigos caídos martillan tu cordura para siempre...",
   "death_name": "LA MUERTE",
-  "ui_entrar_abismo": "ENTRAR AL ABISMO"
+  "ui_entrar_abismo": "ENTRAR AL ABISMO",
+  "ui_rotate_dismiss": "Continuar de todos modos"
 }

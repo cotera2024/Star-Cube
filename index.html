@@ -1176,14 +1176,19 @@
         html, body { position: fixed; width: 100%; height: 100%; }
 
         #touch-controls {
-            position: absolute;
-            top: env(safe-area-inset-top, 0px);
-            right: env(safe-area-inset-right, 0px);
-            bottom: env(safe-area-inset-bottom, 0px);
-            left: env(safe-area-inset-left, 0px);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
             pointer-events: none;
-            z-index: 12; display: none;
+            z-index: 95;
+            display: none;
             font-family: 'Fredoka One', cursive;
+            overflow: hidden;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         @media (max-height: 520px) {
@@ -1323,103 +1328,180 @@
         }
 
         #pad-zone {
-            position: absolute; left: 16px; bottom: 16px;
-            width: 220px; height: 220px;
+            position: absolute;
+            left: max(18px, env(safe-area-inset-left, 18px));
+            bottom: max(16px, env(safe-area-inset-bottom, 16px));
+            width: 204px;
+            height: 204px;
             pointer-events: auto;
             touch-action: none;
             transition: left 0.3s ease, right 0.3s ease;
         }
         .dpad-cross {
-            position: relative; width: 100%; height: 100%;
+            position: relative;
+            width: 100%;
+            height: 100%;
             display: grid;
-            grid-template-columns: 70px 80px 70px;
-            grid-template-rows: 70px 80px 70px;
-            justify-content: center; align-content: center;
+            grid-template-columns: 64px 76px 64px;
+            grid-template-rows: 64px 76px 64px;
+            justify-content: center;
+            align-content: center;
+            filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.7));
         }
         .dpad-btn {
-            background: rgba(22, 27, 34, 0.72);
-            border: 2px solid rgba(255, 255, 255, 0.35);
-            font-size: 30px; color: #f0f6fc;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.2);
-            backdrop-filter: blur(4px);
+            background: linear-gradient(180deg, rgba(32, 38, 54, 0.88) 0%, rgba(16, 20, 30, 0.94) 100%);
+            border: 2.5px solid rgba(255, 255, 255, 0.35);
+            font-size: 28px;
+            color: #f0f6fc;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.6), inset 0 1px 2px rgba(255,255,255,0.3);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
         }
         .dpad-btn.active {
-            background: rgba(56, 189, 248, 0.65);
+            background: linear-gradient(180deg, rgba(56, 189, 248, 0.92) 0%, rgba(14, 116, 144, 0.96) 100%);
             border-color: #38bdf8;
-            box-shadow: 0 0 16px rgba(56, 189, 248, 0.8), inset 0 0 8px #fff;
+            box-shadow: 0 0 22px rgba(56, 189, 248, 0.95), inset 0 0 10px #ffffff;
+            transform: scale(0.96);
         }
         #pad-up {
             grid-column: 2; grid-row: 1;
-            border-radius: 16px 16px 4px 4px;
+            border-radius: 20px 20px 6px 6px;
             border-bottom: 0;
         }
         #pad-down {
             grid-column: 2; grid-row: 3;
-            border-radius: 4px 4px 16px 16px;
+            border-radius: 6px 6px 20px 20px;
             border-top: 0;
         }
         #pad-left {
             grid-column: 1; grid-row: 2;
-            border-radius: 16px 4px 4px 16px;
+            border-radius: 20px 6px 6px 20px;
             border-right: 0;
         }
         #pad-right {
             grid-column: 3; grid-row: 2;
-            border-radius: 4px 16px 16px 4px;
+            border-radius: 6px 20px 20px 6px;
             border-left: 0;
         }
         .dpad-center {
             grid-column: 2; grid-row: 2;
-            background: rgba(22, 27, 34, 0.85);
-            border: 2px solid rgba(255, 255, 255, 0.18);
-            border-radius: 8px;
+            background: rgba(20, 25, 36, 0.92);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
             pointer-events: none;
             position: relative;
         }
         .dpad-center::after {
-            content: ''; position: absolute; inset: 20px;
-            border-radius: 50%; background: rgba(255,255,255,0.18);
+            content: '';
+            position: absolute;
+            inset: 18px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.04) 100%);
         }
 
         #action-zone {
-            position: absolute; right: 16px; bottom: 16px;
-            width: 250px; height: 210px;
+            position: absolute;
+            right: max(18px, env(safe-area-inset-right, 18px));
+            bottom: max(16px, env(safe-area-inset-bottom, 16px));
+            width: 270px;
+            height: 204px;
             pointer-events: none;
             transition: left 0.3s ease, right 0.3s ease;
         }
         #btn-jump {
-            position: absolute; right: 8px; bottom: 8px;
-            width: 96px; height: 96px; border-radius: 50%;
-            background: linear-gradient(135deg, #ff3377, #c2185b);
-            border: 3px solid #ff80ab;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.5), inset 0 -4px 10px rgba(0,0,0,0.3);
-            font-size: 26px; line-height: 1;
+            position: absolute;
+            right: 8px;
+            bottom: 6px;
+            width: 86px;
+            height: 86px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff3377 0%, #be123c 100%);
+            border: 3.5px solid #ffa4cb;
+            box-shadow: 0 8px 24px rgba(190, 18, 60, 0.65), inset 0 2px 4px rgba(255,255,255,0.4), inset 0 -4px 10px rgba(0,0,0,0.4);
+            font-size: 28px;
+            line-height: 1;
         }
-        #btn-jump .lbl { font-size: 11px; letter-spacing: 1.2px; opacity: 0.95; margin-top: 3px; }
+        #btn-jump .lbl {
+            font-size: 11px;
+            letter-spacing: 1.2px;
+            font-weight: bold;
+            opacity: 0.95;
+            margin-top: 2px;
+        }
 
         #btn-shoot {
-            position: absolute; right: 118px; bottom: 28px;
-            width: 82px; height: 82px; border-radius: 50%;
-            background: linear-gradient(135deg, #00b4d8, #0077b6);
-            border: 3px solid #90e0ef;
-            box-shadow: 0 6px 18px rgba(0,0,0,0.5), inset 0 -4px 10px rgba(0,0,0,0.3);
-            font-size: 22px; line-height: 1;
+            position: absolute;
+            right: 104px;
+            bottom: 18px;
+            width: 78px;
+            height: 78px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            border: 3.5px solid #7dd3fc;
+            box-shadow: 0 8px 22px rgba(3, 105, 161, 0.65), inset 0 2px 4px rgba(255,255,255,0.4), inset 0 -4px 10px rgba(0,0,0,0.4);
+            font-size: 24px;
+            line-height: 1;
         }
-        #btn-shoot .lbl { font-size: 10px; letter-spacing: 1px; opacity: 0.95; margin-top: 2px; }
+        #btn-shoot .lbl {
+            font-size: 10px;
+            letter-spacing: 1px;
+            font-weight: bold;
+            opacity: 0.95;
+            margin-top: 2px;
+        }
 
         #btn-dash {
-            position: absolute; right: 68px; bottom: 118px;
-            width: 74px; height: 74px; border-radius: 50%;
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            border: 3px solid #fde68a;
-            box-shadow: 0 6px 16px rgba(0,0,0,0.5), inset 0 -3px 8px rgba(0,0,0,0.3);
-            font-size: 20px; line-height: 1;
+            position: absolute;
+            right: 56px;
+            bottom: 106px;
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%);
+            border: 3px solid #fef08a;
+            box-shadow: 0 6px 18px rgba(180, 83, 9, 0.65), inset 0 2px 4px rgba(255,255,255,0.4), inset 0 -3px 8px rgba(0,0,0,0.4);
+            font-size: 22px;
+            line-height: 1;
         }
-        #btn-dash .lbl { font-size: 10px; letter-spacing: 1px; opacity: 0.95; margin-top: 2px; }
+        #btn-dash .lbl {
+            font-size: 9.5px;
+            letter-spacing: 1px;
+            font-weight: bold;
+            opacity: 0.95;
+            margin-top: 1px;
+        }
+
+        #btn-enter-door {
+            position: absolute;
+            right: 138px;
+            bottom: 108px;
+            width: 66px;
+            height: 66px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+            border: 3px solid #a7f3d0;
+            box-shadow: 0 6px 18px rgba(4, 120, 87, 0.65), inset 0 2px 4px rgba(255,255,255,0.4);
+            font-size: 22px;
+            line-height: 1;
+        }
+        #btn-enter-door .lbl {
+            font-size: 9.5px;
+            letter-spacing: 1px;
+            font-weight: bold;
+            opacity: 0.95;
+            margin-top: 1px;
+        }
 
         #hunt-action-zone {
-            position: absolute; right: 24px; bottom: 24px;
-            width: 140px; height: 140px;
+            position: absolute;
+            right: max(24px, env(safe-area-inset-right, 24px));
+            bottom: max(20px, env(safe-area-inset-bottom, 20px));
+            width: 140px;
+            height: 140px;
             pointer-events: none;
             transition: left 0.3s ease, right 0.3s ease;
         }
@@ -1438,23 +1520,28 @@
         }
 
         #touch-controls.inverted-hands #pad-zone {
-            left: auto !important; right: 16px !important;
+            left: auto !important;
+            right: max(18px, env(safe-area-inset-right, 18px)) !important;
         }
-
         #touch-controls.inverted-hands #action-zone {
-            right: auto !important; left: 16px !important;
+            right: auto !important;
+            left: max(18px, env(safe-area-inset-left, 18px)) !important;
         }
         #touch-controls.inverted-hands #btn-jump {
             right: auto !important; left: 8px !important;
         }
         #touch-controls.inverted-hands #btn-shoot {
-            right: auto !important; left: 118px !important;
+            right: auto !important; left: 104px !important;
         }
         #touch-controls.inverted-hands #btn-dash {
-            right: auto !important; left: 68px !important;
+            right: auto !important; left: 56px !important;
+        }
+        #touch-controls.inverted-hands #btn-enter-door {
+            right: auto !important; left: 138px !important;
         }
         #touch-controls.inverted-hands #hunt-action-zone {
-            right: auto !important; left: 24px !important;
+            right: auto !important;
+            left: max(24px, env(safe-area-inset-left, 24px)) !important;
         }
 
         #btn-fullscreen-toggle {
@@ -1594,33 +1681,44 @@
             }
         }
     
-        @media (max-height: 480px) {
+        @media (max-height: 350px) {
             #pad-zone {
-                width: 170px !important; height: 170px !important;
-                left: 10px !important; bottom: 10px !important;
+                width: 178px !important; height: 178px !important;
+                left: max(10px, env(safe-area-inset-left, 10px)) !important;
+                bottom: max(8px, env(safe-area-inset-bottom, 8px)) !important;
             }
             .dpad-cross {
-                grid-template-columns: 55px 60px 55px !important;
-                grid-template-rows: 55px 60px 55px !important;
+                grid-template-columns: 56px 66px 56px !important;
+                grid-template-rows: 56px 66px 56px !important;
+            }
+            #action-zone {
+                width: 240px !important; height: 180px !important;
+                right: max(10px, env(safe-area-inset-right, 10px)) !important;
+                bottom: max(8px, env(safe-area-inset-bottom, 8px)) !important;
             }
             #btn-jump {
                 width: 76px !important; height: 76px !important;
-                right: 12px !important; bottom: 12px !important;
-                font-size: 20px !important;
+                right: 6px !important; bottom: 4px !important;
+                font-size: 24px !important;
             }
             #btn-shoot {
-                width: 66px !important; height: 66px !important;
-                right: 98px !important; bottom: 22px !important;
-                font-size: 18px !important;
+                width: 70px !important; height: 70px !important;
+                right: 92px !important; bottom: 12px !important;
+                font-size: 22px !important;
             }
             #btn-dash {
                 width: 60px !important; height: 60px !important;
-                right: 56px !important; bottom: 98px !important;
-                font-size: 16px !important;
+                right: 50px !important; bottom: 92px !important;
+                font-size: 19px !important;
             }
-            #touch-controls.inverted-hands #btn-jump { right: auto !important; left: 12px !important; }
-            #touch-controls.inverted-hands #btn-shoot { right: auto !important; left: 98px !important; }
-            #touch-controls.inverted-hands #btn-dash { right: auto !important; left: 56px !important; }
+            #btn-enter-door {
+                width: 58px !important; height: 58px !important;
+                right: 122px !important; bottom: 94px !important;
+            }
+            #touch-controls.inverted-hands #btn-jump { right: auto !important; left: 6px !important; }
+            #touch-controls.inverted-hands #btn-shoot { right: auto !important; left: 92px !important; }
+            #touch-controls.inverted-hands #btn-dash { right: auto !important; left: 50px !important; }
+            #touch-controls.inverted-hands #btn-enter-door { right: auto !important; left: 122px !important; }
         }
 
         @media (max-width: 800px), (max-height: 520px) {
@@ -1683,7 +1781,7 @@
         #rotate-prompt-overlay {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
-            background: radial-gradient(circle, rgba(20, 10, 40, 0.98) 0%, rgba(5, 2, 15, 0.98) 100%);
+            background: radial-gradient(circle at center, rgba(22, 14, 45, 0.98) 0%, rgba(6, 4, 16, 0.99) 100%);
             z-index: 100000;
             display: none;
             align-items: center;
@@ -1693,34 +1791,124 @@
             font-family: 'Fredoka One', cursive, sans-serif;
             padding: 24px;
             box-sizing: border-box;
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            cursor: pointer;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            animation: fadeInRotate 0.3s ease;
+        }
+        @keyframes fadeInRotate {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @media screen and (orientation: portrait) {
+            #rotate-prompt-overlay:not(.dismissed) {
+                display: flex !important;
+            }
+        }
+        @media screen and (orientation: landscape) {
+            #rotate-prompt-overlay {
+                display: none !important;
+            }
         }
         .rotate-prompt-content {
-            background: rgba(255, 255, 255, 0.06);
-            border: 2px solid rgba(255, 215, 0, 0.6);
-            border-radius: 20px;
-            padding: 28px 24px;
-            max-width: 320px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 25px rgba(255, 215, 0, 0.2);
+            background: rgba(255, 255, 255, 0.07);
+            border: 2px solid rgba(255, 215, 0, 0.65);
+            border-radius: 24px;
+            padding: 32px 26px;
+            max-width: 330px;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75), 0 0 30px rgba(255, 215, 0, 0.25);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-        .rotate-phone-icon {
-            font-size: 52px;
-            margin-bottom: 14px;
-            animation: rotatePhoneAnim 2.2s infinite ease-in-out;
+        .rotate-anim-box {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 16px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        @keyframes rotatePhoneAnim {
+        .rotate-phone-device {
+            width: 36px;
+            height: 62px;
+            border: 3.5px solid #ffd700;
+            border-radius: 9px;
+            background: rgba(255, 215, 0, 0.12);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+            position: relative;
+            animation: rotateDeviceAnim 2.2s infinite ease-in-out;
+            transform-origin: center center;
+        }
+        .phone-screen-bar {
+            width: 14px;
+            height: 3px;
+            background: #ffd700;
+            border-radius: 2px;
+            position: absolute;
+            top: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .phone-screen-bar::after {
+            content: '';
+            position: absolute;
+            top: 44px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #ffd700;
+        }
+        .rotate-curve-arrow {
+            position: absolute;
+            font-size: 30px;
+            color: #00ffff;
+            text-shadow: 0 0 12px #00ffff;
+            bottom: -4px;
+            right: 0px;
+            animation: arrowPulse 2.2s infinite ease-in-out;
+        }
+        @keyframes rotateDeviceAnim {
             0%, 15% { transform: rotate(0deg); }
             50%, 65% { transform: rotate(90deg); }
             100% { transform: rotate(0deg); }
         }
+        @keyframes arrowPulse {
+            0%, 100% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.25); opacity: 1; }
+        }
         .rotate-prompt-title {
-            font-size: 19px;
-            line-height: 1.4;
+            font-size: 22px;
+            line-height: 1.35;
             color: #ffd700;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+            text-shadow: 0 2px 10px rgba(0,0,0,0.85);
             margin: 0;
+            letter-spacing: 0.5px;
+        }
+        .rotate-prompt-desc {
+            font-family: 'Courier Prime', monospace;
+            font-size: 13.5px;
+            color: #e2e8f0;
+            margin: 12px 0 16px 0;
+            line-height: 1.5;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+        }
+        .rotate-dismiss-btn {
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.45);
+            font-family: 'Courier Prime', monospace;
+            font-size: 11.5px;
+            cursor: pointer;
+            padding: 6px 12px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        .rotate-dismiss-btn:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.12);
         }
     </style>
 </head>
@@ -1805,41 +1993,39 @@
                 <div id="dialog-prompt" data-i18n="ui_dialog_prompt">PRESS SPACE ▶</div>
             </div>
         </div>
+    </div>
 
-        <div id="touch-controls">
-            
-            <div id="pad-zone" class="dpad-container">
-                <div class="dpad-cross">
-                    <button class="tc-btn dpad-btn" id="pad-up" data-dir="up" aria-label="Up">▲</button>
-                    <button class="tc-btn dpad-btn" id="pad-left" data-dir="left" aria-label="Left">◀</button>
-                    <div class="dpad-center"></div>
-                    <button class="tc-btn dpad-btn" id="pad-right" data-dir="right" aria-label="Right">▶</button>
-                    <button class="tc-btn dpad-btn" id="pad-down" data-dir="down" aria-label="Down">▼</button>
-                </div>
+    <div id="touch-controls">
+        <div id="pad-zone" class="dpad-container">
+            <div class="dpad-cross">
+                <button class="tc-btn dpad-btn" id="pad-up" data-dir="up" aria-label="Up">▲</button>
+                <button class="tc-btn dpad-btn" id="pad-left" data-dir="left" aria-label="Left">◀</button>
+                <div class="dpad-center"></div>
+                <button class="tc-btn dpad-btn" id="pad-right" data-dir="right" aria-label="Right">▶</button>
+                <button class="tc-btn dpad-btn" id="pad-down" data-dir="down" aria-label="Down">▼</button>
             </div>
+        </div>
 
-            <div id="action-zone">
-                <button class="tc-btn" id="btn-enter-door" data-action="enter" aria-label="Enter" style="display:none">
-                    <span>🚪</span><span class="lbl" data-i18n="ui_touch_enter_btn">ENTER</span>
-                </button>
-                <button class="tc-btn" id="btn-dash" data-action="dash" aria-label="Dash">
-                    <span>⚡</span><span class="lbl" data-i18n="ui_touch_dash_btn">DASH</span>
-                </button>
-                <button class="tc-btn" id="btn-shoot" data-action="shoot" aria-label="Shoot">
-                    <span>✕</span><span class="lbl" data-i18n="ui_touch_shoot_btn">SHOOT</span>
-                </button>
-                <button class="tc-btn" id="btn-jump" data-action="jump" aria-label="Jump">
-                    <span>A</span><span class="lbl" data-i18n="ui_touch_jump_btn">JUMP</span>
-                </button>
-            </div>
+        <div id="action-zone">
+            <button class="tc-btn" id="btn-enter-door" data-action="enter" aria-label="Enter" style="display:none">
+                <span>🚪</span><span class="lbl" data-i18n="ui_touch_enter_btn">ENTER</span>
+            </button>
+            <button class="tc-btn" id="btn-dash" data-action="dash" aria-label="Dash">
+                <span>⚡</span><span class="lbl" data-i18n="ui_touch_dash_btn">DASH</span>
+            </button>
+            <button class="tc-btn" id="btn-shoot" data-action="shoot" aria-label="Shoot">
+                <span>✕</span><span class="lbl" data-i18n="ui_touch_shoot_btn">SHOOT</span>
+            </button>
+            <button class="tc-btn" id="btn-jump" data-action="jump" aria-label="Jump">
+                <span>A</span><span class="lbl" data-i18n="ui_touch_jump_btn">JUMP</span>
+            </button>
+        </div>
 
-            <div id="hunt-action-zone" style="display:none;">
-                <button class="tc-btn" id="btn-slash-hunt" data-action="slash" aria-label="Attack">
-                    <span class="hunt-icon">🗡️</span>
-                    <span class="hunt-lbl" data-i18n="ui_touch_slash_btn">ATTACK</span>
-                </button>
-            </div>
-
+        <div id="hunt-action-zone" style="display:none;">
+            <button class="tc-btn" id="btn-slash-hunt" data-action="slash" aria-label="Attack">
+                <span class="hunt-icon">🗡️</span>
+                <span class="hunt-lbl" data-i18n="ui_touch_slash_btn">ATTACK</span>
+            </button>
         </div>
     </div>
     <div id="handOverlay">✋</div>
@@ -2413,11 +2599,17 @@
             <p class="pause-hint" data-i18n="ui_pause_hint">Press P (or tap ⏸) to resume</p>
     </div>
 
-    <div id="rotate-prompt-overlay" style="display: none;" onclick="this.style.display='none'">
+    <div id="rotate-prompt-overlay" style="display: none;">
         <div class="rotate-prompt-content">
-            <div class="rotate-phone-icon">📱 ➔ 📲</div>
-            <h3 class="rotate-prompt-title" data-i18n="ui_rotate_device">Por favor, gira tu dispositivo a horizontal</h3>
-            <span class="rotate-tap-dismiss" style="font-size: 13px; opacity: 0.7; margin-top: 14px; display: block;">(Toca para continuar / Tap to dismiss)</span>
+            <div class="rotate-anim-box">
+                <div class="rotate-phone-device">
+                    <div class="phone-screen-bar"></div>
+                </div>
+                <div class="rotate-curve-arrow">↻</div>
+            </div>
+            <h2 class="rotate-prompt-title" data-i18n="ui_rotate_title">¡Gira tu teléfono!</h2>
+            <p class="rotate-prompt-desc" data-i18n="ui_rotate_desc">StarCube se juega en horizontal.<br>Pon el móvil de lado para continuar.</p>
+            <button id="rotate-dismiss-btn" class="rotate-dismiss-btn" type="button" data-i18n="ui_rotate_dismiss">(Continuar de todos modos)</button>
         </div>
     </div>
 
@@ -2752,6 +2944,18 @@
                 });
             }
 
+            const rotateDismissBtn = document.getElementById('rotate-dismiss-btn');
+            if (rotateDismissBtn) {
+                rotateDismissBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const prompt = document.getElementById('rotate-prompt-overlay');
+                    if (prompt) {
+                        prompt.classList.add('dismissed');
+                        prompt.style.display = 'none';
+                    }
+                });
+            }
+
             if (typeof updateUITranslations === 'function') {
                 updateUITranslations();
             }
@@ -2812,17 +3016,24 @@
             c.style.transform = 'scale(' + s + ')';
             c.style.transformOrigin = 'top left';
 
+            const isPortrait = (winH > winW);
+            const rotatePrompt = document.getElementById('rotate-prompt-overlay');
+            if (rotatePrompt) {
+                if (isPortrait) {
+                    if (!rotatePrompt.classList.contains('dismissed')) {
+                        rotatePrompt.style.display = 'flex';
+                    }
+                } else {
+                    rotatePrompt.style.display = 'none';
+                    rotatePrompt.classList.remove('dismissed');
+                }
+            }
+
             const isMobileCoarse = typeof window !== 'undefined' && (
                 (window.matchMedia && window.matchMedia("(pointer: coarse)").matches) ||
                 ('ontouchstart' in window) ||
                 (navigator.maxTouchPoints > 0)
             );
-            const isPortrait = isMobileCoarse && (winH > winW);
-            const rotatePrompt = document.getElementById('rotate-prompt-overlay');
-            if (rotatePrompt) {
-                rotatePrompt.style.display = isPortrait ? 'flex' : 'none';
-            }
-
             const isFullBleed = (aspect >= 1.75 && s >= 0.98) || isMobileCoarse;
             if (isFullBleed) {
                 c.style.borderWidth = '0';
@@ -2839,7 +3050,15 @@
         resizeGame();
         window.addEventListener('resize', resizeGame);
         window.addEventListener('load', resizeGame);
-        window.addEventListener('orientationchange', () => { setTimeout(resizeGame, 100); setTimeout(resizeGame, 300); });
+        window.addEventListener('orientationchange', () => { setTimeout(resizeGame, 80); setTimeout(resizeGame, 250); });
+        if (typeof screen !== 'undefined' && screen.orientation && screen.orientation.addEventListener) {
+            screen.orientation.addEventListener('change', () => { setTimeout(resizeGame, 80); setTimeout(resizeGame, 250); });
+        }
+        if (window.matchMedia) {
+            try {
+                window.matchMedia('(orientation: portrait)').addEventListener('change', () => { setTimeout(resizeGame, 80); setTimeout(resizeGame, 250); });
+            } catch (e) {}
+        }
         if (window.visualViewport) {
             window.visualViewport.addEventListener('resize', resizeGame);
         }
