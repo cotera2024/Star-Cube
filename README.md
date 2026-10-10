@@ -75,16 +75,21 @@ Puedes jugar *Star Cube* ahora mismo en tu navegador sin instalar nada:
 ### Controles
 
 #### Teclado (PC)
-| Acción | Tecla / Control |
-| :--- | :--- |
-| __Moverse__ | Flechas direccionales (`←` / `→`) |
-| __Saltar__ | Barra espaciadora (`Espacio`) |
-| __Disparar__ | `X` |
-| __Cargar Ataque__ | Mantener `X` presionado |
-| __Dash__ | `C` |
-| __Energy Dash__ | `C` (con el ataque cargado al máximo) |
-| __Interactuar / Entrar__ | Flecha Arriba (`↑`) frente a puertas |
-| __Pausar__ | `P` |
+El juego cuenta con dos esquemas de control completos: **Clásico** (Flechas + Espacio + C + X) y **Moderno** (WASD + K + L + J):
+
+| Acción | Esquema Clásico | Esquema Moderno |
+| :--- | :--- | :--- |
+| __Moverse__ | Flechas direccionales (`←` / `→`) | Teclas `A` / `D` |
+| __Saltar__ | Barra espaciadora (`Espacio`) | Tecla `K` |
+| __Dash (Impulso)__ | `C` | `L` |
+| __Disparar / Cargar Plasma__ | `X` (mantener para cargar niveles 1 a 5) | `J` (mantener para cargar niveles 1 a 5) |
+| __Disparo Arriba__ | `↑` + `X` | `W` + `J` |
+| __Disparo Abajo (en el aire)__ | `↓` + `X` | `S` + `J` |
+| __Energy Dash__ | `C` (con carga nivel 4) | `L` (con carga nivel 4) |
+| __Rayo Cósmico__ | Soltar `X` (con carga nivel 5 MAX) | Soltar `J` (con carga nivel 5 MAX) |
+| __Tajo (Modo Cacería)__ | `X` | `J` |
+| __Interactuar / Entrar__ | Flecha Arriba (`↑`) frente a puertas | Tecla `W` frente a puertas |
+| __Pausar__ | `P` | `P` |
 
 #### Pantalla Táctil (Móvil / Tablet)
 - __D-Pad Virtual__: Moverse a la izquierda o derecha.
@@ -229,16 +234,21 @@ You can play *Star Cube* instantly right now in your web browser across any of o
 ### Controls
 
 #### Keyboard (PC)
-| Action | Key / Input |
-| :--- | :--- |
-| **Move** | Arrow keys (`←` / `→`) |
-| **Jump** | `Spacebar` |
-| **Shoot** | `X` |
-| **Charge Shot** | Hold `X` |
-| **Dash** | `C` |
-| **Energy Dash** | `C` (while fully charged) |
-| **Interact / Enter** | Up Arrow (`↑`) in front of doors |
-| **Pause** | `P` |
+The game features two complete control schemes: **Classic** (Arrows + Space + C + X) and **Modern** (WASD + K + L + J):
+
+| Action | Classic Scheme | Modern Scheme |
+| :--- | :--- | :--- |
+| **Move** | Arrow keys (`←` / `→`) | `A` / `D` keys |
+| **Jump** | `Spacebar` | `K` key |
+| **Dash** | `C` | `L` |
+| **Shoot / Charge Plasma** | `X` (hold to charge levels 1 to 5) | `J` (hold to charge levels 1 to 5) |
+| **Shoot Upward** | `↑` + `X` | `W` + `J` |
+| **Shoot Downward (in air)** | `↓` + `X` | `S` + `J` |
+| **Energy Dash** | `C` (with level 4 charge) | `L` (with level 4 charge) |
+| **Cosmic Beam** | Release `X` (with level 5 MAX charge) | Release `J` (with level 5 MAX charge) |
+| **Slash (Hunt Mode)** | `X` | `J` |
+| **Interact / Enter** | Up Arrow (`↑`) in front of doors | `W` key in front of doors |
+| **Pause** | `P` | `P` |
 
 #### Touch Screen (Mobile / Tablet)
 - **Virtual D-Pad**: Move left and right.
