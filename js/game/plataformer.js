@@ -1685,7 +1685,7 @@
         if (!targetDoor) {
             targetDoor = game.hubDoors[0];
         }
-        const startX = targetDoor ? targetDoor.x + targetDoor.w / 2 - 16 : (180 + hubDoorOffset);
+        const startX = targetDoor ? targetDoor.x + targetDoor.w / 2 - 16 : (80 + hubDoorOffset);
         game.player = new Player(startX, 440);
         cameraX = Math.max(0, Math.min(game.player.x - VIEW_W / 2 + game.player.w / 2, worldWidth - VIEW_W));
         delete game.cameraZoom;
