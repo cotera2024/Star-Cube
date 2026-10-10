@@ -1560,10 +1560,12 @@
             unbreakable: true
         }) ];
         game.enemies = [];
+        const isMobileHub = typeof window !== "undefined" && (window.isMobileDevice || (typeof window.isMobileOrTouch === "function" && window.isMobileOrTouch()));
+        const hubDoorOffset = isMobileHub ? 180 : 0;
         game.hubDoors = [ {
             levelIndex: 0,
             levelNum: 1,
-            x: 240,
+            x: 240 + hubDoorOffset,
             y: 414,
             w: 64,
             h: 86,
@@ -1571,7 +1573,7 @@
         }, {
             levelIndex: 3,
             levelNum: 2,
-            x: 560,
+            x: 560 + hubDoorOffset,
             y: 414,
             w: 64,
             h: 86,
@@ -1579,7 +1581,7 @@
         }, {
             levelIndex: 2,
             levelNum: 3,
-            x: 880,
+            x: 880 + hubDoorOffset,
             y: 414,
             w: 64,
             h: 86,
@@ -1587,7 +1589,7 @@
         }, {
             levelIndex: 1,
             levelNum: 4,
-            x: 1200,
+            x: 1200 + hubDoorOffset,
             y: 414,
             w: 64,
             h: 86,
@@ -1595,7 +1597,7 @@
         }, {
             levelIndex: 6,
             levelNum: 5,
-            x: 1520,
+            x: 1520 + hubDoorOffset,
             y: 414,
             w: 64,
             h: 86,
@@ -1603,7 +1605,7 @@
         }, {
             levelIndex: 4,
             levelNum: 6,
-            x: 1840,
+            x: 1840 + hubDoorOffset,
             y: 414,
             w: 64,
             h: 86,
@@ -1616,7 +1618,7 @@
             game.hubDoors = [ {
                 levelIndex: 0,
                 levelNum: 1,
-                x: 200,
+                x: 200 + hubDoorOffset,
                 y: hY,
                 w: hW,
                 h: hH,
@@ -1624,7 +1626,7 @@
             }, {
                 levelIndex: 3,
                 levelNum: 2,
-                x: 540,
+                x: 540 + hubDoorOffset,
                 y: hY,
                 w: hW,
                 h: hH,
@@ -1632,7 +1634,7 @@
             }, {
                 levelIndex: 2,
                 levelNum: 3,
-                x: 1440,
+                x: 1440 + hubDoorOffset,
                 y: hY,
                 w: hW,
                 h: hH,
@@ -1640,7 +1642,7 @@
             }, {
                 levelIndex: 1,
                 levelNum: 4,
-                x: 1760,
+                x: 1760 + hubDoorOffset,
                 y: hY,
                 w: hW,
                 h: hH,
@@ -1648,7 +1650,7 @@
             }, {
                 levelIndex: 6,
                 levelNum: 5,
-                x: 2080,
+                x: 2080 + hubDoorOffset,
                 y: hY,
                 w: hW,
                 h: hH,
@@ -1683,7 +1685,7 @@
         if (!targetDoor) {
             targetDoor = game.hubDoors[0];
         }
-        const startX = targetDoor ? targetDoor.x + targetDoor.w / 2 - 16 : 180;
+        const startX = targetDoor ? targetDoor.x + targetDoor.w / 2 - 16 : (180 + hubDoorOffset);
         game.player = new Player(startX, 440);
         cameraX = Math.max(0, Math.min(game.player.x - VIEW_W / 2 + game.player.w / 2, worldWidth - VIEW_W));
         delete game.cameraZoom;

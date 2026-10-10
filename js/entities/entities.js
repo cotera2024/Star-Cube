@@ -1298,9 +1298,15 @@ class Player {
         playSound(150, .4, "sawtooth", .3, 100);
         if (typeof window.triggerHaptic === "function") {
             window.triggerHaptic("damage");
-        } else if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
+        }
+        if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
             try {
-                navigator.vibrate(130);
+                navigator.vibrate([70, 45, 110]);
+            } catch (e) {}
+        }
+        if (typeof window.triggerGamepadRumble === "function") {
+            try {
+                window.triggerGamepadRumble(240, 0.9, 0.7);
             } catch (e) {}
         }
         if (typeof window.onPlayerHurtLithium === "function") {

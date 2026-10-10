@@ -63,16 +63,23 @@
 
     function triggerGamepadRumble(duration = 100, strong = 0.5, weak = 0.5) {
         const gamepads = getConnectedGamepads();
-        const gp = activeGamepadIndex !== null && gamepads[activeGamepadIndex] ? gamepads[activeGamepadIndex] : gamepads[0];
-        if (gp && gp.vibrationActuator && typeof gp.vibrationActuator.playEffect === 'function') {
-            try {
-                gp.vibrationActuator.playEffect('dual-rumble', {
-                    startDelay: 0,
-                    duration: duration,
-                    weakMagnitude: weak,
-                    strongMagnitude: strong
-                }).catch(function() {});
-            } catch (e) {}
+        for (let i = 0; i < gamepads.length; i++) {
+            const gp = gamepads[i];
+            if (!gp) continue;
+            if (gp.vibrationActuator && typeof gp.vibrationActuator.playEffect === 'function') {
+                try {
+                    gp.vibrationActuator.playEffect('dual-rumble', {
+                        startDelay: 0,
+                        duration: duration,
+                        weakMagnitude: weak,
+                        strongMagnitude: strong
+                    }).catch(function() {});
+                } catch (e) {}
+            } else if (gp.hapticActuators && gp.hapticActuators.length > 0 && typeof gp.hapticActuators[0].pulse === 'function') {
+                try {
+                    gp.hapticActuators[0].pulse(strong, duration);
+                } catch (e) {}
+            }
         }
     }
     window.triggerGamepadRumble = triggerGamepadRumble;

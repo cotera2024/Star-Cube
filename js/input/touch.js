@@ -289,6 +289,7 @@
     const jumpBtnEl = document.getElementById("btn-jump");
     const shootBtnEl = document.getElementById("btn-shoot");
     const dashBtnEl = document.getElementById("btn-dash");
+    const edashBtnEl = document.getElementById("btn-energy-dash");
     const enterDoorBtn = document.getElementById("btn-enter-door");
     const huntZone = document.getElementById("hunt-action-zone");
     const slashHuntBtn = document.getElementById("btn-slash-hunt");
@@ -296,17 +297,20 @@
     let _isJumpPressed = false;
     let _isShootPressed = false;
     let _isDashPressed = false;
+    let _isEdashPressed = false;
     let _isEnterPressed = false;
     let _isSlashPressed = false;
 
     function getActionBtnAt(x, y) {
         const pad = 12;
+        const ed = edashBtnEl && edashBtnEl.style.display !== "none" ? edashBtnEl.getBoundingClientRect() : null;
         const dDoor = enterDoorBtn && enterDoorBtn.style.display !== "none" ? enterDoorBtn.getBoundingClientRect() : null;
         const s = shootBtnEl && shootBtnEl.style.display !== "none" ? shootBtnEl.getBoundingClientRect() : null;
         const j = jumpBtnEl && jumpBtnEl.style.display !== "none" ? jumpBtnEl.getBoundingClientRect() : null;
         const d = dashBtnEl && dashBtnEl.style.display !== "none" ? dashBtnEl.getBoundingClientRect() : null;
         const sh = slashHuntBtn && slashHuntBtn.style.display !== "none" ? slashHuntBtn.getBoundingClientRect() : null;
 
+        if (ed && x >= ed.left - pad && x <= ed.right + pad && y >= ed.top - pad && y <= ed.bottom + pad) return "edash";
         if (dDoor && x >= dDoor.left - pad && x <= dDoor.right + pad && y >= dDoor.top - pad && y <= dDoor.bottom + pad) return "enter";
         if (s && x >= s.left - pad && x <= s.right + pad && y >= s.top - pad && y <= s.bottom + pad) return "shoot";
         if (j && x >= j.left - pad && x <= j.right + pad && y >= j.top - pad && y <= j.bottom + pad) return "jump";
@@ -375,7 +379,30 @@
             emit(wantSlash ? "keydown" : "keyup", "x", "KeyX");
             if (wantSlash) triggerHaptic("medium");
         }
+
+        const wantEdash = activeTypes.has("edash");
+        if (wantEdash !== _isEdashPressed) {
+            _isEdashPressed = wantEdash;
+            if (edashBtnEl) edashBtnEl.classList.toggle("active", wantEdash);
+            if (wantEdash) {
+                triggerEnergyDash();
+            }
+        }
     }
+
+    function triggerEnergyDash() {
+        if (typeof game === "undefined" || !game || !game.player) return;
+        const p = game.player;
+        if (p.frozen || p.dashTimer > 0 || p.dashCooldown > 0) return;
+        if (p.chargeLevel < 4) p.chargeLevel = 4;
+        p.dashBufferTimer = 6;
+        const dk = dashKey();
+        emit("keydown", dk.key, dk.code);
+        triggerHaptic("heavy");
+        if (typeof window.triggerGamepadRumble === "function") window.triggerGamepadRumble(160, 0.85, 0.85);
+        setTimeout(() => emit("keyup", dk.key, dk.code), 120);
+    }
+    window.triggerEnergyDash = triggerEnergyDash;
 
     function attachButtonListeners(el, typeName) {
         if (!el) return;
@@ -408,6 +435,7 @@
     attachButtonListeners(jumpBtnEl, "jump");
     attachButtonListeners(shootBtnEl, "shoot");
     attachButtonListeners(dashBtnEl, "dash");
+    attachButtonListeners(edashBtnEl, "edash");
     attachButtonListeners(enterDoorBtn, "enter");
     attachButtonListeners(slashHuntBtn, "slash");
 
@@ -496,7 +524,7 @@
             updateActionButtonsState();
         }
     });
-    let _lastShow = null, _lastMaxCharge = null, _lastCanEnter = null, _lastShoot = null, _lastJump = null, _lastDash = null, _lastZone = null, _lastInv = null;
+    let _lastShow = null, _lastMaxCharge = null, _lastCanEnter = null, _lastShoot = null, _lastJump = null, _lastDash = null, _lastEdash = null, _lastZone = null, _lastInv = null;
     function updateTouchControlsState() {
         if (!touchCtl) return;
         const shouldShow = isTouch && !window.hasGamepad && (typeof gameState !== "undefined" && (gameState === "playing" || gameState === "hub" || gameState === "caceria"));
@@ -536,6 +564,14 @@
             if (_lastDash !== showDash) {
                 _lastDash = showDash;
                 dashBtnEl.style.display = showDash ? "flex" : "none";
+            }
+        }
+        if (edashBtnEl) {
+            const player = (typeof game !== "undefined" && game) ? game.player : null;
+            const canEdash = !!(player && player.chargeLevel >= 4 && player.dashCooldown <= 0 && player.dashTimer <= 0 && !player.frozen && !inHunt && !isLevel6Dark);
+            if (_lastEdash !== canEdash) {
+                _lastEdash = canEdash;
+                edashBtnEl.style.display = canEdash ? "flex" : "none";
             }
         }
         if (actionZone && huntZone) {

@@ -1574,6 +1574,58 @@
             background: rgba(30, 41, 59, 0.95);
         }
 
+        #btn-energy-dash {
+            position: absolute;
+            left: calc(max(16px, env(safe-area-inset-left, 16px)) + 172px);
+            bottom: calc(max(18px, env(safe-area-inset-bottom, 18px)) + 106px);
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00f0ff 0%, #ff0055 100%);
+            border: 3.5px solid #ffffff;
+            box-shadow: 0 0 22px rgba(0, 240, 255, 0.9), 0 0 35px rgba(255, 0, 85, 0.65), inset 0 2px 6px rgba(255, 255, 255, 0.7);
+            color: #ffffff;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            pointer-events: auto;
+            cursor: pointer;
+            z-index: 96;
+            animation: pulseEnergyDash 0.75s infinite alternate ease-in-out;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+            transition: transform 0.12s ease;
+        }
+        #btn-energy-dash .edash-icon {
+            font-size: 22px;
+            line-height: 1;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6));
+        }
+        #btn-energy-dash .lbl {
+            font-size: 8.5px;
+            letter-spacing: 0.8px;
+            font-weight: bold;
+            color: #ffffff;
+            text-shadow: 0 1px 3px #000;
+            margin-top: 1px;
+            white-space: nowrap;
+        }
+        #btn-energy-dash:active, #btn-energy-dash.active {
+            transform: scale(0.92);
+            filter: brightness(1.25);
+        }
+        @keyframes pulseEnergyDash {
+            0% { transform: scale(0.96); box-shadow: 0 0 16px rgba(0, 240, 255, 0.85); }
+            100% { transform: scale(1.08); box-shadow: 0 0 28px rgba(255, 0, 85, 0.95), 0 0 35px rgba(0, 240, 255, 0.9); }
+        }
+
+        #touch-controls.inverted-hands #btn-energy-dash {
+            left: auto !important;
+            right: calc(max(16px, env(safe-area-inset-right, 16px)) + 172px) !important;
+        }
+
         @media (pointer: coarse) {
             #controls-info { display: none !important; }
             #handOverlay, #cursorOverlay { display: none !important; }
@@ -1740,6 +1792,18 @@
             #touch-controls.inverted-hands #btn-shoot { right: auto !important; left: 78px !important; }
             #touch-controls.inverted-hands #btn-dash { right: auto !important; left: 22px !important; }
             #touch-controls.inverted-hands #btn-enter-door { right: auto !important; left: 84px !important; }
+            #btn-energy-dash {
+                left: calc(max(10px, env(safe-area-inset-left, 10px)) + 158px) !important;
+                bottom: calc(max(10px, env(safe-area-inset-bottom, 10px)) + 92px) !important;
+                width: 56px !important;
+                height: 56px !important;
+            }
+            #btn-energy-dash .edash-icon { font-size: 20px !important; }
+            #btn-energy-dash .lbl { font-size: 8px !important; }
+            #touch-controls.inverted-hands #btn-energy-dash {
+                left: auto !important;
+                right: calc(max(10px, env(safe-area-inset-right, 10px)) + 158px) !important;
+            }
         }
 
         @media (max-width: 800px), (max-height: 520px) {
@@ -2027,6 +2091,10 @@
                 <button class="tc-btn dpad-btn" id="pad-down" data-dir="down" aria-label="Down">▼</button>
             </div>
         </div>
+
+        <button class="tc-btn" id="btn-energy-dash" data-action="edash" aria-label="Energy Dash" style="display:none">
+            <span class="edash-icon">⚡</span><span class="lbl" data-i18n="ui_touch_edash_btn">E-DASH</span>
+        </button>
 
         <div id="action-zone">
             <button class="tc-btn" id="btn-enter-door" data-action="enter" aria-label="Enter" style="display:none">
