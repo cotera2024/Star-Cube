@@ -104,39 +104,41 @@
             background: radial-gradient(circle at center, #1b123d 0%, #0a0a24 70%, #050515 100%);
             z-index: 150; display: none;
             flex-direction: column; justify-content: center; align-items: center;
-            gap: 24px; opacity: 0; transition: opacity 0.4s ease;
+            gap: 20px; opacity: 0; transition: opacity 0.4s ease;
         }
         #lang-select.visible { display: flex; opacity: 1; }
         #lang-select h2 {
             font-family: 'Fredoka One', cursive;
-            font-size: 30px; color: #ffd700;
+            font-size: 32px; color: #ffd700;
             text-shadow: 0 0 20px rgba(255,215,0,0.4);
-            letter-spacing: 3px; margin: 0 0 8px 0;
+            letter-spacing: 3px; margin: 0 0 10px 0;
             text-align: center;
         }
         .lang-grid {
-            display: flex; gap: 20px; flex-wrap: wrap;
-            justify-content: center; align-items: center;
-            max-width: 760px;
-            padding: 0 20px;
+            display: flex; gap: 16px; flex-wrap: nowrap;
+            justify-content: center; align-items: stretch;
+            max-width: 860px; width: 92%;
+            padding: 0 10px;
         }
         .lang-btn {
-            display: flex; flex-direction: column; align-items: center;
-            gap: 8px; padding: 14px 22px; border-radius: 16px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            flex: 1 1 0; min-width: 120px;
+            gap: 10px; padding: 18px 12px; border-radius: 18px;
             background: rgba(255,255,255,0.08);
             border: 3px solid rgba(255,255,255,0.18);
             cursor: pointer; transition: all 0.25s ease;
             font-family: 'Courier Prime', monospace;
-            color: #fff; font-size: 14px; min-width: 110px;
+            color: #fff;
             touch-action: manipulation;
             user-select: none;
             -webkit-user-select: none;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
         }
         .lang-btn:hover {
             background: rgba(255,255,255,0.18);
             border-color: #ffd700;
-            transform: scale(1.08) translateY(-2px);
-            box-shadow: 0 6px 25px rgba(255,215,0,0.3);
+            transform: scale(1.08) translateY(-3px);
+            box-shadow: 0 8px 28px rgba(255,215,0,0.35);
         }
         .lang-btn.active {
             border-color: #00ffff !important;
@@ -148,8 +150,8 @@
             color: #00ffff;
             font-weight: bold;
         }
-        .lang-btn .flag { font-size: 44px; line-height: 1; }
-        .lang-btn .name { font-size: 15px; letter-spacing: 1px; }
+        .lang-btn .flag { font-size: 52px; line-height: 1; }
+        .lang-btn .name { font-size: 16px; font-weight: bold; letter-spacing: 1px; }
 
         #close-lang-btn {
             width: auto !important;
@@ -1516,37 +1518,47 @@
 
             
             #lang-select {
-                gap: 10px !important;
-                padding: 10px !important;
+                gap: 8px !important;
+                padding: 8px !important;
             }
             #lang-select h2 {
-                font-size: 19px !important;
+                font-size: 20px !important;
                 margin-bottom: 2px !important;
                 letter-spacing: 1.5px !important;
             }
             .lang-grid {
-                gap: 8px !important;
-                max-width: 580px !important;
+                display: flex !important;
+                flex-direction: row !important;
+                flex-wrap: nowrap !important;
+                justify-content: center !important;
+                align-items: stretch !important;
+                gap: 10px !important;
+                width: 95% !important;
+                max-width: 840px !important;
                 padding: 0 !important;
+                margin-bottom: 6px !important;
             }
             .lang-btn {
-                min-width: 90px !important;
-                padding: 10px 14px !important;
+                flex: 1 1 0 !important;
+                min-width: 80px !important;
+                max-width: 145px !important;
+                padding: 10px 4px !important;
                 gap: 6px !important;
                 border-radius: 14px !important;
             }
             .lang-btn .flag {
-                font-size: 44px !important;
+                font-size: 48px !important;
+                margin-bottom: 2px !important;
             }
             .lang-btn .name {
-                font-size: 13px !important;
+                font-size: 13.5px !important;
                 font-weight: bold !important;
             }
             #close-lang-btn {
-                min-width: 160px !important;
-                padding: 8px 20px !important;
-                font-size: 14px !important;
-                margin-top: 8px !important;
+                min-width: 140px !important;
+                padding: 6px 18px !important;
+                font-size: 13px !important;
+                margin-top: 4px !important;
             }
 
             
@@ -2550,26 +2562,23 @@
         flex-shrink: 0 !important;
     }
     
-    #lang-select { background: rgba(5, 5, 15, 0.95) !important; backdrop-filter: blur(12px) !important; }
-    
-    /* Center the flags properly */
+    #lang-select { background: rgba(5, 5, 15, 0.95) !important; backdrop-filter: blur(12px) !important; gap: 10px !important; padding: 8px !important; }
     .lang-grid {
-        display: flex !important; flex-wrap: wrap !important; justify-content: center !important; gap: 12px !important;
-        width: 100% !important; max-width: 450px !important; padding: 0 !important; margin-bottom: 20px !important;
+        display: flex !important; flex-wrap: wrap !important; justify-content: center !important; gap: 10px !important;
+        width: 95% !important; max-width: 820px !important; padding: 0 !important; margin-bottom: 10px !important;
     }
     .lang-btn {
-        flex: 1 1 40% !important; max-width: 48% !important;
-        background: rgba(255,255,255,0.08) !important; border-radius: 16px !important; padding: 12px !important;
-        border: 2px solid rgba(255,255,255,0.15) !important; box-shadow: 0 4px 15px rgba(0,0,0,0.6) !important;
-        display: flex !important; flex-direction: column !important; align-items: center !important; gap: 6px !important;
+        flex: 1 1 16% !important; min-width: 78px !important; max-width: 140px !important;
+        background: rgba(255,255,255,0.08) !important; border-radius: 14px !important; padding: 10px 4px !important;
+        border: 2px solid rgba(255,255,255,0.18) !important; box-shadow: 0 4px 15px rgba(0,0,0,0.6) !important;
+        display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; gap: 6px !important;
     }
-    .lang-btn .flag { font-size: 32px !important; margin-bottom: 2px !important; }
-    .lang-btn .name { font-size: 14px !important; font-weight: bold !important; }
+    .lang-btn .flag { font-size: 48px !important; line-height: 1 !important; margin-bottom: 2px !important; }
+    .lang-btn .name { font-size: 13.5px !important; font-weight: bold !important; letter-spacing: 0.5px !important; }
 
     #level-display { font-size: 20px !important; }
     .boss-hud-name { font-size: 20px !important; }
     
-    /* Make pause button larger */
     #pause-btn {
         width: 46px !important; height: 46px !important; font-size: 24px !important;
     }
@@ -2583,11 +2592,11 @@
 <body>
     <div id="game-container">
         
-        <div id="splash-screen" onclick="if(window.dismissSplashScreen)window.dismissSplashScreen()">
+        <div id="splash-screen" style="display: none;" onclick="if(window.dismissSplashScreen)window.dismissSplashScreen()">
             <h1 id="splash-author" data-i18n="ui_splash_author">By Isaac Daniel Cotera 2026</h1>
         </div>
 
-        <div id="lang-select">
+        <div id="lang-select" class="visible" style="display: flex; opacity: 1;">
             <h2 id="lang-title" data-i18n="ui_select_language">SELECT LANGUAGE</h2>
             <div class="lang-grid">
                 <div class="lang-btn" data-lang="es"><span class="flag">🇪🇸</span><span class="name">Español</span></div>

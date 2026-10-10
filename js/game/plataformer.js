@@ -2163,89 +2163,81 @@
     function initGameFlow() {
         const langToggleBtn = document.getElementById("btn-lang-toggle");
         const closeLangBtn = document.getElementById("close-lang-btn");
-        let splashDismissed = false;
-
-        function dismissSplashScreen() {
-            if (splashDismissed) return;
-            splashDismissed = true;
-            if (splashScreen) {
-                splashScreen.classList.add("hidden");
-                setTimeout(() => {
-                    splashScreen.style.display = "none";
-                    if (typeof updateUITranslations === "function") updateUITranslations();
-                    
-                    gameState = "title_intro";
-                    window.titleIntroTimer = 0;
-                    if (typeof game !== "undefined") game.nightTransitionProgress = 1;
-                    
-gameReady = true;
-                    window.gameReady = true;
-                    window.GAME_PAUSED = false;
-                    if (typeof window.notifyGamePixLoaded === "function") {
-                        window.notifyGamePixLoaded();
-                    }
-                    if (typeof window.gameLoadingStop === "function") {
-                        window.gameLoadingStop();
-                    }
-                    try {
-                        if (typeof drawEnhancedBackground === "function") {
-                            drawEnhancedBackground(ctx, currentLevel, cameraX, 0, game);
-                        }
-                    } catch (err) {}
-                    try {
-                        if (typeof currentBGM === "undefined" || !currentBGM || currentBGM.paused) {
-                            playBGM("bgm_menu_title");
-                        }
-                    } catch (e) {}
-                }, 500);
-            }
-        }
-        window.dismissSplashScreen = dismissSplashScreen;
-
-        const splashTimer = setTimeout(() => {
-            dismissSplashScreen();
-        }, 2200);
-
         if (splashScreen) {
-            splashScreen.addEventListener("click", () => {
-                clearTimeout(splashTimer);
-                dismissSplashScreen();
-            });
+            splashScreen.style.display = "none";
         }
-        window.addEventListener("keydown", function onSplashKey(e) {
-            if (!splashDismissed && splashScreen && !splashScreen.classList.contains("hidden")) {
-                clearTimeout(splashTimer);
-                dismissSplashScreen();
-                window.removeEventListener("keydown", onSplashKey);
+        if (langSelect) {
+            langSelect.style.display = "flex";
+            langSelect.classList.add("visible");
+            langSelect.style.opacity = "1";
+        }
+
+        async function onSelectLanguage(lang) {
+            try {
+                const el = document.documentElement;
+                if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                    if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
+                    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+                }
+                if (screen.orientation && screen.orientation.lock) {
+                    screen.orientation.lock("landscape").catch(() => {});
+                } else if (screen.lockOrientation) {
+                    screen.lockOrientation("landscape");
+                }
+            } catch (_) {}
+
+            try {
+                initAudio();
+                if (typeof audioCtx !== "undefined" && audioCtx && audioCtx.state === "suspended") {
+                    audioCtx.resume().catch(() => {});
+                }
+            } catch (_) {}
+
+            await setLanguage(lang);
+            updateUITranslations();
+
+            if (langSelect) {
+                langSelect.classList.remove("visible");
+                langSelect.style.opacity = "0";
+                setTimeout(() => {
+                    langSelect.style.display = "none";
+                    if (!gameReady) {
+                        gameState = "title_intro";
+                        window.titleIntroTimer = 0;
+                        if (typeof game !== "undefined") game.nightTransitionProgress = 1;
+                        gameReady = true;
+                        window.gameReady = true;
+                        window.GAME_PAUSED = false;
+                        if (typeof window.notifyGamePixLoaded === "function") {
+                            window.notifyGamePixLoaded();
+                        }
+                        if (typeof window.gameLoadingStop === "function") {
+                            window.gameLoadingStop();
+                        }
+                        try {
+                            if (typeof drawEnhancedBackground === "function") {
+                                drawEnhancedBackground(ctx, currentLevel, cameraX, 0, game);
+                            }
+                        } catch (err) {}
+                        try {
+                            if (typeof currentBGM === "undefined" || !currentBGM || currentBGM.paused) {
+                                playBGM("bgm_menu_title");
+                            }
+                        } catch (e) {}
+                    } else {
+                        const titleBtns = document.getElementById("title-buttons");
+                        if (titleBtns && (gameState === "title" || gameState === "title_intro")) {
+                            titleBtns.classList.remove("hidden");
+                        }
+                        if (langToggleBtn) langToggleBtn.style.display = "flex";
+                    }
+                }, 300);
             }
-        });
+        }
 
         document.querySelectorAll(".lang-btn").forEach(btn => {
-            btn.addEventListener("click", async () => {
-                const lang = btn.dataset.lang;
-                await setLanguage(lang);
-                updateUITranslations();
-                if (langSelect) langSelect.classList.remove("visible");
-                setTimeout(() => {
-                    if (langSelect) langSelect.style.display = "none";
-                    gameState = "title_intro";
-                    window.titleIntroTimer = 0;
-                    if (typeof game !== "undefined") game.nightTransitionProgress = 1;
-                    
-gameReady = true;
-                    window.gameReady = true;
-                    window.GAME_PAUSED = false;
-                    try {
-                        if (typeof drawEnhancedBackground === "function") {
-                            drawEnhancedBackground(ctx, currentLevel, cameraX, 0, game);
-                        }
-                    } catch (err) {}
-                    try {
-                        if (typeof currentBGM === "undefined" || !currentBGM || currentBGM.paused) {
-                            playBGM("bgm_menu_title");
-                        }
-                    } catch (e) {}
-                }, 350);
+            btn.addEventListener("click", () => {
+                onSelectLanguage(btn.dataset.lang);
             });
         });
 
@@ -2276,16 +2268,6 @@ gameReady = true;
             });
         }
 
-        if (closeLangBtn) {
-            closeLangBtn.addEventListener("click", () => {
-                if (langSelect) {
-                    langSelect.classList.remove("visible");
-                    setTimeout(() => {
-                        langSelect.style.display = "none";
-                    }, 300);
-                }
-            });
-        }
 
         const startBtn = document.getElementById("start-btn");
         if (startBtn) {
