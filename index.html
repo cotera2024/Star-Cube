@@ -1193,120 +1193,374 @@
             -webkit-user-select: none;
         }
 
-        @media (max-height: 520px) {
-            .credits-extra {
-                margin-top: 5px !important;
-                gap: 5px !important;
+        @media (max-height: 520px), (pointer: coarse) and (max-height: 600px), (max-width: 850px) and (orientation: landscape) {
+            .modal-overlay {
+                padding: env(safe-area-inset-top, 6px) env(safe-area-inset-right, 10px) env(safe-area-inset-bottom, 6px) env(safe-area-inset-left, 10px);
+                align-items: center;
+                justify-content: center;
             }
-            .credits-extra-box {
-                padding: 6px !important;
-            }
-            .credits-extra-box span {
-                margin-bottom: 2px !important;
-            }
-
             .modal-box {
-                padding: 12px 18px !important;
-                max-height: 94vh !important;
+                padding: 10px 14px !important;
+                max-height: 96vh !important;
+                max-height: 96dvh !important;
+                border-radius: 14px !important;
             }
             .modal-box h2 {
-                font-size: 20px !important;
-                margin-bottom: 6px !important;
+                font-size: 18px !important;
+                margin-bottom: 4px !important;
+                letter-spacing: 1px !important;
             }
-        .close-icon-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: #fff;
-            font-size: 16px;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.2s;
-        }
-        .close-icon-btn:hover {
-            background: rgba(255, 51, 102, 0.8);
-        }
-
             .modal-header {
-                margin-bottom: 8px !important;
-                padding-bottom: 6px !important;
+                margin-bottom: 6px !important;
+                padding-bottom: 4px !important;
             }
-            .platform-tabs {
-                margin-bottom: 8px !important;
+            .modal-badge {
+                font-size: 10px !important;
+                padding: 2px 7px !important;
             }
-            .platform-tab-btn {
+            .close-icon-btn {
+                width: 28px !important;
+                height: 28px !important;
+                font-size: 13px !important;
+            }
+            .modal-close-btn {
                 padding: 6px 14px !important;
                 font-size: 13px !important;
+                min-height: 32px !important;
+                border-radius: 10px !important;
+                margin-top: 6px !important;
+            }
+
+            /* Controls Guide Modal */
+            .controls-modal-box {
+                max-width: 660px !important;
+                width: 95% !important;
+            }
+            .platform-tabs {
+                margin-bottom: 6px !important;
+                gap: 6px !important;
+            }
+            .platform-tab-btn {
+                padding: 4px 10px !important;
+                font-size: 11.5px !important;
+                border-radius: 8px !important;
             }
             .controls-cards-grid {
                 grid-template-columns: repeat(2, 1fr) !important;
-                gap: 8px !important;
-                margin-bottom: 8px !important;
+                gap: 6px !important;
+                margin-bottom: 6px !important;
             }
             .ctrl-card {
-                padding: 6px 10px !important;
-                gap: 8px !important;
+                padding: 4px 8px !important;
+                gap: 6px !important;
+                border-radius: 10px !important;
             }
-            .ctrl-canvas-box {
-                width: 46px !important;
-                height: 46px !important;
-                min-width: 46px !important;
-            }
-            .ctrl-peggy-canvas {
-                width: 46px !important;
-                height: 46px !important;
+            .ctrl-canvas-box, .ctrl-peggy-canvas {
+                width: 38px !important;
+                height: 38px !important;
+                min-width: 38px !important;
             }
             .ctrl-details h4 {
-                font-size: 13px !important;
-                margin: 1px 0 !important;
+                font-size: 12px !important;
+                margin: 0 !important;
             }
             .ctrl-details p {
-                font-size: 10.5px !important;
-                line-height: 1.2 !important;
+                font-size: 9.5px !important;
+                line-height: 1.15 !important;
             }
             .key-badge {
-                min-width: 22px !important;
-                height: 22px !important;
-                font-size: 11px !important;
-                padding: 0 4px !important;
+                min-width: 18px !important;
+                height: 18px !important;
+                font-size: 10px !important;
+                padding: 0 3px !important;
             }
             .touch-badge {
-                font-size: 10.5px !important;
-                padding: 2px 8px !important;
+                font-size: 9.5px !important;
+                padding: 2px 6px !important;
+            }
+
+            /* Credits Modal */
+            .credits-modal-box {
+                max-width: 680px !important;
+                width: 95% !important;
             }
             .credits-showcase {
-                gap: 8px !important;
-                margin-bottom: 8px !important;
+                gap: 6px !important;
+                margin-bottom: 6px !important;
             }
             .credits-hero {
-                padding: 6px 12px !important;
+                padding: 6px 10px !important;
+                border-radius: 12px !important;
             }
             .credits-hero-text h3 {
-                font-size: 18px !important;
+                font-size: 15px !important;
+                margin-bottom: 2px !important;
             }
             .credits-card-highlight {
-                padding: 6px 12px !important;
+                padding: 4px 8px !important;
             }
             .author-name {
-                font-size: 17px !important;
+                font-size: 14px !important;
             }
             .credits-tile {
-                padding: 6px 12px !important;
+                padding: 4px 8px !important;
+                border-radius: 10px !important;
             }
             .credits-tile h4 {
-                font-size: 13px !important;
+                font-size: 11.5px !important;
+                margin: 0 0 2px 0 !important;
             }
             .credits-tile p {
+                font-size: 9.5px !important;
+                line-height: 1.2 !important;
+            }
+            .credits-extra {
+                margin-top: 4px !important;
+                gap: 4px !important;
+            }
+            .credits-extra-box {
+                padding: 4px 6px !important;
+                border-radius: 8px !important;
+            }
+            .credits-extra-box span {
+                margin-bottom: 1px !important;
+                font-size: 10.5px !important;
+            }
+
+            /* Pause Modal (No scroll needed) */
+            .pause-modal-box {
+                max-width: 460px !important;
+                width: 92% !important;
+                padding: 10px 14px !important;
+                overflow: hidden !important;
+            }
+            .pause-icon {
+                width: 36px !important;
+                height: 36px !important;
+                font-size: 18px !important;
+                margin: 0 auto 4px !important;
+            }
+            .pause-modal-box h2 {
+                font-size: 18px !important;
+                margin: 0 !important;
+            }
+            .pause-sub {
+                display: none !important;
+            }
+            .pause-buttons {
+                display: grid !important;
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 6px !important;
+                margin-top: 8px !important;
+                width: 100% !important;
+            }
+            .pause-buttons button {
+                width: 100% !important;
+                max-width: 100% !important;
+                padding: 7px 10px !important;
+                font-size: 12.5px !important;
+                border-radius: 10px !important;
+                letter-spacing: 0.5px !important;
+            }
+            .pause-hint {
+                margin-top: 6px !important;
+                font-size: 10.5px !important;
+            }
+
+            /* Options Modal */
+            .options-modal-box {
+                max-width: 540px !important;
+                width: 94% !important;
+                padding: 10px 14px !important;
+            }
+            .options-content {
+                gap: 8px !important;
+            }
+            .opt-section-title {
+                font-size: 12.5px !important;
+                margin: 0 0 4px 0 !important;
+            }
+            .audio-controls-card {
+                padding: 8px 10px !important;
+                gap: 6px !important;
+                border-radius: 10px !important;
+            }
+            .audio-row {
+                gap: 2px !important;
+            }
+            .audio-label-group {
+                font-size: 11.5px !important;
+            }
+            .audio-slider-group {
+                gap: 6px !important;
+            }
+            .opt-mute-btn {
+                width: 28px !important;
+                height: 28px !important;
+                font-size: 12px !important;
+            }
+            .opt-test-btn {
+                padding: 3px 8px !important;
+                font-size: 10.5px !important;
+            }
+            .quick-audio-bar {
+                padding-top: 5px !important;
+                gap: 4px !important;
+            }
+            .quick-audio-btns {
+                gap: 4px !important;
+            }
+            .quick-audio-btn {
+                padding: 3px 6px !important;
+                font-size: 10px !important;
+            }
+            .opt-lang-grid {
+                grid-template-columns: repeat(5, 1fr) !important;
+                gap: 4px !important;
+            }
+            .opt-lang-card {
+                padding: 4px 2px !important;
+                gap: 1px !important;
+                border-radius: 8px !important;
+            }
+            .opt-lang-card .lang-flag {
+                font-size: 18px !important;
+            }
+            .opt-lang-card .lang-name {
+                font-size: 9.5px !important;
+            }
+            .opt-lang-card .lang-code {
+                font-size: 8px !important;
+            }
+            .options-modal-box .modal-footer {
+                margin-top: 6px !important;
+            }
+            #close-options-btn {
+                padding: 6px 18px !important;
+                font-size: 12.5px !important;
+                min-width: 130px !important;
+                border-radius: 10px !important;
+            }
+
+            /* Language Select Screen */
+            #lang-select {
+                gap: 10px !important;
+                padding: 10px !important;
+            }
+            #lang-select h2 {
+                font-size: 19px !important;
+                margin-bottom: 2px !important;
+                letter-spacing: 1.5px !important;
+            }
+            .lang-grid {
+                gap: 8px !important;
+                max-width: 580px !important;
+                padding: 0 !important;
+            }
+            .lang-btn {
+                min-width: 76px !important;
+                padding: 6px 10px !important;
+                gap: 3px !important;
+                border-radius: 10px !important;
                 font-size: 11px !important;
             }
-            .modal-close-btn {
+            .lang-btn .flag {
+                font-size: 26px !important;
+            }
+            .lang-btn .name {
+                font-size: 11px !important;
+            }
+            #close-lang-btn {
+                min-width: 120px !important;
                 padding: 6px 16px !important;
-                font-size: 14px !important;
-                margin-top: 6px !important;
+                font-size: 12px !important;
+                margin-top: 4px !important;
+            }
+
+            /* Victory Modal (No scroll needed) */
+            .victory-modal-box {
+                max-width: 440px !important;
+                width: 90% !important;
+                padding: 10px 14px !important;
+                overflow: hidden !important;
+            }
+            .victory-icon {
+                font-size: 34px !important;
+                margin-bottom: 2px !important;
+            }
+            .victory-modal-box h2 {
+                font-size: 20px !important;
+                margin-bottom: 2px !important;
+            }
+            .victory-desc {
+                font-size: 11.5px !important;
+                margin-bottom: 10px !important;
+            }
+            .victory-stats {
+                gap: 8px !important;
+                margin-bottom: 10px !important;
+            }
+            .stat-card {
+                padding: 6px 8px !important;
+                border-radius: 10px !important;
+            }
+            .stat-card .stat-title {
+                font-size: 9.5px !important;
+            }
+            .stat-card .stat-val {
+                font-size: 16px !important;
+            }
+            #victory-restart-btn {
+                padding: 7px 18px !important;
+                font-size: 13px !important;
+                margin-top: 0 !important;
+            }
+
+            /* Defeat Modal (No scroll needed) */
+            .defeat-box {
+                padding: 12px !important;
+            }
+            .defeat-title {
+                font-size: clamp(34px, 8vw, 54px) !important;
+                letter-spacing: 4px !important;
+                margin: 0 0 16px !important;
+            }
+            .defeat-buttons {
+                flex-direction: row !important;
+                gap: 10px !important;
+                justify-content: center !important;
+            }
+            .defeat-buttons .modal-close-btn {
+                min-width: 130px !important;
+                font-size: 12.5px !important;
+                padding: 8px 14px !important;
+            }
+
+            /* World Map Modal */
+            .level-map-box.full-screen-map {
+                padding: 8px 12px !important;
+                border-radius: 16px !important;
+                width: 98vw !important;
+                height: 96vh !important;
+                height: 96dvh !important;
+            }
+            .map-header {
+                padding-bottom: 6px !important;
+            }
+            .map-title-group h2 {
+                font-size: 18px !important;
+            }
+            .map-title-group p {
+                font-size: 10px !important;
+            }
+            .map-back-btn {
+                padding: 5px 12px !important;
+                font-size: 12px !important;
+                border-radius: 10px !important;
+            }
+            .world-map-viewport {
+                margin: 6px 0 !important;
+                border-radius: 12px !important;
             }
         }
         .tc-btn {
