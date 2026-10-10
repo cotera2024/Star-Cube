@@ -19,3 +19,4 @@ for (const dir of dirsToCopy) {
         fs.cpSync(src, dest, { recursive: true });
     }
 }
+
