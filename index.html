@@ -255,7 +255,7 @@
             background: linear-gradient(180deg, #FFFFFF 0%, #FFF7D6 20%, #FBBF24 50%, #EA580C 80%, #9A3412 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            -webkit-text-stroke: 3.5px #1e1b4b;
+            /* -webkit-text-stroke: 3.5px #1e1b4b; */
             filter: drop-shadow(0 6px 0 #1e1b4b) drop-shadow(0 14px 22px rgba(0, 0, 0, 0.7));
             letter-spacing: 6px;
             animation: floatTitle 4s ease-in-out infinite;
@@ -2324,6 +2324,14 @@
 @media (max-width: 900px) and (pointer: coarse), (max-height: 520px) {
     .hide-on-mobile { display: none !important; }
 
+    #btn-fullscreen-toggle {
+        position: static !important;
+        margin-top: 8px !important;
+        margin-left: 2px !important;
+        order: 99 !important;
+    }
+
+
     .modal-box {
         background: rgba(10, 15, 30, 0.95) !important;
         backdrop-filter: blur(16px) !important;
@@ -2415,7 +2423,7 @@
         background: rgba(255,255,255,0.1) !important; border: 1px solid rgba(255,255,255,0.2) !important;
     }
     
-    .modal-close-btn, #close-options, #close-lang-btn {
+    .modal-close-btn, #close-options-btn, #close-lang-btn {
         background: linear-gradient(180deg, #ff007f 0%, #cc0066 100%) !important; border-radius: 20px !important;
         height: 44px !important; line-height: 44px !important; padding: 0 20px !important; font-size: 16px !important;
         margin-top: 15px !important; width: 100% !important; border: none !important; color: white !important; font-weight: bold !important;
