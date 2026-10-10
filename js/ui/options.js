@@ -236,12 +236,6 @@
         if (pauseOptionsBtn) {
             pauseOptionsBtn.addEventListener('click', openOptionsModal);
         }
-        if (langToggleBtn) {
-            langToggleBtn.addEventListener('click', () => {
-                openOptionsModal();
-            });
-        }
-
         if (closeOptions) {
             closeOptions.addEventListener('click', closeOptionsModal);
         }

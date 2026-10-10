@@ -2208,6 +2208,18 @@ gameReady = true;
             });
         });
 
+        if (closeLangBtn) {
+            closeLangBtn.addEventListener("click", () => {
+                if (langSelect) {
+                    langSelect.classList.remove("visible");
+                    setTimeout(() => { langSelect.style.display = "none"; }, 350);
+                }
+                const titleBtns = document.getElementById("title-buttons");
+                if (titleBtns) titleBtns.classList.remove("hidden");
+                if (langToggleBtn) langToggleBtn.style.display = "flex";
+            });
+        }
+
         if (langToggleBtn) {
             langToggleBtn.addEventListener("click", () => {
                 if (langSelect) {
@@ -2215,6 +2227,10 @@ gameReady = true;
                     langSelect.style.display = "flex";
                     setTimeout(() => langSelect.classList.add("visible"), 30);
                     updateUITranslations();
+                    
+                    const titleBtns = document.getElementById("title-buttons");
+                    if (titleBtns) titleBtns.classList.add("hidden");
+                    langToggleBtn.style.display = "none";
                 }
             });
         }

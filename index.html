@@ -1231,7 +1231,7 @@
                 margin-top: 6px !important;
             }
 
-            /* Controls Guide Modal */
+            
             .controls-modal-box {
                 max-width: 660px !important;
                 width: 95% !important;
@@ -1279,7 +1279,7 @@
                 padding: 2px 6px !important;
             }
 
-            /* Credits Modal */
+            
             .credits-modal-box {
                 max-width: 680px !important;
                 width: 95% !important;
@@ -1327,7 +1327,7 @@
                 font-size: 10.5px !important;
             }
 
-            /* Pause Modal (No scroll needed) */
+            
             .pause-modal-box {
                 max-width: 460px !important;
                 width: 92% !important;
@@ -1367,7 +1367,7 @@
                 font-size: 10.5px !important;
             }
 
-            /* Options Modal */
+            
             .options-modal-box {
                 max-width: 540px !important;
                 width: 94% !important;
@@ -1442,7 +1442,7 @@
                 border-radius: 10px !important;
             }
 
-            /* Language Select Screen */
+            
             #lang-select {
                 gap: 10px !important;
                 padding: 10px !important;
@@ -1458,26 +1458,26 @@
                 padding: 0 !important;
             }
             .lang-btn {
-                min-width: 76px !important;
-                padding: 6px 10px !important;
-                gap: 3px !important;
-                border-radius: 10px !important;
-                font-size: 11px !important;
+                min-width: 90px !important;
+                padding: 10px 14px !important;
+                gap: 6px !important;
+                border-radius: 14px !important;
             }
             .lang-btn .flag {
-                font-size: 26px !important;
+                font-size: 44px !important;
             }
             .lang-btn .name {
-                font-size: 11px !important;
+                font-size: 13px !important;
+                font-weight: bold !important;
             }
             #close-lang-btn {
-                min-width: 120px !important;
-                padding: 6px 16px !important;
-                font-size: 12px !important;
-                margin-top: 4px !important;
+                min-width: 160px !important;
+                padding: 8px 20px !important;
+                font-size: 14px !important;
+                margin-top: 8px !important;
             }
 
-            /* Victory Modal (No scroll needed) */
+            
             .victory-modal-box {
                 max-width: 440px !important;
                 width: 90% !important;
@@ -1516,7 +1516,7 @@
                 margin-top: 0 !important;
             }
 
-            /* Defeat Modal (No scroll needed) */
+            
             .defeat-box {
                 padding: 12px !important;
             }
@@ -1536,7 +1536,7 @@
                 padding: 8px 14px !important;
             }
 
-            /* World Map Modal */
+            
             .level-map-box.full-screen-map {
                 padding: 8px 12px !important;
                 border-radius: 16px !important;
@@ -2102,6 +2102,74 @@
                 padding: 9px 20px !important;
                 border-radius: 16px !important;
                 top: 22% !important;
+            }
+        }
+
+        @media (pointer: coarse) and (orientation: landscape) {
+            #game-title {
+                top: 24% !important;
+            }
+            #game-title .starcube-title {
+                font-size: clamp(60px, 13vw, 120px) !important;
+                letter-spacing: 6px !important;
+                text-shadow: 0 10px 0 #1e1b4b, 0 0 40px rgba(251, 191, 36, 0.7) !important;
+            }
+            #game-title .starcube-subtitle {
+                font-size: clamp(14px, 3.5vw, 24px) !important;
+                letter-spacing: 6px !important;
+                margin-top: 14px !important;
+                background: rgba(0, 0, 0, 0.45);
+                padding: 6px 20px !important;
+                border-radius: 20px !important;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            #title-buttons {
+                top: 68% !important;
+                flex-direction: row !important;
+                flex-wrap: wrap !important;
+                justify-content: center !important;
+                width: 85vw !important;
+                max-width: 620px !important;
+                gap: 12px !important;
+            }
+            .title-btn {
+                width: calc(33.33% - 14px) !important;
+                height: 54px !important;
+                font-size: 13.5px !important;
+                border-radius: 18px !important;
+                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5) !important;
+                margin: 0 !important;
+                padding: 4px !important;
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
+            }
+            #start-btn {
+                width: 100% !important;
+                height: 68px !important;
+                font-size: 26px !important;
+                border-radius: 24px !important;
+                background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%) !important;
+                color: #fff !important;
+                border: 3px solid #7dd3fc !important;
+                box-shadow: 0 12px 30px rgba(56, 189, 248, 0.55), inset 0 2px 5px rgba(255, 255, 255, 0.4) !important;
+                margin-bottom: 6px !important;
+            }
+            #corner-credit {
+                bottom: max(12px, env(safe-area-inset-bottom, 12px)) !important;
+                right: max(16px, env(safe-area-inset-right, 16px)) !important;
+                font-size: 13px !important;
+                padding: 6px 14px !important;
+                border-radius: 14px !important;
+                background: rgba(15, 23, 42, 0.85) !important;
+            }
+            #btn-lang-toggle {
+                font-size: 14px !important;
+                padding: 8px 18px !important;
+                border-radius: 22px !important;
+                top: max(16px, env(safe-area-inset-top, 16px)) !important;
+                left: max(20px, env(safe-area-inset-left, 20px)) !important;
+                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6) !important;
             }
         }
 
