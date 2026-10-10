@@ -429,6 +429,7 @@
   "ui_pause_title": "暂停",
   "ui_pause_sub": "游戏已暂停。深呼吸。",
   "ui_pause_resume": "▶ 继续",
+  "ui_pause_fullscreen": "⛶ 全屏显示",
   "ui_pause_retry": "🔄 重新开始关卡",
   "ui_pause_exit": "🏠 返回标题",
   "ui_pause_exit_map": "🗺️ 返回地图",

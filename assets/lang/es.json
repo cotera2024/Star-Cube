@@ -435,6 +435,7 @@
   "ui_pause_title": "PAUSA",
   "ui_pause_sub": "El juego está detenido. Respira.",
   "ui_pause_resume": "▶ REANUDAR",
+  "ui_pause_fullscreen": "⛶ PANTALLA COMPLETA",
   "ui_pause_retry": "🔄 REINICIAR NIVEL",
   "ui_pause_exit": "🏠 SALIR AL TÍTULO",
   "ui_pause_exit_map": "🗺️ SALIR AL MAPA",

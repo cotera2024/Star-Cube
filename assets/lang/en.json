@@ -434,6 +434,7 @@
   "ui_pause_title": "PAUSED",
   "ui_pause_sub": "The game is paused. Take a breath.",
   "ui_pause_resume": "▶ RESUME",
+  "ui_pause_fullscreen": "⛶ FULLSCREEN",
   "ui_pause_retry": "🔄 RESTART LEVEL",
   "ui_pause_exit": "🏠 EXIT TO TITLE",
   "ui_pause_exit_map": "🗺️ EXIT TO MAP",

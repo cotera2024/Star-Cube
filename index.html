@@ -1547,13 +1547,31 @@
         }
 
         #btn-fullscreen-toggle {
-            position: absolute; right: 14px; top: 12px;
-            width: 36px; height: 36px; border-radius: 8px;
-            background: rgba(15, 23, 42, 0.75);
-            border: 1.5px solid rgba(255, 255, 255, 0.3);
-            font-size: 16px; color: #fff;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
-            z-index: 25;
+            position: absolute;
+            right: max(14px, env(safe-area-inset-right, 14px));
+            top: max(12px, env(safe-area-inset-top, 12px));
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: rgba(15, 23, 42, 0.82);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            font-size: 20px;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            z-index: 100;
+            pointer-events: auto;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(6px);
+            user-select: none;
+            touch-action: manipulation;
+            transition: transform 0.15s ease, background 0.15s ease;
+        }
+        #btn-fullscreen-toggle:active {
+            transform: scale(0.9);
+            background: rgba(30, 41, 59, 0.95);
         }
 
         @media (pointer: coarse) {
@@ -1999,6 +2017,7 @@
     </div>
 
     <div id="touch-controls">
+        <button id="btn-fullscreen-toggle" type="button" aria-label="Fullscreen" title="Fullscreen">⛶</button>
         <div id="pad-zone" class="dpad-container">
             <div class="dpad-cross">
                 <button class="tc-btn dpad-btn" id="pad-up" data-dir="up" aria-label="Up">▲</button>
@@ -2593,6 +2612,7 @@
             <p class="pause-sub" data-i18n="ui_pause_sub">The game is paused. Take a breath.</p>
             <div class="pause-buttons">
                 <button id="pause-resume-btn" data-i18n="ui_pause_resume">▶ RESUME</button>
+                <button id="pause-fullscreen-btn" data-i18n="ui_pause_fullscreen">⛶ FULLSCREEN</button>
                 <button id="pause-options-btn" data-i18n="ui_btn_options">⚙ OPTIONS</button>
                 <button id="pause-retry-btn" data-i18n="ui_pause_retry">🔄 RESTART LEVEL</button>
                 <button id="pause-exit-btn" data-i18n="ui_pause_exit_map">🗺️ EXIT TO MAP</button>
@@ -2881,8 +2901,61 @@
                 }
             }
 
+            function toggleFullscreen() {
+                try {
+                    const doc = document;
+                    const el = document.documentElement;
+                    const isFs = doc.fullscreenElement || doc.webkitFullscreenElement;
+                    if (!isFs) {
+                        if (el.requestFullscreen) {
+                            el.requestFullscreen().catch(() => {});
+                        } else if (el.webkitRequestFullscreen) {
+                            el.webkitRequestFullscreen();
+                        }
+                    } else {
+                        if (doc.exitFullscreen) {
+                            doc.exitFullscreen().catch(() => {});
+                        } else if (doc.webkitExitFullscreen) {
+                            doc.webkitExitFullscreen();
+                        }
+                    }
+                } catch (e) {}
+            }
+            window.toggleFullscreen = toggleFullscreen;
+
+            function updateFullscreenBtnIcon() {
+                const fsBtn = document.getElementById('btn-fullscreen-toggle');
+                const isFs = document.fullscreenElement || document.webkitFullscreenElement;
+                if (fsBtn) {
+                    fsBtn.innerHTML = isFs ? '🗗' : '⛶';
+                }
+                setTimeout(resizeGame, 80);
+                setTimeout(resizeGame, 250);
+            }
+            document.addEventListener('fullscreenchange', updateFullscreenBtnIcon);
+            document.addEventListener('webkitfullscreenchange', updateFullscreenBtnIcon);
+
+            const fsToggleBtn = document.getElementById('btn-fullscreen-toggle');
+            if (fsToggleBtn) {
+                fsToggleBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleFullscreen();
+                });
+            }
+
             if (startBtn) {
                 startBtn.addEventListener('click', () => {
+                    const isMobileCoarse = (
+                        (window.matchMedia && window.matchMedia("(pointer: coarse)").matches) ||
+                        ('ontouchstart' in window) ||
+                        (navigator.maxTouchPoints > 0)
+                    );
+                    if (isMobileCoarse && !document.fullscreenElement && !document.webkitFullscreenElement) {
+                        const el = document.documentElement;
+                        if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
+                        else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+                    }
                     if (typeof startGameFromButton === 'function') startGameFromButton();
                 });
             }
@@ -2975,33 +3048,45 @@
             const winH = (vv && vv.height) ? vv.height : window.innerHeight;
             if (!winW || !winH) return;
 
-            const baseW = 1024;
             const baseH = 576;
+            const minW = 1024;
+            const aspect = winW / winH;
 
-            const scale = Math.min(winW / baseW, winH / baseH);
-            const dispW = Math.round(baseW * scale);
-            const dispH = Math.round(baseH * scale);
-            const offX = Math.round((winW - dispW) / 2);
-            const offY = Math.round((winH - dispH) / 2);
+            let targetW = minW;
+            let s = 1;
+            let offX = 0;
+            let offY = 0;
 
-            window.VIEW_W = baseW;
+            if (aspect >= minW / baseH) {
+                targetW = Math.round(baseH * aspect);
+                s = winH / baseH;
+                offX = 0;
+                offY = 0;
+            } else {
+                targetW = minW;
+                s = winW / minW;
+                offX = 0;
+                offY = Math.round((winH - baseH * s) / 2);
+            }
+
+            window.VIEW_W = targetW;
             window.VIEW_H = baseH;
-            if (typeof VIEW_W !== 'undefined') VIEW_W = baseW;
+            if (typeof VIEW_W !== 'undefined') VIEW_W = targetW;
 
             const ps = (typeof window.PerfQuality !== 'undefined' && window.PerfQuality && typeof window.PerfQuality.pixelScale === 'number' && window.PerfQuality.pixelScale > 0) ? window.PerfQuality.pixelScale : 1;
-            const bufW = Math.round(baseW * ps);
+            const bufW = Math.round(targetW * ps);
             const bufH = Math.round(baseH * ps);
             if (canvas.width !== bufW) canvas.width = bufW;
             if (canvas.height !== bufH) canvas.height = bufH;
-            canvas.style.width = baseW + 'px';
+            canvas.style.width = targetW + 'px';
             canvas.style.height = baseH + 'px';
 
             c.style.position = 'fixed';
-            c.style.width = baseW + 'px';
+            c.style.width = targetW + 'px';
             c.style.height = baseH + 'px';
             c.style.left = offX + 'px';
             c.style.top = offY + 'px';
-            c.style.transform = 'scale(' + scale + ')';
+            c.style.transform = 'scale(' + s + ')';
             c.style.transformOrigin = 'top left';
 
             const isTouchOrMobile = (

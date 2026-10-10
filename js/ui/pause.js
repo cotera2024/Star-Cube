@@ -173,9 +173,13 @@
         if (paused) resumeGame(); else pauseGame();
     });
     const resumeBtn = document.getElementById("pause-resume-btn");
+    const pauseFsBtn = document.getElementById("pause-fullscreen-btn");
     const retryBtn = document.getElementById("pause-retry-btn");
     const exitBtn = document.getElementById("pause-exit-btn");
     if (resumeBtn) resumeBtn.addEventListener("click", resumeGame);
+    if (pauseFsBtn) pauseFsBtn.addEventListener("click", function() {
+        if (typeof window.toggleFullscreen === "function") window.toggleFullscreen();
+    });
     if (retryBtn) retryBtn.addEventListener("click", function() {
         unpauseSilently();
         try {

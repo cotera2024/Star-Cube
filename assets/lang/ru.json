@@ -429,6 +429,7 @@
   "ui_pause_title": "ПАУЗА",
   "ui_pause_sub": "Игра на паузе. Переведите дух.",
   "ui_pause_resume": "▶ ПРОДОЛЖИТЬ",
+  "ui_pause_fullscreen": "⛶ ПОЛНЫЙ ЭКРАН",
   "ui_pause_retry": "🔄 ПЕРЕЗАПУСТИТЬ УРОВЕНЬ",
   "ui_pause_exit": "🏠 НА ГЛАВНЫЙ ЭКРАН",
   "ui_pause_exit_map": "🗺️ НА КАРТУ",

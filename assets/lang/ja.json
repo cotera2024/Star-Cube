@@ -429,6 +429,7 @@
   "ui_pause_title": "一時停止",
   "ui_pause_sub": "ゲームは一時停止中。ゆっくりどうぞ。",
   "ui_pause_resume": "▶ 再開する",
+  "ui_pause_fullscreen": "⛶ 全画面表示",
   "ui_pause_retry": "🔄 レベルをやり直す",
   "ui_pause_exit": "🏠 タイトルへ戻る",
   "ui_pause_exit_map": "🗺️ マップへ戻る",
