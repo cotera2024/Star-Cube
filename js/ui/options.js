@@ -1,0 +1,332 @@
+(function() {
+    'use strict';
+
+    function initOptionsManager() {
+        const optionsModal = document.getElementById('options-modal');
+        const optionsBtn = document.getElementById('options-btn');
+        const pauseOptionsBtn = document.getElementById('pause-options-btn');
+        const langToggleBtn = document.getElementById('btn-lang-toggle');
+        const closeOptions = document.getElementById('close-options');
+        const closeOptionsBtn = document.getElementById('close-options-btn');
+
+        const bgmSlider = document.getElementById('bgm-slider');
+        const sfxSlider = document.getElementById('sfx-slider');
+        const bgmVolText = document.getElementById('bgm-vol-text');
+        const sfxVolText = document.getElementById('sfx-vol-text');
+        const btnToggleBgm = document.getElementById('btn-toggle-bgm');
+        const btnToggleSfx = document.getElementById('btn-toggle-sfx');
+        const btnTestSfx = document.getElementById('btn-test-sfx');
+
+        const btnQuickBoth = document.getElementById('btn-quick-both');
+        const btnQuickMusic = document.getElementById('btn-quick-music');
+        const btnQuickSfx = document.getElementById('btn-quick-sfx');
+        const btnQuickMute = document.getElementById('btn-quick-mute');
+
+        function updateSliderVisual(slider, val, isMuted) {
+            if (!slider) return;
+            const pct = isMuted ? 0 : val;
+            slider.style.background = isMuted
+                ? `linear-gradient(90deg, #475569 0%, #334155 100%)`
+                : `linear-gradient(90deg, #ff007f 0%, #f43f5e ${Math.min(pct, 70)}%, #ffd700 ${pct}%, rgba(255,255,255,0.15) ${pct}%)`;
+        }
+
+        function syncOptionsUI() {
+            const musicVol = typeof window.getMusicVolume === 'function' ? window.getMusicVolume() : 0.8;
+            const soundVol = typeof window.getSoundVolume === 'function' ? window.getSoundVolume() : 0.8;
+            const musicMuted = typeof window.isMusicMuted === 'function' ? window.isMusicMuted() : false;
+            const soundMuted = typeof window.isSoundMuted === 'function' ? window.isSoundMuted() : false;
+
+            const musicPct = Math.round(musicVol * 100);
+            const soundPct = Math.round(soundVol * 100);
+
+            if (bgmSlider) {
+                bgmSlider.value = musicPct;
+                updateSliderVisual(bgmSlider, musicPct, musicMuted);
+            }
+            if (sfxSlider) {
+                sfxSlider.value = soundPct;
+                updateSliderVisual(sfxSlider, soundPct, soundMuted);
+            }
+
+            if (bgmVolText) {
+                bgmVolText.textContent = musicMuted ? '0%' : `${musicPct}%`;
+                bgmVolText.style.color = musicMuted ? '#94a3b8' : '#00ffff';
+            }
+            if (sfxVolText) {
+                sfxVolText.textContent = soundMuted ? '0%' : `${soundPct}%`;
+                sfxVolText.style.color = soundMuted ? '#94a3b8' : '#00ffff';
+            }
+
+            if (btnToggleBgm) {
+                btnToggleBgm.textContent = musicMuted || musicPct === 0 ? '🔇' : '🔊';
+                btnToggleBgm.classList.toggle('muted', musicMuted || musicPct === 0);
+            }
+            if (btnToggleSfx) {
+                btnToggleSfx.textContent = soundMuted || soundPct === 0 ? '🔇' : '🔊';
+                btnToggleSfx.classList.toggle('muted', soundMuted || soundPct === 0);
+            }
+
+            const bothActive = !musicMuted && !soundMuted && musicPct > 0 && soundPct > 0;
+            const musicOnlyActive = !musicMuted && soundMuted && musicPct > 0;
+            const sfxOnlyActive = musicMuted && !soundMuted && soundPct > 0;
+            const allMutedActive = (musicMuted || musicPct === 0) && (soundMuted || soundPct === 0);
+
+            if (btnQuickBoth) btnQuickBoth.classList.toggle('active', bothActive);
+            if (btnQuickMusic) btnQuickMusic.classList.toggle('active', musicOnlyActive);
+            if (btnQuickSfx) btnQuickSfx.classList.toggle('active', sfxOnlyActive);
+            if (btnQuickMute) btnQuickMute.classList.toggle('active', allMutedActive);
+
+            const curLang = typeof window.getCurrentLang === 'function' ? window.getCurrentLang() : 'es';
+            if (typeof updateLanguageCarouselDisplay === 'function') {
+                updateLanguageCarouselDisplay(curLang);
+            }
+            document.querySelectorAll('.opt-lang-card').forEach(card => {
+                const lang = card.getAttribute('data-lang');
+                card.classList.toggle('active', lang === curLang);
+            });
+        }
+
+        
+        const LANG_LIST = [
+            { code: 'es', name: 'Español', flag: '🇪🇸' },
+            { code: 'en', name: 'English', flag: '🇬🇧' },
+            { code: 'zh', name: '中文', flag: '🇨🇳' },
+            { code: 'ja', name: '日本語', flag: '🇯🇵' },
+            { code: 'ru', name: 'Русский', flag: '🇷🇺' }
+        ];
+
+        const SVG_FLAGS = {
+            es: '<svg viewBox="0 0 64 48" width="28" height="21" style="border-radius:3px;vertical-align:middle;"><rect width="64" height="48" fill="#AA151B"/><rect y="12" width="64" height="24" fill="#F1BF00"/><circle cx="20" cy="24" r="6" fill="#AA151B"/></svg>',
+            en: '<svg viewBox="0 0 64 48" width="28" height="21" style="border-radius:3px;vertical-align:middle;"><rect width="64" height="48" fill="#012169"/><path d="M0,0 L64,48 M64,0 L0,48" stroke="#fff" stroke-width="8"/><path d="M0,0 L64,48 M64,0 L0,48" stroke="#C8102E" stroke-width="4"/><path d="M32,0 V48 M0,24 H64" stroke="#fff" stroke-width="12"/><path d="M32,0 V48 M0,24 H64" stroke="#C8102E" stroke-width="7"/></svg>',
+            zh: '<svg viewBox="0 0 64 48" width="28" height="21" style="border-radius:3px;vertical-align:middle;"><rect width="64" height="48" fill="#DE2910"/><polygon points="12,6 14,12 20,12 15,16 17,22 12,18 7,22 9,16 4,12 10,12" fill="#FFDE00"/></svg>',
+            ja: '<svg viewBox="0 0 64 48" width="28" height="21" style="border-radius:3px;vertical-align:middle;"><rect width="64" height="48" fill="#FFFFFF" rx="4"/><circle cx="32" cy="24" r="14" fill="#BC002D"/></svg>',
+            ru: '<svg viewBox="0 0 64 48" width="28" height="21" style="border-radius:3px;vertical-align:middle;"><rect width="64" height="16" fill="#FFFFFF"/><rect y="16" width="64" height="16" fill="#0039A6"/><rect y="32" width="64" height="16" fill="#D52B1E"/></svg>'
+        };
+
+        function updateLanguageCarouselDisplay(langCode) {
+            const item = LANG_LIST.find(l => l.code === langCode) || LANG_LIST[0];
+            const flagEl = document.getElementById('opt-current-flag');
+            const nameEl = document.getElementById('opt-current-name');
+            const codeEl = document.getElementById('opt-current-code');
+            if (flagEl) {
+                flagEl.innerHTML = SVG_FLAGS[item.code] || item.flag;
+            }
+            if (nameEl) nameEl.textContent = item.name;
+            if (codeEl) codeEl.textContent = item.code.toUpperCase();
+        }
+
+        async function cycleLanguage(direction = 1) {
+            const curLang = typeof window.getCurrentLang === 'function' ? window.getCurrentLang() : 'es';
+            let idx = LANG_LIST.findIndex(l => l.code === curLang);
+            if (idx === -1) idx = 0;
+            let nextIdx = (idx + direction + LANG_LIST.length) % LANG_LIST.length;
+            const nextLang = LANG_LIST[nextIdx].code;
+            if (typeof window.setLanguage === 'function') {
+                await window.setLanguage(nextLang);
+            }
+            if (typeof window.updateUITranslations === 'function') {
+                window.updateUITranslations();
+            }
+            syncOptionsUI();
+        }
+
+        const btnLangPrev = document.getElementById('opt-lang-prev');
+        const btnLangNext = document.getElementById('opt-lang-next');
+        const btnLangDisplay = document.getElementById('opt-lang-display');
+
+        if (btnLangPrev) {
+            btnLangPrev.addEventListener('click', (e) => {
+                e.stopPropagation();
+                cycleLanguage(-1);
+            });
+        }
+        if (btnLangNext) {
+            btnLangNext.addEventListener('click', (e) => {
+                e.stopPropagation();
+                cycleLanguage(1);
+            });
+        }
+        if (btnLangDisplay) {
+            btnLangDisplay.addEventListener('click', (e) => {
+                e.stopPropagation();
+                cycleLanguage(1);
+            });
+        }
+
+        window.syncOptionsUI = syncOptionsUI;
+
+        function openOptionsModal() {
+            if (!optionsModal) return;
+            syncOptionsUI();
+            optionsModal.style.zIndex = '10005';
+            optionsModal.classList.add('active');
+            if (typeof window.updateUITranslations === 'function') {
+                window.updateUITranslations();
+            }
+        }
+
+        function closeOptionsModal() {
+            if (!optionsModal) return;
+            optionsModal.classList.remove('active');
+        }
+
+        window.openOptionsModal = openOptionsModal;
+        window.closeOptionsModal = closeOptionsModal;
+
+        if (bgmSlider) {
+            bgmSlider.addEventListener('input', e => {
+                const val = parseFloat(e.target.value) / 100;
+                if (typeof window.setMusicMuted === 'function' && window.isMusicMuted() && val > 0) {
+                    window.setMusicMuted(false);
+                }
+                if (typeof window.setMusicVolume === 'function') {
+                    window.setMusicVolume(val);
+                }
+                syncOptionsUI();
+            });
+        }
+
+        if (sfxSlider) {
+            sfxSlider.addEventListener('input', e => {
+                const val = parseFloat(e.target.value) / 100;
+                if (typeof window.setSoundMuted === 'function' && window.isSoundMuted() && val > 0) {
+                    window.setSoundMuted(false);
+                }
+                if (typeof window.setSoundVolume === 'function') {
+                    window.setSoundVolume(val);
+                }
+                syncOptionsUI();
+            });
+            sfxSlider.addEventListener('change', () => {
+                if (typeof window.playTestSFX === 'function' && !window.isSoundMuted()) {
+                    window.playTestSFX();
+                }
+            });
+        }
+
+        if (btnToggleBgm) {
+            btnToggleBgm.addEventListener('click', () => {
+                if (typeof window.isMusicMuted === 'function' && typeof window.setMusicMuted === 'function') {
+                    const nextMuted = !window.isMusicMuted();
+                    window.setMusicMuted(nextMuted);
+                    if (!nextMuted && window.getMusicVolume() <= 0.05) {
+                        window.setMusicVolume(0.8);
+                    }
+                }
+                syncOptionsUI();
+            });
+        }
+
+        if (btnToggleSfx) {
+            btnToggleSfx.addEventListener('click', () => {
+                if (typeof window.isSoundMuted === 'function' && typeof window.setSoundMuted === 'function') {
+                    const nextMuted = !window.isSoundMuted();
+                    window.setSoundMuted(nextMuted);
+                    if (!nextMuted && window.getSoundVolume() <= 0.05) {
+                        window.setSoundVolume(0.8);
+                    }
+                    if (!nextMuted && typeof window.playTestSFX === 'function') {
+                        window.playTestSFX();
+                    }
+                }
+                syncOptionsUI();
+            });
+        }
+
+        if (btnQuickBoth) {
+            btnQuickBoth.addEventListener('click', () => {
+                if (typeof window.setMusicMuted === 'function') window.setMusicMuted(false);
+                if (typeof window.setSoundMuted === 'function') window.setSoundMuted(false);
+                if (typeof window.getMusicVolume === 'function' && window.getMusicVolume() <= 0.05) {
+                    window.setMusicVolume(0.8);
+                }
+                if (typeof window.getSoundVolume === 'function' && window.getSoundVolume() <= 0.05) {
+                    window.setSoundVolume(0.8);
+                }
+                if (typeof window.playTestSFX === 'function') window.playTestSFX();
+                syncOptionsUI();
+            });
+        }
+
+        if (btnQuickMusic) {
+            btnQuickMusic.addEventListener('click', () => {
+                if (typeof window.setMusicMuted === 'function') window.setMusicMuted(false);
+                if (typeof window.setSoundMuted === 'function') window.setSoundMuted(true);
+                if (typeof window.getMusicVolume === 'function' && window.getMusicVolume() <= 0.05) {
+                    window.setMusicVolume(0.8);
+                }
+                syncOptionsUI();
+            });
+        }
+
+        if (btnQuickSfx) {
+            btnQuickSfx.addEventListener('click', () => {
+                if (typeof window.setMusicMuted === 'function') window.setMusicMuted(true);
+                if (typeof window.setSoundMuted === 'function') window.setSoundMuted(false);
+                if (typeof window.getSoundVolume === 'function' && window.getSoundVolume() <= 0.05) {
+                    window.setSoundVolume(0.8);
+                }
+                if (typeof window.playTestSFX === 'function') window.playTestSFX();
+                syncOptionsUI();
+            });
+        }
+
+        if (btnQuickMute) {
+            btnQuickMute.addEventListener('click', () => {
+                if (typeof window.setMusicMuted === 'function') window.setMusicMuted(true);
+                if (typeof window.setSoundMuted === 'function') window.setSoundMuted(true);
+                syncOptionsUI();
+            });
+        }
+
+        if (btnTestSfx) {
+            btnTestSfx.addEventListener('click', () => {
+                if (typeof window.playTestSFX === 'function') {
+                    window.playTestSFX();
+                }
+            });
+        }
+
+        document.querySelectorAll('.opt-lang-card').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const lang = btn.getAttribute('data-lang');
+                if (typeof window.setLanguage === 'function') {
+                    await window.setLanguage(lang);
+                }
+                if (typeof window.updateUITranslations === 'function') {
+                    window.updateUITranslations();
+                }
+                syncOptionsUI();
+            });
+        });
+
+        if (optionsBtn) {
+            optionsBtn.addEventListener('click', openOptionsModal);
+        }
+        if (pauseOptionsBtn) {
+            pauseOptionsBtn.addEventListener('click', openOptionsModal);
+        }
+        if (closeOptions) {
+            closeOptions.addEventListener('click', closeOptionsModal);
+        }
+        if (closeOptionsBtn) {
+            closeOptionsBtn.addEventListener('click', closeOptionsModal);
+        }
+        if (optionsModal) {
+            optionsModal.addEventListener('click', e => {
+                if (e.target === optionsModal) closeOptionsModal();
+            });
+        }
+
+        document.addEventListener('audioSettingsChanged', syncOptionsUI);
+        document.addEventListener('languageChanged', syncOptionsUI);
+
+        syncOptionsUI();
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initOptionsManager);
+    } else {
+        initOptionsManager();
+    }
+})();
