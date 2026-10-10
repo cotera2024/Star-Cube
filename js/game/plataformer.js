@@ -202,6 +202,14 @@
             game.cameraOverrideX = portalCamX;
         }
 
+        if (p.state === "opening" || p.state === "hero_emerge") {
+            const padZone = document.getElementById("pad-zone");
+            if (padZone && padZone.style.opacity !== "0") {
+                padZone.style.opacity = "0";
+                padZone.style.pointerEvents = "none";
+            }
+        }
+
         if (p.state === "opening") {
             p.scale = (p.scale || 0) + (1.12 - (p.scale || 0)) * 0.12;
 
@@ -277,6 +285,11 @@
                     game.player.onGround = true;
                     p.state = "hero_landing";
                     p.landingTimer = 0;
+                    const padZone = document.getElementById("pad-zone");
+                    if (padZone) {
+                        padZone.style.opacity = "1";
+                        padZone.style.pointerEvents = "auto";
+                    }
 
                     game.player.scaleX = 1.42;
                     game.player.scaleY = 0.58;
@@ -339,6 +352,11 @@
                 }
                 delete game.cameraOverrideX;
                 game.spawnPortal = null;
+                const padZone = document.getElementById("pad-zone");
+                if (padZone) {
+                    padZone.style.opacity = "1";
+                    padZone.style.pointerEvents = "auto";
+                }
                 return;
             }
         }
@@ -946,6 +964,11 @@
             rotation: 0,
             timer: 0
         };
+        const padZone = document.getElementById("pad-zone");
+        if (padZone) {
+            padZone.style.opacity = "0";
+            padZone.style.pointerEvents = "none";
+        }
         game.player.y = portalSpawnY;
         game.player.frozen = true;
         game.player.hidden = true;
@@ -1745,6 +1768,11 @@
                 rotation: 0,
                 timer: 0
             };
+            const padZone = document.getElementById("pad-zone");
+            if (padZone) {
+                padZone.style.opacity = "0";
+                padZone.style.pointerEvents = "none";
+            }
             game.player.y = portalSpawnY;
             game.player.frozen = true;
             game.player.hidden = true;
@@ -1752,6 +1780,11 @@
             game.player.vy = 0;
         } else {
             game.spawnPortal = null;
+            const padZone = document.getElementById("pad-zone");
+            if (padZone) {
+                padZone.style.opacity = "1";
+                padZone.style.pointerEvents = "auto";
+            }
         }
         game.isEnteringDoor = false;
         window.canEnterDoor = false;
@@ -2226,7 +2259,7 @@
                         } catch (e) {}
                     } else {
                         const titleBtns = document.getElementById("title-buttons");
-                        if (titleBtns && (gameState === "title" || gameState === "title_intro")) {
+                        if (titleBtns && (gameState === "start" || gameState === "title" || gameState === "title_intro")) {
                             titleBtns.classList.remove("hidden");
                         }
                         if (langToggleBtn) langToggleBtn.style.display = "flex";
@@ -2241,31 +2274,53 @@
             });
         });
 
-        if (closeLangBtn) {
-            closeLangBtn.addEventListener("click", () => {
-                if (langSelect) {
-                    langSelect.classList.remove("visible");
-                    setTimeout(() => { langSelect.style.display = "none"; }, 350);
-                }
+        function openLanguageSelector(e) {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            if (langSelect) {
+                if (closeLangBtn) closeLangBtn.style.display = "inline-block";
+                langSelect.style.display = "flex";
+                langSelect.style.opacity = "1";
+                langSelect.style.pointerEvents = "auto";
+                langSelect.classList.add("visible");
+                updateUITranslations();
+                
                 const titleBtns = document.getElementById("title-buttons");
-                if (titleBtns) titleBtns.classList.remove("hidden");
-                if (langToggleBtn) langToggleBtn.style.display = "flex";
-            });
+                if (titleBtns) titleBtns.classList.add("hidden");
+                if (langToggleBtn) langToggleBtn.style.display = "none";
+            }
+        }
+        window.openLanguageSelector = openLanguageSelector;
+
+        function closeLanguageSelector(e) {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            if (langSelect) {
+                langSelect.classList.remove("visible");
+                langSelect.style.opacity = "0";
+                setTimeout(() => {
+                    langSelect.style.display = "none";
+                }, 300);
+            }
+            const titleBtns = document.getElementById("title-buttons");
+            if (titleBtns && (gameState === "start" || gameState === "title" || gameState === "title_intro")) {
+                titleBtns.classList.remove("hidden");
+            }
+            if (langToggleBtn) langToggleBtn.style.display = "flex";
+        }
+
+        if (closeLangBtn) {
+            closeLangBtn.addEventListener("click", closeLanguageSelector);
+            closeLangBtn.addEventListener("touchend", closeLanguageSelector);
         }
 
         if (langToggleBtn) {
-            langToggleBtn.addEventListener("click", () => {
-                if (langSelect) {
-                    if (closeLangBtn) closeLangBtn.style.display = "inline-block";
-                    langSelect.style.display = "flex";
-                    setTimeout(() => langSelect.classList.add("visible"), 30);
-                    updateUITranslations();
-                    
-                    const titleBtns = document.getElementById("title-buttons");
-                    if (titleBtns) titleBtns.classList.add("hidden");
-                    langToggleBtn.style.display = "none";
-                }
-            });
+            langToggleBtn.addEventListener("click", openLanguageSelector);
+            langToggleBtn.addEventListener("touchend", openLanguageSelector);
         }
 
 

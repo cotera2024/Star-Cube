@@ -45,6 +45,17 @@
         if (!touchCtl) return;
         const shouldShow = isTouch && !window.hasGamepad && (typeof gameState !== "undefined" && (gameState === "playing" || gameState === "hub" || gameState === "caceria"));
         touchCtl.style.display = shouldShow ? "block" : "none";
+        const padZone = document.getElementById("pad-zone");
+        if (padZone) {
+            const isPortalJumping = typeof game !== "undefined" && game && game.spawnPortal && (game.spawnPortal.state === "opening" || game.spawnPortal.state === "hero_emerge");
+            if (isPortalJumping) {
+                padZone.style.opacity = "0";
+                padZone.style.pointerEvents = "none";
+            } else {
+                padZone.style.opacity = "1";
+                padZone.style.pointerEvents = "auto";
+            }
+        }
     }
     window.updateTouchControlsVisibility = updateTouchControlsVisibility;
     function forceFullscreen() {

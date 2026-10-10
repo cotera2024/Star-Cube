@@ -177,7 +177,7 @@
         }
 
         #btn-lang-toggle {
-            position: absolute; top: 20px; left: 24px; z-index: 50;
+            position: absolute; top: 20px; left: 24px; z-index: 99;
             background: rgba(15, 23, 42, 0.78);
             border: 1.5px solid rgba(255, 0, 127, 0.5);
             color: #ffffff;
@@ -188,6 +188,7 @@
             padding: 7px 16px;
             border-radius: 20px;
             cursor: pointer;
+            pointer-events: auto !important;
             display: none; align-items: center; justify-content: center;
             gap: 8px;
             transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -215,24 +216,24 @@
         }
 
         #corner-credit {
-            position: absolute; bottom: 22px; right: 28px; z-index: 50;
-            background: rgba(15, 23, 42, 0.78);
-            border: 1px solid rgba(255, 255, 255, 0.22);
-            border-radius: 16px;
-            padding: 7px 18px;
+            position: absolute; bottom: 8px; right: 12px; z-index: 50;
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 4px 11px;
             font-family: 'Montserrat', 'Segoe UI', system-ui, sans-serif;
-            font-size: 13px;
+            font-size: 11px;
             font-weight: 500;
             color: #f8fafc;
-            letter-spacing: 0.8px;
+            letter-spacing: 0.6px;
             pointer-events: none; opacity: 0;
             transition: opacity 0.5s ease;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
             backdrop-filter: blur(8px);
             text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
             white-space: nowrap;
         }
         #corner-credit .credit-label {
@@ -321,12 +322,12 @@
 
         .title-btn {
             font-family: 'Fredoka One', cursive;
-            font-size: 21px;
-            padding: 13px 30px;
-            width: 280px;
-            height: 52px;
-            border-radius: 16px;
-            margin: 4px 0;
+            font-size: 19px;
+            padding: 10px 24px;
+            width: 260px;
+            height: 46px;
+            border-radius: 14px;
+            margin: 2px 0;
             letter-spacing: 2px;
             cursor: pointer;
             transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -400,13 +401,13 @@
 
         #title-buttons {
             position: absolute;
-            top: 70%; left: 50%;
+            top: 65%; left: 50%;
             transform: translate(-50%, -50%);
             z-index: 50;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             pointer-events: none;
         }
         #title-buttons .title-btn {
@@ -1675,7 +1676,7 @@
             height: 168px;
             pointer-events: auto;
             touch-action: none;
-            transition: left 0.3s ease, right 0.3s ease;
+            transition: opacity 0.25s ease, left 0.3s ease, right 0.3s ease;
         }
         .dpad-cross {
             position: relative;
@@ -2167,11 +2168,11 @@
                 gap: 6px !important;
             }
             #corner-credit {
-                bottom: 12px !important;
-                right: 16px !important;
-                font-size: 11px !important;
-                padding: 5px 12px !important;
-                border-radius: 12px !important;
+                bottom: 8px !important;
+                right: 12px !important;
+                font-size: 10.5px !important;
+                padding: 4px 10px !important;
+                border-radius: 10px !important;
             }
             #btn-lang-toggle {
                 font-size: 11px !important;
@@ -2181,6 +2182,8 @@
                 border-radius: 16px !important;
                 top: 12px !important;
                 left: 16px !important;
+                pointer-events: auto !important;
+                z-index: 99 !important;
             }
             #message {
                 font-size: 15px !important;
@@ -2241,20 +2244,22 @@
                 margin-bottom: 6px !important;
             }
             #corner-credit {
-                bottom: max(12px, env(safe-area-inset-bottom, 12px)) !important;
-                right: max(16px, env(safe-area-inset-right, 16px)) !important;
-                font-size: 13px !important;
-                padding: 6px 14px !important;
-                border-radius: 14px !important;
+                bottom: max(6px, env(safe-area-inset-bottom, 6px)) !important;
+                right: max(10px, env(safe-area-inset-right, 10px)) !important;
+                font-size: 10.5px !important;
+                padding: 3px 8px !important;
+                border-radius: 10px !important;
                 background: rgba(15, 23, 42, 0.85) !important;
             }
             #btn-lang-toggle {
-                font-size: 14px !important;
-                padding: 8px 18px !important;
-                border-radius: 22px !important;
-                top: max(16px, env(safe-area-inset-top, 16px)) !important;
-                left: max(20px, env(safe-area-inset-left, 20px)) !important;
+                font-size: 13px !important;
+                padding: 6px 14px !important;
+                border-radius: 20px !important;
+                top: max(12px, env(safe-area-inset-top, 12px)) !important;
+                left: max(14px, env(safe-area-inset-left, 14px)) !important;
                 box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6) !important;
+                pointer-events: auto !important;
+                z-index: 99 !important;
             }
         }
 
@@ -2608,7 +2613,7 @@
             <button id="close-lang-btn" class="modal-close-btn" data-i18n="ui_btn_close" style="display:none;">✓ CLOSE</button>
         </div>
         
-        <button id="btn-lang-toggle" title="Language" aria-label="Language">
+        <button id="btn-lang-toggle" title="Language" aria-label="Language" onclick="if(window.openLanguageSelector)window.openLanguageSelector()">
             <span style="font-size: 14px; opacity: 0.9;">🌐</span>
             <span class="lang-toggle-code" id="lang-toggle-code">ES</span>
         </button>
@@ -3246,7 +3251,6 @@
             <p class="pause-sub" data-i18n="ui_pause_sub">The game is paused. Take a breath.</p>
             <div class="pause-buttons">
                 <button id="pause-resume-btn" data-i18n="ui_pause_resume">▶ RESUME</button>
-                <button id="pause-fullscreen-btn" class="hide-on-mobile" data-i18n="ui_pause_fullscreen">⛶ FULLSCREEN</button>
                 <button id="pause-options-btn" data-i18n="ui_btn_options">⚙ OPTIONS</button>
                 <button id="pause-retry-btn" data-i18n="ui_pause_retry">🔄 RESTART LEVEL</button>
                 <button id="pause-exit-btn" data-i18n="ui_pause_exit_map">🗺️ EXIT TO MAP</button>
