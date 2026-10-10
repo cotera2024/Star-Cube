@@ -1,7 +1,8 @@
-# Scratch & temporary media files
 Galery/Gif.zip
 Galery/a/
 *.tmp
 *.log
 .DS_Store
-
+dist/
+src-tauri/target/
+node_modules/

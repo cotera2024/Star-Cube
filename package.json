@@ -1,0 +1,13 @@
+{
+  "name": "star-cube",
+  "version": "1.0.0",
+  "description": "Star Cube - Arcade Platformer Game",
+  "private": true,
+  "scripts": {
+    "build": "node scripts/prepare-dist.js",
+    "tauri": "tauri"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.1.0"
+  }
+}
