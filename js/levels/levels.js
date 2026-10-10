@@ -6168,25 +6168,3 @@ const levels = [ {
         y: 440
     }
 } ];
-
-if (typeof window !== "undefined" && window.innerWidth <= 900 && !window.levelsOffsetApplied) {
-    window.levelsOffsetApplied = true;
-    const offset = 400;
-    levels.forEach(lvl => {
-        if (lvl.worldWidth) lvl.worldWidth += offset;
-        if (lvl.playerStart) lvl.playerStart.x += offset;
-        if (lvl.platforms) {
-            lvl.platforms.forEach(p => p.x += offset);
-            if (lvl.platforms.length > 0) {
-                let first = lvl.platforms[0];
-                first.x -= offset;
-                first.w += offset;
-            }
-        }
-        if (lvl.enemies) lvl.enemies.forEach(e => { if(e.x) e.x += offset; });
-        if (lvl.items) lvl.items.forEach(i => { if(i.x) i.x += offset; });
-        if (lvl.checkpoints) lvl.checkpoints.forEach(c => { if(c.x) c.x += offset; });
-        if (lvl.portals) lvl.portals.forEach(p => { if(p.x) p.x += offset; });
-        if (lvl.boss && lvl.boss.x) lvl.boss.x += offset;
-    });
-}

@@ -126,6 +126,10 @@
         const screenY = groundY - 60;
         if (screenX < -120 || screenX > VIEW_W + 120) return;
         ctx.save();
+        ctx.globalAlpha = 1;
+        ctx.globalCompositeOperation = "source-over";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
         ctx.fillStyle = "rgba(0,0,0,0.35)";
         ctx.beginPath();
         ctx.ellipse(screenX + 12, groundY, 20, 5, 0, 0, Math.PI * 2);
@@ -791,6 +795,11 @@
         if (keepCheckpoint && currentCheckpoint && currentCheckpoint.level === idx) {
             startX = currentCheckpoint.x;
             startY = currentCheckpoint.y;
+        } else {
+            const isMobile = typeof window !== "undefined" && (window.isMobileDevice || (typeof window.isMobileOrTouch === "function" && window.isMobileOrTouch()) || (window.innerWidth <= 900 && ("ontouchstart" in window || (navigator.maxTouchPoints && navigator.maxTouchPoints > 0))));
+            if (isMobile) {
+                startX = Math.min(startX + 90, 190);
+            }
         }
         let boatRideState = null;
         if (idx === 3 && keepCheckpoint && currentCheckpoint && currentCheckpoint.level === 3 && currentCheckpoint.x >= 12350 && currentCheckpoint.x < 21750 && typeof window.isBoatTraveling === "function" && window.isBoatTraveling()) {
@@ -1011,7 +1020,7 @@
             checkpoints = lvl.checkpoints.map(cp => ({
                 x: cp.x,
                 y: cp.y,
-                activated: !!(currentCheckpoint && currentCheckpoint.level === idx && currentCheckpoint.x === cp.x && currentCheckpoint.y === cp.y)
+                activated: !!(currentCheckpoint && currentCheckpoint.level === idx && Math.abs(currentCheckpoint.x - cp.x) < 50)
             }));
         }
         game.iceMode = idx === 0 && game.boss1Defeated && !game.subCaveMode && startX >= 12400;
@@ -1478,7 +1487,7 @@
         }
         game.isHub = true;
         currentLevel = "hub";
-        worldWidth = 2300;
+        worldWidth = (typeof window !== "undefined" && (window.isMobileDevice || (typeof window.isMobileOrTouch === "function" && window.isMobileOrTouch()) || (window.innerWidth <= 900 && "ontouchstart" in window))) ? 2850 : 2300;
         currentCheckpoint = null;
         game.iceMode = false;
         game.fireMode = false;
@@ -1537,7 +1546,7 @@
         game.platforms = [ new Platform({
             x: 0,
             y: 500,
-            w: 2300,
+            w: worldWidth,
             h: 80,
             unbreakable: true
         }), new Platform({
@@ -1547,7 +1556,7 @@
             h: 580,
             unbreakable: true
         }), new Platform({
-            x: 2220,
+            x: (worldWidth - 80),
             y: 0,
             w: 80,
             h: 580,
@@ -1555,7 +1564,7 @@
         }), new Platform({
             x: 0,
             y: -40,
-            w: 2300,
+            w: worldWidth,
             h: 60,
             unbreakable: true
         }) ];

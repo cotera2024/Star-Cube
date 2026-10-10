@@ -2369,13 +2369,46 @@
         width: 92% !important; max-width: 500px !important; height: auto !important; max-height: 85vh !important; padding: 20px !important;
     }
     
-    /* Options Modal - Fullscreen */
-    .options-modal-box {
+        .options-modal-box {
         width: 100vw !important; max-width: 100vw !important;
-        height: 100vh !important; max-height: 100vh !important;
+        height: 100% !important; max-height: 100dvh !important;
         border-radius: 0 !important; border: none !important;
-        padding: 20px !important;
+        padding: max(6px, env(safe-area-inset-top, 6px)) max(12px, env(safe-area-inset-right, 12px)) max(6px, env(safe-area-inset-bottom, 6px)) max(12px, env(safe-area-inset-left, 12px)) !important;
+        box-sizing: border-box !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        display: flex !important; flex-direction: column !important;
         justify-content: flex-start !important;
+    }
+    .options-modal-box .modal-header {
+        padding-bottom: 6px !important;
+        margin-bottom: 8px !important;
+        flex-shrink: 0 !important;
+    }
+    .options-modal-box .modal-footer {
+        margin-top: 8px !important;
+        padding-bottom: 6px !important;
+        flex-shrink: 0 !important;
+    }
+    .pause-buttons {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        width: 100% !important;
+    }
+    .pause-buttons button {
+        flex: 1 1 calc(50% - 10px) !important;
+        max-width: calc(50% - 4px) !important;
+        min-width: 125px !important;
+        margin: 0 !important;
+    }
+    .pause-buttons button:last-child:nth-child(odd),
+    .pause-buttons button#pause-title-btn,
+    .pause-buttons button#pause-exit-btn:last-child {
+        flex: 0 1 70% !important;
+        max-width: 70% !important;
+        margin: 0 auto !important;
     }
 
     .options-content, .credits-content {

@@ -3768,9 +3768,10 @@ class Enemy {
             }
             playSound(150, .3, "square", .2, 50);
             const isMiniboss = this.type === "miniboss";
-            const expSize = isMiniboss ? 60 : 30;
-            const expCount = isMiniboss ? 40 : 15;
-            createExplosion(this.x + this.w / 2, this.y + this.h / 2, this.color, expSize, expCount, [ "#ffff00", "#ff0000", "#ffffff" ]);
+            const expSize = isMiniboss ? 65 : 36;
+            const expCount = isMiniboss ? 40 : 20;
+            createExplosion(this.x + this.w / 2, this.y + this.h / 2, this.color || "#ff3300", expSize, expCount, [ "#ffff00", "#ff0000", "#ffffff", "#ff8800" ]);
+            applyShake(isMiniboss ? 20 : 4);
             if (isMiniboss) {
                 applyShake(20);
                 playSound(80, .8, "sawtooth", .5, 30);
