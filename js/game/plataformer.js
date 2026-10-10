@@ -586,6 +586,18 @@
     bindChoiceAction(btnSi, confirmDeal);
     function startGameFromButton() {
         initAudio();
+        try {
+            const el = document.documentElement;
+            if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
+                else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+            }
+            if (screen.orientation && screen.orientation.lock) {
+                screen.orientation.lock("landscape").catch(() => {});
+            } else if (screen.lockOrientation) {
+                screen.lockOrientation("landscape");
+            }
+        } catch (_) {}
         if (gameState !== "start") return;
         gameReady = true;
         window.gameReady = true;
@@ -798,7 +810,7 @@
         } else {
             const isMobile = typeof window !== "undefined" && (window.isMobileDevice || (typeof window.isMobileOrTouch === "function" && window.isMobileOrTouch()) || (window.innerWidth <= 900 && ("ontouchstart" in window || (navigator.maxTouchPoints && navigator.maxTouchPoints > 0))));
             if (isMobile) {
-                startX = Math.min(startX + 90, 190);
+                startX = Math.min(startX + 130, 210);
             }
         }
         let boatRideState = null;

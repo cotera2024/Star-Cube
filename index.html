@@ -1803,6 +1803,7 @@
         }
 
         #btn-fullscreen-toggle {
+            display: none !important;
             position: absolute;
             right: max(14px, env(safe-area-inset-right, 14px));
             top: max(12px, env(safe-area-inset-top, 12px));
@@ -2325,6 +2326,7 @@
     .hide-on-mobile { display: none !important; }
 
     #btn-fullscreen-toggle {
+        display: flex !important;
         position: static !important;
         margin-top: 8px !important;
         margin-left: 2px !important;
@@ -3530,11 +3532,18 @@
                         ('ontouchstart' in window) ||
                         (navigator.maxTouchPoints > 0)
                     );
-                    if (isMobileCoarse && !document.fullscreenElement && !document.webkitFullscreenElement) {
+                    try {
                         const el = document.documentElement;
-                        if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
-                        else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
-                    }
+                        if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                            if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
+                            else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+                        }
+                        if (screen.orientation && screen.orientation.lock) {
+                            screen.orientation.lock("landscape").catch(() => {});
+                        } else if (screen.lockOrientation) {
+                            screen.lockOrientation("landscape");
+                        }
+                    } catch (_) {}
                     if (typeof startGameFromButton === 'function') startGameFromButton();
                 });
             }

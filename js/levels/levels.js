@@ -1735,7 +1735,7 @@ const levels = [ {
         h: 80
     } ],
     enemies: [ {
-        x: 430,
+        x: 620,
         y: 340,
         w: 40,
         h: 40,
@@ -2902,7 +2902,7 @@ const levels = [ {
         h: 20
     } ],
     enemies: [ {
-        x: 420,
+        x: 650,
         y: 468,
         w: 32,
         h: 32,

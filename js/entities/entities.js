@@ -1015,7 +1015,7 @@ class Player {
         }
         if (game.isHub || currentLevel === "hub") {
             const wallLeft = 80;
-            const wallRight = 2220;
+            const wallRight = (typeof worldWidth !== "undefined" && worldWidth > 80) ? (worldWidth - 80) : 2220;
             if (this.x < wallLeft) {
                 this.x = wallLeft;
                 this.vx = 0;
