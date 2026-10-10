@@ -3819,7 +3819,7 @@
                 if (drawX + sw < -80 || drawX - sw > VIEW_W + 80) return;
 
                 const animPhase = time % 60 < 30 ? 0 : 1;
-                const lang = typeof window.currentLang === "string" ? window.currentLang : "es";
+                const lang = typeof getCurrentLang === "function" ? getCurrentLang() : (typeof window.currentLang === "string" ? window.currentLang : "es");
                 const cacheKey = sx + "_" + (game.iceMode ? "1" : "0") + "_" + animPhase + "_" + lang;
 
                 let cached = window._tutorialSignCache[cacheKey];
@@ -4147,19 +4147,21 @@
                 }
             };
             drawBigSign(450, 520, 175, () => {
-                drawDPad(-180, -18);
+                drawDPad(-204, -18);
+                drawSignLabel("/", -178, -18, "bold 13px sans-serif");
+                drawKey(-152, -18, "A D", 34);
                 drawRealPeggy(-180, 38, {
                     state: "run",
                     facing: time % 60 < 30 ? -1 : 1
                 });
                 drawSignLabel(typeof __ === "function" ? __("ui_ctrl_move_short") : "MOVER", -180, -62);
-                drawKey(-60, -18, typeof __ === "function" ? __("ui_key_space") : "ESPACIO", 70);
+                drawKey(-60, -18, (typeof __ === "function" ? __("ui_key_space") : "ESPACIO") + " / K", 88);
                 drawRealPeggy(-60, 38, {
                     state: "jump",
                     vy: time % 60 < 30 ? -2 : 2
                 });
                 drawSignLabel(typeof __ === "function" ? __("ui_ctrl_jump_short") : "SALTAR", -60, -62);
-                drawKey(60, -18, "X");
+                drawKey(60, -18, "X / J", 48);
                 drawRealPeggy(60, 38, {
                     state: "idle",
                     facing: 1
@@ -4167,7 +4169,7 @@
                 ctx.fillStyle = "#fbbf24";
                 ctx.fillRect(80, 34, 6, 6);
                 drawSignLabel(typeof __ === "function" ? __("ui_ctrl_shoot_short") : "DISPARAR", 60, -62);
-                drawKey(180, -18, "C");
+                drawKey(180, -18, "C / L", 48);
                 drawRealPeggy(180, 38, {
                     state: "run",
                     facing: 1,
@@ -4186,7 +4188,7 @@
                 drawSignLabel(typeof __ === "function" ? __("ui_ctrl_dash_short") : "DASH", 180, -62);
             });
             drawBigSign(1320, 480, 175, () => {
-                drawKey(-175, -18, "X");
+                drawKey(-175, -18, "X / J", 48);
                 drawSignLabel(typeof __ === "function" ? __("ui_ctrl_hold") : "MANTENER", -175, -62);
                 drawRealPeggy(-105, 38, {
                     state: "idle",
@@ -4235,9 +4237,9 @@
                 ctx.restore();
             });
             drawBigSign(1750, 300, 175, () => {
-                drawKey(-70, -34, typeof __ === "function" ? __("ui_key_space") : "ESPACIO", 66);
+                drawKey(-70, -34, (typeof __ === "function" ? __("ui_key_space") : "ESPACIO") + " / K", 84);
                 drawSignLabel("+", -70, -16);
-                drawKey(-70, 2, "C");
+                drawKey(-70, 2, "C / L", 46);
                 drawRealPeggy(-70, 48, {
                     state: "jump",
                     facing: 1,
@@ -4249,9 +4251,9 @@
                 ctx.ellipse(-70, 68, 15, 4, 0, 0, Math.PI * 2);
                 ctx.fill();
                 drawSignLabel(typeof __ === "function" ? __("ui_ctrl_air_dash") : "AIR DASH", -70, -62);
-                drawKey(70, -34, "↑");
+                drawKey(70, -34, "↑ / W", 46);
                 drawSignLabel("+", 70, -16);
-                drawKey(70, 2, "X");
+                drawKey(70, 2, "X / J", 46);
                 drawRealPeggy(70, 48, {
                     state: "jump",
                     facing: 1,
@@ -4262,10 +4264,10 @@
                 drawSignLabel(typeof __ === "function" ? __("ui_ctrl_shoot_up") : "DISPARO ARRIBA", 70, -62);
             });
             drawBigSign(13050, 280, 175, () => {
-                drawKey(-60, -34, "X");
-                drawSignLabel(typeof __ === "function" ? __("ui_ctrl_lvl4") : "NIVEL 4", -20, -34, "bold 10px sans-serif");
+                drawKey(-60, -34, "X / J", 46);
+                drawSignLabel(typeof __ === "function" ? __("ui_ctrl_lvl4") : "NIVEL 4", -16, -34, "bold 10px sans-serif");
                 drawSignLabel("+", -60, -16);
-                drawKey(-60, 2, "C");
+                drawKey(-60, 2, "C / L", 46);
                 drawRealPeggy(50, 38, {
                     state: "run",
                     facing: 1,

@@ -248,6 +248,10 @@ async function setLanguage(langCode) {
         await loadLang(langCode);
     }
     currentLang = langCode;
+    window.currentLang = langCode;
+    if (typeof window !== "undefined") {
+        window._tutorialSignCache = {};
+    }
     storageSet("starcube_lang", langCode);
     if (typeof window !== "undefined" && typeof window.updateUITranslations === "function") {
         try { window.updateUITranslations(); } catch (e) {}
@@ -284,6 +288,9 @@ function storageRemove(key) {
 }
 
 window.__ = __;
+window.currentLang = currentLang;
+window.getCurrentLang = getCurrentLang;
+window.setLanguage = setLanguage;
 window.storageGet = storageGet;
 window.storageSet = storageSet;
 window.storageRemove = storageRemove;
