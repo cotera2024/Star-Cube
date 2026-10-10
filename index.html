@@ -1128,6 +1128,76 @@
             font-size: 11px;
             font-weight: 600;
         }
+        
+        .opt-lang-carousel {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            margin-top: 6px;
+        }
+        .opt-lang-arrow-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+            touch-action: manipulation;
+        }
+        .opt-lang-arrow-btn:hover, .opt-lang-arrow-btn:active {
+            background: rgba(255, 0, 127, 0.35);
+            border-color: #ff007f;
+            transform: scale(1.08);
+            box-shadow: 0 0 12px rgba(255, 0, 127, 0.5);
+        }
+        .opt-lang-select-btn {
+            flex: 1;
+            max-width: 340px;
+            height: 46px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(0, 240, 255, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 0 16px rgba(0, 240, 255, 0.15);
+            touch-action: manipulation;
+        }
+        .opt-lang-select-btn:hover, .opt-lang-select-btn:active {
+            border-color: #00ffff;
+            background: rgba(0, 240, 255, 0.16);
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+        }
+        .opt-lang-select-btn .lang-flag {
+            font-size: 24px;
+        }
+        .opt-lang-select-btn .lang-name {
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            font-family: inherit;
+        }
+        .opt-lang-select-btn .lang-code {
+            font-size: 11px;
+            color: #38bdf8;
+            background: rgba(56, 189, 248, 0.15);
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
         .opt-lang-card .lang-code {
             font-family: 'Fredoka One', cursive;
             font-size: 10px;
@@ -2972,47 +3042,21 @@
                             </div>
                         </div>
 
-                        <div class="quick-audio-bar">
-                            <span class="quick-audio-label" data-i18n="ui_opt_quick_select">Quick Select:</span>
-                            <div class="quick-audio-btns">
-                                <button type="button" class="quick-audio-btn" id="btn-quick-both" data-i18n="ui_opt_both">🔊 Both</button>
-                                <button type="button" class="quick-audio-btn" id="btn-quick-music" data-i18n="ui_opt_music_only">🎵 Music Only</button>
-                                <button type="button" class="quick-audio-btn" id="btn-quick-sfx" data-i18n="ui_opt_sfx_only">🔔 SFX Only</button>
-                                <button type="button" class="quick-audio-btn" id="btn-quick-mute" data-i18n="ui_opt_mute_all">🔇 Mute All</button>
-                            </div>
-                        </div>
+
                     </div>
                 </div>
 
                 <div class="options-section">
                     <h3 class="opt-section-title" data-i18n="ui_opt_language">🌐 GAME LANGUAGE</h3>
                     
-                    <div class="opt-lang-grid" id="options-lang-grid">
-                        <button type="button" class="opt-lang-card" data-lang="es">
-                            <span class="lang-flag">🇪🇸</span>
-                            <span class="lang-name">Español</span>
-                            <span class="lang-code">ES</span>
+                    <div class="opt-lang-carousel">
+                        <button type="button" class="opt-lang-arrow-btn" id="opt-lang-prev" aria-label="Previous Language">◀</button>
+                        <button type="button" class="opt-lang-select-btn" id="opt-lang-display" aria-label="Language Selector">
+                            <span class="lang-flag" id="opt-current-flag">🇪🇸</span>
+                            <span class="lang-name" id="opt-current-name">Español</span>
+                            <span class="lang-code" id="opt-current-code">ES</span>
                         </button>
-                        <button type="button" class="opt-lang-card" data-lang="en">
-                            <span class="lang-flag">🇬🇧</span>
-                            <span class="lang-name">English</span>
-                            <span class="lang-code">EN</span>
-                        </button>
-                        <button type="button" class="opt-lang-card" data-lang="zh">
-                            <span class="lang-flag">🇨🇳</span>
-                            <span class="lang-name">中文</span>
-                            <span class="lang-code">ZH</span>
-                        </button>
-                        <button type="button" class="opt-lang-card" data-lang="ja">
-                            <span class="lang-flag">🇯🇵</span>
-                            <span class="lang-name">日本語</span>
-                            <span class="lang-code">JA</span>
-                        </button>
-                        <button type="button" class="opt-lang-card" data-lang="ru">
-                            <span class="lang-flag">🇷🇺</span>
-                            <span class="lang-name">Русский</span>
-                            <span class="lang-code">RU</span>
-                        </button>
+                        <button type="button" class="opt-lang-arrow-btn" id="opt-lang-next" aria-label="Next Language">▶</button>
                     </div>
                 </div>
             </div>

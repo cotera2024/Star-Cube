@@ -77,9 +77,69 @@
             if (btnQuickMute) btnQuickMute.classList.toggle('active', allMutedActive);
 
             const curLang = typeof window.getCurrentLang === 'function' ? window.getCurrentLang() : 'es';
+            if (typeof updateLanguageCarouselDisplay === 'function') {
+                updateLanguageCarouselDisplay(curLang);
+            }
             document.querySelectorAll('.opt-lang-card').forEach(card => {
                 const lang = card.getAttribute('data-lang');
                 card.classList.toggle('active', lang === curLang);
+            });
+        }
+
+        
+        const LANG_LIST = [
+            { code: 'es', name: 'Español', flag: '🇪🇸' },
+            { code: 'en', name: 'English', flag: '🇬🇧' },
+            { code: 'zh', name: '中文', flag: '🇨🇳' },
+            { code: 'ja', name: '日本語', flag: '🇯🇵' },
+            { code: 'ru', name: 'Русский', flag: '🇷🇺' }
+        ];
+
+        function updateLanguageCarouselDisplay(langCode) {
+            const item = LANG_LIST.find(l => l.code === langCode) || LANG_LIST[0];
+            const flagEl = document.getElementById('opt-current-flag');
+            const nameEl = document.getElementById('opt-current-name');
+            const codeEl = document.getElementById('opt-current-code');
+            if (flagEl) flagEl.textContent = item.flag;
+            if (nameEl) nameEl.textContent = item.name;
+            if (codeEl) codeEl.textContent = item.code.toUpperCase();
+        }
+
+        async function cycleLanguage(direction = 1) {
+            const curLang = typeof window.getCurrentLang === 'function' ? window.getCurrentLang() : 'es';
+            let idx = LANG_LIST.findIndex(l => l.code === curLang);
+            if (idx === -1) idx = 0;
+            let nextIdx = (idx + direction + LANG_LIST.length) % LANG_LIST.length;
+            const nextLang = LANG_LIST[nextIdx].code;
+            if (typeof window.setLanguage === 'function') {
+                await window.setLanguage(nextLang);
+            }
+            if (typeof window.updateUITranslations === 'function') {
+                window.updateUITranslations();
+            }
+            syncOptionsUI();
+        }
+
+        const btnLangPrev = document.getElementById('opt-lang-prev');
+        const btnLangNext = document.getElementById('opt-lang-next');
+        const btnLangDisplay = document.getElementById('opt-lang-display');
+
+        if (btnLangPrev) {
+            btnLangPrev.addEventListener('click', (e) => {
+                e.stopPropagation();
+                cycleLanguage(-1);
+            });
+        }
+        if (btnLangNext) {
+            btnLangNext.addEventListener('click', (e) => {
+                e.stopPropagation();
+                cycleLanguage(1);
+            });
+        }
+        if (btnLangDisplay) {
+            btnLangDisplay.addEventListener('click', (e) => {
+                e.stopPropagation();
+                cycleLanguage(1);
             });
         }
 

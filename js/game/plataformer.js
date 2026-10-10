@@ -811,6 +811,26 @@
             const isMobile = typeof window !== "undefined" && (window.isMobileDevice || (typeof window.isMobileOrTouch === "function" && window.isMobileOrTouch()) || (window.innerWidth <= 900 && ("ontouchstart" in window || (navigator.maxTouchPoints && navigator.maxTouchPoints > 0))));
             if (isMobile) {
                 startX = Math.min(startX + 130, 210);
+                if (game.enemies && Array.isArray(game.enemies)) {
+                    game.enemies.forEach(e => {
+                        if (typeof e.x === "number") {
+                            if (idx === 2) {
+                                if (e.x < 500) e.x += 260;
+                                else if (e.x < 800) e.x += 180;
+                                if (e.originX) e.originX = e.x;
+                            } else if (idx === 1) {
+                                if (e.x < 550) e.x += 240;
+                                if (e.originX) e.originX = e.x;
+                            } else if (idx === 3) {
+                                if (e.x < 650) e.x += 200;
+                                if (e.originX) e.originX = e.x;
+                            } else if (idx === 0) {
+                                if (e.x < 800) e.x += 120;
+                                if (e.originX) e.originX = e.x;
+                            }
+                        }
+                    });
+                }
             }
         }
         let boatRideState = null;
